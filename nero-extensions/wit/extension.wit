@@ -1,0 +1,163 @@
+package nero:extension;
+
+/// The `extractor` interface provides a set of functions to interact with the series-based media platform.
+/// It allows users to search for series, retrieve episodes and fetch video streams for episodes.
+///
+/// This interface is specifically designed for fetching data over the network and does not support
+/// local or file system data extraction.
+interface extractor {
+    use wasi:http/types@0.2.1.{error-code, scheme, headers};
+    /// Represents a URL with its components, used for referencing network resources.
+    record url {
+        /// The scheme component of the URL, such as "http" or "https".
+        /// This defines the protocol to be used.
+        scheme: scheme,
+        /// The authority component of the URL, typically consisting of the domain name
+        /// and optionally the port number (e.g., "example.com" or "example.com:8080").
+        authority: string,
+        /// The optional path and query component of the URL, specifying the path
+        /// on the server and any query parameters (e.g., "/path?query=1").
+        path-with-query: option<string>
+    }
+
+    /// Represents a series with its basic details.
+    record series {
+        /// Unique identifier for the series.
+        id: string,
+        /// Title of the series.
+        title: string,
+        /// URL to the poster image of the series, if available.
+        poster-url: option<url>,
+        /// Synopsis or description of the series, if available.
+        synopsis: option<string>,
+        /// Type of the series (e.g., TV show, movie), if available.
+        %type: option<string>,
+    }
+
+    /// Represents a page of series results, including pagination information.
+    ///
+    /// This record is particularly useful when the search results need to be broken down into multiple pages.
+    /// Instead of returning a complete list of all available series at once, `series-page` allows
+    /// paginate the results, making it easier to manage large datasets.
+    record series-page {
+        /// List of series on the current page.
+        series: list<series>,
+        /// Indicates if there is a next page of results.
+        has-next-page: bool
+    }
+
+    /// Represents a filter used in search queries.
+    ///
+    /// The filter is defined as a tuple where the first element is the displayable name
+    /// and the second element is the filter value (such as an ID or key),
+    /// (e.g., ("Slice of life", "slice_of_life")).
+    ///
+    /// This structure is useful for pairing user-friendly names with their corresponding
+    /// internal values used in search operations.
+    type filter = tuple<string, string>;
+
+    /// Wrapper for the `filter` type designed to include additional information
+    /// that can be displayed to the end user.
+    record series-filter {
+        /// Unique identifier for the filter (e.g., "genre").
+        id: string,
+        /// Display name for the filter (e.g., "Genre").
+        display-name: string,
+        /// List of applicable filters where each filter contains the displayable name and its value.
+        filters: list<filter>
+    }
+
+    /// Represents a filter to be used specifically in the `search` method.
+    ///
+    /// Unlike `series-filter`, this type omits displayable information (like `display-name`),
+    /// focusing only on the filter identifier and selected values.
+    ///
+    /// The first element of the tuple is the filter identifier (e.g., "genre"),
+    /// and the second element is a list of selected values (e.g., ["slice_of_life", "romance"]).
+    type search-filter = tuple<string, list<string>>;
+
+    /// Returns the list of available filters for the series search.
+    filters: func() -> list<series-filter>;
+
+    /// Searches for series based on a query string, optional pagination, and a list of filters.
+    ///
+    /// * `query`: The search query string, used to find matching series.
+    /// * `page`: Optional page number for paginated results.
+    /// * `filters`: List of filters to apply to the search.
+    ///
+    /// Returns a `series-page` if successful, or an http error code as a `error-code`.
+    search: func(
+        query: string,
+        page: option<u16>,
+        filters: list<search-filter>
+    ) -> result<series-page, error-code>;
+
+    /// Represents an episode of a series.
+    record episode {
+        /// Unique identifier for the episode.
+        id: string,
+        /// Episode number in the series.
+        number: u16,
+        /// Title of the episode, if available.
+        title: option<string>,
+        /// URL to the thumbnail image of the episode, if available.
+        thumbnail-url: option<url>,
+        /// Description of the episode, if available.
+        description: option<string>,
+    }
+
+    /// Represents a page of episode results, including pagination information.
+    ///
+    /// Similar to the `series-page`, `episodes-page` is useful for handling large numbers of episodes
+    /// by dividing them into manageable pages. This is especially helpful for series with numerous episodes,
+    /// allowing to return only a part of the episodes to avoid an overload when retrieving and returning the data.
+    record episodes-page {
+        /// List of episodes on the current page.
+        episodes: list<episode>,
+        /// Indicates if there is a next page of results.
+        has-next-page: bool
+    }
+
+    /// Retrieves a paginated list of episodes for a given series, identified by its unique `series-id`.
+    ///
+    /// * `series-id`: The unique identifier for the series from which episodes are to be fetched.
+    ///
+    /// Returns an `episodes-page` if successful, or an http error code as a `error-code`.
+    get-series-episodes: func(series-id: string) -> result<episodes-page, error-code>;
+
+    /// Represents the resolution of a video stream with height and width.
+    /// 
+    /// For example, a resolution of `1920x1080` would be represented as `(1080, 1920)`.
+    type resolution = tuple<u16, u16>;
+
+    /// Represents a video stream for a specific episode.
+    record series-video {
+        /// URL to the video stream.
+        video-url: url,
+        /// HTTP headers required to access the video stream.
+        ///
+        /// These headers are essential for loading the video stream in case the video requires it.
+        /// Ensure that all necessary headers are included (e.g. Referer or Content-Type headers).
+        video-headers: headers,
+        /// The server hosting the video stream.
+        server: string,
+        /// The resolution of the video stream.
+        resolution: resolution
+    }
+
+    /// Retrieves the available video streams for a given episode of a specific series.
+    ///
+    /// * `series-id`: The unique identifier for the series to which the episode belongs.
+    /// * `episode-id`: The unique identifier of the episode for which video streams are requested.
+    ///
+    /// Returns a list of `series-video` records if successful, or an http error code as a `error-code`.
+    get-series-videos: func(
+        series-id: string,
+        episode-id: string
+    ) -> result<list<series-video>, error-code>;
+}
+
+world extension {
+    import wasi:http/outgoing-handler@0.2.1;
+    export extractor;
+}
