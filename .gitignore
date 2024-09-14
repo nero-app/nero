@@ -1,0 +1,4 @@
+/nero-app/gen/schemas
+/nero-ui/dist/
+/target/
+/Cargo.lock
