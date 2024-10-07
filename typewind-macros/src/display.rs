@@ -7,7 +7,8 @@ use syn::{parse_macro_input, Data, DeriveInput, Fields};
 #[darling(default, attributes(display))]
 struct DisplayOpts {
     prefix: Option<String>,
-    replace: Option<Replace>,
+    #[darling(multiple)]
+    replace: Vec<Replace>,
 }
 
 #[derive(FromMeta, Default)]
@@ -54,11 +55,11 @@ fn generate_struct_impl(fields: &Fields) -> proc_macro2::TokenStream {
 fn generate_enum_impl(data: &syn::DataEnum, opts: &DisplayOpts) -> proc_macro2::TokenStream {
     let match_arms = data.variants.iter().map(|variant| {
         let variant_name = &variant.ident;
-        let mut kebab_variant = to_kebab_case(variant_name.to_string().trim_start_matches('_'));
-
-        if let Some(ref replace) = opts.replace {
-            kebab_variant = kebab_variant.replace(&replace.from, &replace.to);
-        }
+        let variant_str = opts.replace.iter().fold(
+            variant_name.to_string().trim_start_matches('_').to_string(),
+            |acc, replace| acc.replace(&replace.from, &replace.to)
+        );
+        let kebab_variant = to_kebab_case(&variant_str);
 
         match &variant.fields {
             Fields::Unnamed(_) => quote! {
