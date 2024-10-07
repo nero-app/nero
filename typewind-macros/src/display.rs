@@ -76,9 +76,14 @@ fn generate_enum_impl(data: &syn::DataEnum, opts: &DisplayOpts) -> proc_macro2::
 fn to_kebab_case(s: &str) -> String {
     s.chars()
         .enumerate()
-        .map(|(i, ch)| match ch.is_uppercase() && i > 0 {
-            true => format!("-{}", ch.to_ascii_lowercase()),
-            false => ch.to_ascii_lowercase().to_string(),
+        .fold(String::new(), |mut kebab, (i, ch)| {
+            if i > 0 {
+                let prev_ch = s.chars().nth(i - 1).unwrap();
+                if ch.is_uppercase() || ch.is_numeric() && prev_ch.is_alphabetic() {
+                    kebab.push('-');
+                }
+            }
+            kebab.push(ch.to_ascii_lowercase());
+            kebab
         })
-        .collect()
 }
