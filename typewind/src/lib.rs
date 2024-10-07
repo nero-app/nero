@@ -14,7 +14,7 @@ mod macros;
 
 pub use typewind_macros::ToClasses;
 
-register_mods!(flexbox_grid, layout, spacing, typography);
+register_mods!(flexbox_grid, layout, spacing, sizing, typography);
 
 /// Trait for converting types into a string of tailwind classes.
 pub trait ToClasses {
