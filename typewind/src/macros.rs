@@ -32,15 +32,15 @@ macro_rules! tailwind_types {
         pub(crate) fn convert_to_classes(instances: &[String]) -> Vec<String> {
             instances.iter()
                 .filter_map(|expr_str| {
-                    $(
-                        if expr_str.contains(stringify!($t)) {
-                            if let Ok(expr) = syn::parse_str::<$t>(expr_str) {
-                                return Some(expr.to_string());
-                            }
+                    match expr_str.split(|c| c == ' ').next().unwrap_or("") {
+                        $(
+                            stringify!($t) => syn::parse_str::<$t>(expr_str).ok().map(|expr| expr.to_string()),
+                        )+
+                        _ => {
+                            eprintln!("Failed to match type for expression: {}", expr_str);
+                            None
                         }
-                    )+
-                    eprintln!("Failed to match type for expression: {}", expr_str);
-                    None
+                    }
                 })
                 .collect()
         }
