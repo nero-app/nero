@@ -6,7 +6,7 @@ use std::{
     io::Write,
     path::{Path, PathBuf},
 };
-use syn::{Expr, ExprCall, ExprStruct};
+use syn::{Expr, ExprCall};
 
 pub mod customization;
 #[macro_use]
@@ -58,11 +58,6 @@ impl Visitor {
 impl<'ast> syn::visit::Visit<'ast> for Visitor {
     fn visit_expr(&mut self, i: &'ast syn::Expr) {
         match i {
-            Expr::Struct(ExprStruct { fields, .. }) => {
-                fields.iter().for_each(|f| {
-                    self.visit_expr(&f.expr);
-                });
-            }
             Expr::Call(ExprCall { func, args, .. }) => {
                 let func_str = func.to_token_stream().to_string();
                 if self.is_target_type(&func_str) {
