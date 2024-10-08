@@ -6,7 +6,7 @@ use std::{
     io::Write,
     path::{Path, PathBuf},
 };
-use syn::{Expr, ExprCall};
+use syn::{parse::Parser, punctuated::Punctuated, Expr, ExprCall, ExprMacro, Token};
 
 pub mod customization;
 #[macro_use]
@@ -58,6 +58,18 @@ impl Visitor {
 impl<'ast> syn::visit::Visit<'ast> for Visitor {
     fn visit_expr(&mut self, i: &'ast syn::Expr) {
         match i {
+            Expr::Macro(ExprMacro { mac, .. }) => {
+                let parser = Punctuated::<Expr, Token![,]>::parse_terminated;
+                let args = parser.parse2(mac.tokens.clone()).unwrap_or_default();
+
+                args.iter().for_each(|arg| {
+                    let arg_str = arg.to_token_stream().to_string();
+                    if self.is_target_type(&arg_str) {
+                        self.instances.insert(arg_str);
+                    }
+                    self.visit_expr(arg);
+                });
+            }
             Expr::Call(ExprCall { func, args, .. }) => {
                 let func_str = func.to_token_stream().to_string();
                 if self.is_target_type(&func_str) {
