@@ -239,9 +239,31 @@ mod tests {
     }
 
     #[test]
-    fn test_to_classes_derive() {
+    fn test_to_classes_derive_with_variant_behavior() {
         #[allow(dead_code)]
         #[derive(ToClasses)]
+        #[tw(behavior = "variant")]
+        struct Text {
+            #[tw(skip)]
+            text: String,
+            font_family: FontFamily,
+            color: TextColor,
+        }
+
+        let text = Text {
+            text: "Hello World".to_owned(),
+            font_family: FontFamily::Sans,
+            color: TextColor(Color::Green(ColorTone::_300)),
+        };
+
+        assert_eq!(text.classes(), "font-sans text-green-300");
+    }
+
+    #[test]
+    fn test_to_classes_derive_with_skip_behavior() {
+        #[allow(dead_code)]
+        #[derive(ToClasses)]
+        #[tw(behavior = "skip")]
         struct Text {
             text: String,
             #[tw(variant)]
