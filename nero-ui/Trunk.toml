@@ -1,6 +1,13 @@
 [build]
 target = "./index.html"
 
+# Workaround to wait until the build.rs finishes to generate the necessary tailwind classes
+# https://github.com/trunk-rs/trunk/issues/701
+[[hooks]]
+stage = "pre_build"
+command = "cargo"
+command_arguments = ["check"]
+
 [serve]
 address = "127.0.0.1"
 port = 1420
