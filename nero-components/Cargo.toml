@@ -1,0 +1,11 @@
+[package]
+name = "nero-components"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+typewind = { path = "../typewind" }
+leptos = { version = "0.7.0-rc0", default-features = false }
+
+[build-dependencies]
+typewind = { path = "../typewind" }
