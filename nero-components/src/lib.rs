@@ -1,4 +1,6 @@
+mod image;
 pub mod layout;
+pub use image::*;
 
 use leptos::IntoView;
 
