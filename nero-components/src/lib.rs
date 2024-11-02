@@ -1,6 +1,10 @@
 mod image;
-pub mod layout;
 pub use image::*;
+
+mod label;
+pub use label::*;
+
+pub mod layout;
 
 use leptos::IntoView;
 
