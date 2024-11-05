@@ -9,6 +9,9 @@ pub use label::*;
 
 pub mod layout;
 
+mod list;
+pub use list::*;
+
 use leptos::IntoView;
 
 /// Trait for converting a type into a leptos component.
