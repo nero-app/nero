@@ -4,7 +4,9 @@ use leptos::{
     IntoView,
 };
 use typewind::{
-    typography::{FontSize, LineClamp, TextAlign, TextColor, TextOverflow, TextTransform},
+    typography::{
+        FontSize, FontWeight, LineClamp, TextAlign, TextColor, TextOverflow, TextTransform,
+    },
     ToClasses,
 };
 
@@ -33,6 +35,7 @@ pub struct Label {
     #[tw(skip)]
     tag: LabelTag,
     font_size: Option<FontSize>,
+    font_weight: Option<FontWeight>,
     line_clamp: Option<LineClamp>,
     align: Option<TextAlign>,
     color: Option<TextColor>,
@@ -74,6 +77,7 @@ impl Label {
             text,
             tag: LabelTag::P,
             font_size: None,
+            font_weight: None,
             line_clamp: None,
             align: None,
             color: None,
@@ -91,6 +95,12 @@ impl Label {
     /// Sets the `font-size` property of the label.
     pub fn font_size(mut self, font_size: FontSize) -> Self {
         self.font_size = Some(font_size);
+        self
+    }
+
+    /// Sets the `font-weight` property of the label.
+    pub fn font_weight(mut self, font_weight: FontWeight) -> Self {
+        self.font_weight = Some(font_weight);
         self
     }
 
