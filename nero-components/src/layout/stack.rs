@@ -1,6 +1,6 @@
 use leptos::IntoView;
 use typewind::{
-    flexbox_grid::{AlignItems, FlexDirection, FlexWrap, Gap, JustifyContent},
+    flexbox_grid::{AlignItems, FlexDirection, FlexWrap, JustifyContent},
     layout::Display,
     ToClasses,
 };
@@ -21,39 +21,31 @@ pub struct StackLayout {
 
 impl Layout<StackLayout> {
     /// Creates a horizontal stack layout with child elements aligned in a row.
-    ///
-    /// By default the horizontal stack is created with the `AlignItems::Center` alignment and
-    /// `Gap::_0_5` spacing between child elements.
     pub fn h_stack(children: impl IntoView + 'static) -> Self {
         Layout::new(
             StackLayout {
                 display: Display::Flex,
-                align: Some(AlignItems::Center),
+                align: None,
                 justify: None,
                 wrap: None,
                 direction: Some(FlexDirection::Row),
             },
             children,
         )
-        .gap(Gap::_0_5)
     }
 
     /// Creates a vertical stack layout with child elements aligned in a column.
-    ///
-    /// By default the vertical stack items is created with the `AlignItems::Center` alignment and
-    /// `Gap::_0_5` spacing between child elements.
     pub fn v_stack(children: impl IntoView + 'static) -> Self {
         Layout::new(
             StackLayout {
                 display: Display::Flex,
-                align: Some(AlignItems::Center),
+                align: None,
                 justify: None,
                 wrap: None,
                 direction: Some(FlexDirection::Col),
             },
             children,
         )
-        .gap(Gap::_0_5)
     }
 
     /// Sets the `align-items` property to align children along the cross-axis in the layout.
