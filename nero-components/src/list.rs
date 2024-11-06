@@ -120,6 +120,7 @@ impl IntoComponent for List {
 
         match self.header {
             Some(header) => Layout::v_stack((header.into_component(), ul))
+                .gap(self.gap.unwrap_or(Gap::_0))
                 .into_component()
                 .into_any(),
             None => ul.into_any(),
