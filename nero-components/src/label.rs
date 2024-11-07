@@ -1,6 +1,6 @@
 use leptos::{
     html::{h1, h2, h3, p, span, ElementChild},
-    prelude::{ClassAttribute, IntoAny, MaybeSignal},
+    prelude::{ClassAttribute, IntoAny, Signal},
     IntoView,
 };
 use typewind::{
@@ -31,7 +31,7 @@ pub enum LabelTag {
 #[derive(ToClasses)]
 pub struct Label {
     #[tw(skip)]
-    text: MaybeSignal<String>,
+    text: Signal<String>,
     #[tw(skip)]
     tag: LabelTag,
     font_size: Option<FontSize>,
@@ -44,7 +44,7 @@ pub struct Label {
 }
 
 impl Label {
-    /// Creates a new `Label` with the specified [`MaybeSignal<String>`] text.
+    /// Creates a new `Label` with the specified [`Signal<String>`] text.
     ///
     /// By default the label is created with the `P` tag.
     ///
@@ -52,7 +52,7 @@ impl Label {
     /// ```
     /// use leptos::{
     ///     html::{div, ElementChild},
-    ///     prelude::{signal, Get, MaybeSignal, Update},
+    ///     prelude::{signal, Get, Signal, Update},
     ///     IntoView
     /// };
     /// use nero_components::{IntoComponent, Label, LabelTag, Button};
@@ -61,7 +61,7 @@ impl Label {
     ///     let (value, set_value) = signal(0);
     ///     
     ///     div().child((
-    ///         Label::new(MaybeSignal::derive(move || value.get().to_string()))
+    ///         Label::new(Signal::derive(move || value.get().to_string()))
     ///             .tag(LabelTag::H1)
     ///             .into_component(),
     ///         Button::new(
@@ -72,7 +72,7 @@ impl Label {
     ///     ))
     /// }    
     /// ```
-    pub fn new(text: MaybeSignal<String>) -> Self {
+    pub fn new(text: Signal<String>) -> Self {
         Self {
             text,
             tag: LabelTag::P,
