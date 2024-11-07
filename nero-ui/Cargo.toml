@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-leptos = { version = "0.7.0-rc0", features = ["csr"] }
+leptos = { version = "0.7.0-rc1", features = ["csr"] }
 wasm-bindgen = "0.2.93"
 wasm-bindgen-futures = "0.4.43"
 js-sys = "0.3.70"
