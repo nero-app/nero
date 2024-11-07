@@ -1,11 +1,11 @@
 use leptos::{
     html::{button, ElementChild},
-    prelude::{ClassAttribute, OnAttribute},
+    prelude::{AnyView, ClassAttribute, IntoAny, OnAttribute},
     IntoView,
 };
-use typewind::{backgrounds::BackgroundColor, borders::BorderRadius, spacing::Padding, ToClasses};
+use typewind::{backgrounds::BackgroundColor, borders::BorderRadius, ToClasses};
 
-use crate::{IntoComponent, Label, LabelTag};
+use crate::IntoComponent;
 
 /// Represents a button with configurable properties for background color,
 /// border radius, and on click callback.
@@ -15,7 +15,7 @@ where
     T: FnMut() + 'static,
 {
     #[tw(skip)]
-    label: Label,
+    children: AnyView,
     background_color: Option<BackgroundColor>,
     radius: Option<BorderRadius>,
     #[tw(skip)]
@@ -23,10 +23,10 @@ where
 }
 
 impl<T: FnMut() + 'static> Button<T> {
-    /// Creates a new `Button` with the specified label and on_click callback.
-    pub fn new(label: Label, on_click: T) -> Self {
+    /// Creates a new `Button` with the specified children and on_click callback.
+    pub fn new(children: impl IntoView + 'static, on_click: T) -> Self {
         Self {
-            label: label.tag(LabelTag::Span),
+            children: children.into_any(),
             background_color: None,
             radius: None,
             on_click,
@@ -49,13 +49,8 @@ impl<T: FnMut() + 'static> Button<T> {
 impl<T: FnMut() + 'static> IntoComponent for Button<T> {
     fn into_component(mut self) -> impl IntoView {
         button()
-            .class(format!(
-                "{} {} {}",
-                Padding::Px3,
-                Padding::Py1_5,
-                self.classes()
-            ))
-            .child(self.label.into_component())
+            .class(self.classes())
+            .child(self.children)
             .on(leptos::ev::click, move |_| (self.on_click)())
     }
 }
