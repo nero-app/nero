@@ -25,14 +25,14 @@ pub struct Image {
 impl Image {
     /// Creates a new `Image` with specified `src` and `alt` text.
     ///
-    /// By default the image is created with a `Height::Full` and `Width::Full`.
+    /// By default the image is created with a `Height::Full`, `Width::Full` and `ObjectFit::Cover` properties.
     pub fn new(src: String, alt: String) -> Self {
         Self {
             src,
             alt,
             height: Some(Height::Full),
             width: Some(Width::Full),
-            fit: None,
+            fit: Some(ObjectFit::Cover),
             radius: None,
         }
     }
