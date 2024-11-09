@@ -66,7 +66,7 @@ impl Label {
     ///             .into_component(),
     ///         Button::new(
     ///             Label::new("Click me!".into()).into_component(),
-    ///             move || set_value.update(|value| *value += 1),
+    ///             move |_| set_value.update(|value| *value += 1),
     ///         )
     ///         .into_component()
     ///     ))

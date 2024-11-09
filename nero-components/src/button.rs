@@ -1,4 +1,5 @@
 use leptos::{
+    ev::MouseEvent,
     html::{button, ElementChild},
     prelude::{AnyView, ClassAttribute, IntoAny, OnAttribute},
     IntoView,
@@ -12,7 +13,7 @@ use crate::IntoComponent;
 #[derive(ToClasses)]
 pub struct Button<T>
 where
-    T: FnMut() + 'static,
+    T: FnMut(MouseEvent) + 'static,
 {
     #[tw(skip)]
     children: AnyView,
@@ -22,7 +23,7 @@ where
     on_click: T,
 }
 
-impl<T: FnMut() + 'static> Button<T> {
+impl<T: FnMut(MouseEvent) + 'static> Button<T> {
     /// Creates a new `Button` with the specified children and on_click callback.
     pub fn new(children: impl IntoView + 'static, on_click: T) -> Self {
         Self {
@@ -46,11 +47,11 @@ impl<T: FnMut() + 'static> Button<T> {
     }
 }
 
-impl<T: FnMut() + 'static> IntoComponent for Button<T> {
+impl<T: FnMut(MouseEvent) + 'static> IntoComponent for Button<T> {
     fn into_component(mut self) -> impl IntoView {
         button()
             .class(self.classes())
             .child(self.children)
-            .on(leptos::ev::click, move |_| (self.on_click)())
+            .on(leptos::ev::click, move |ev| (self.on_click)(ev))
     }
 }
