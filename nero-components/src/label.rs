@@ -86,6 +86,44 @@ impl Label {
         }
     }
 
+    /// Creates a new large title `Label` with the specified text.
+    ///
+    /// By default the large title label is created with the `H1` tag and `TextOverflow::Truncate`,
+    /// `FontSize::_3xl` and `FontWeight::Bold` properties.
+    ///
+    /// # Example
+    /// ```
+    /// use nero_components::Label;
+    ///
+    /// let label = Label::large_title("Large title!".into());
+    /// ```
+    pub fn large_title(text: Signal<String>) -> Self {
+        Self::new(text)
+            .tag(LabelTag::H1)
+            .overflow(TextOverflow::Truncate)
+            .font_size(FontSize::_3xl)
+            .font_weight(FontWeight::Bold)
+    }
+
+    /// Creates a new medium title `Label` with the specified text.
+    ///
+    /// By default the medium title label is created with the `H2` tag and `TextOverflow::Truncate`,
+    /// `FontSize::_2xl` and `FontWeight::Semibold` properties.
+    ///
+    /// # Example
+    /// ```
+    /// use nero_components::Label;
+    ///
+    /// let label = Label::medium_title("Medium title!".into());
+    /// ```
+    pub fn medium_title(text: Signal<String>) -> Self {
+        Self::new(text)
+            .tag(LabelTag::H2)
+            .overflow(TextOverflow::Truncate)
+            .font_size(FontSize::_2xl)
+            .font_weight(FontWeight::Semibold)
+    }
+
     /// Sets the HTML tag to be used for the label (defaults to `P`).
     pub fn tag(mut self, tag: LabelTag) -> Self {
         self.tag = tag;
