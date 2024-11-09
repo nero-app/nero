@@ -1,12 +1,18 @@
 use leptos::{
     ev::MouseEvent,
     html::{button, ElementChild},
-    prelude::{AnyView, ClassAttribute, IntoAny, OnAttribute},
+    prelude::{AnyView, ClassAttribute, IntoAny, OnAttribute, Signal},
     IntoView,
 };
-use typewind::{backgrounds::BackgroundColor, borders::BorderRadius, ToClasses};
+use typewind::{
+    backgrounds::BackgroundColor,
+    borders::BorderRadius,
+    flexbox_grid::{AlignItems, Gap},
+    spacing::Padding,
+    ToClasses,
+};
 
-use crate::IntoComponent;
+use crate::{layout::Layout, Icon, IntoComponent, Label, LabelTag};
 
 /// Represents a button with configurable properties for background color,
 /// border radius, and on click callback.
@@ -32,6 +38,48 @@ impl<T: FnMut(MouseEvent) + 'static> Button<T> {
             radius: None,
             on_click,
         }
+    }
+
+    /// Creates a new `Button` with the specified icon.
+    ///
+    /// # Example
+    /// ```
+    /// use nero_components::{Button, Icon, IconType};
+    ///
+    /// let button = Button::with_icon(Icon::new(IconType::Play), |_| todo!());
+    /// ```
+    pub fn with_icon(icon: Icon, on_click: T) -> Self {
+        Self::new(icon.into_component(), on_click)
+    }
+
+    /// Creates a new `Button` with the specified icon and label.
+    ///
+    /// By default the button is created with the `Gap::_2`, `Padding::Px3`, `Padding::Py1_5`,
+    /// `AlignItems::Center` and `BorderRadius::Lg` properties.
+    ///
+    /// # Example
+    /// ```
+    /// use nero_components::{Button, Icon, IconType};
+    ///
+    /// let button = Button::with_icon_label(
+    ///     Icon::new(IconType::Share),
+    ///     "Share".into(),
+    ///     |_| todo!()
+    /// );
+    /// ```
+    pub fn with_icon_label(icon: Icon, label: Signal<String>, on_click: T) -> Self {
+        Self::new(
+            Layout::h_stack((
+                icon.into_component(),
+                Label::new(label).tag(LabelTag::Span).into_component(),
+            ))
+            .gap(Gap::_2)
+            .paddings(vec![Padding::Px3, Padding::Py1_5])
+            .align_items(AlignItems::Center)
+            .into_component(),
+            on_click,
+        )
+        .radius(BorderRadius::Lg)
     }
 
     /// Sets the background color of the button.
