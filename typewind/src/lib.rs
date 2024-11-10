@@ -22,7 +22,8 @@ register_mods!(
     typography,
     backgrounds,
     borders,
-    effects
+    effects,
+    filters
 );
 
 /// Trait for converting types into a string of tailwind classes.
