@@ -1311,7 +1311,7 @@ pub enum DivideWidth {
 /// <https://tailwindcss.com/docs/divide-color>
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "divide")]
-pub struct DivideColor(Color);
+pub struct DivideColor(pub Color);
 
 /// Utilities for controlling the border style between elements.
 /// 
@@ -1394,7 +1394,7 @@ pub enum OutlineWidth {
 /// <https://tailwindcss.com/docs/outline-color>
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "outline")]
-pub struct OutlineColor(Color);
+pub struct OutlineColor(pub Color);
 
 /// Utilities for controlling the style of an element's outline.
 /// 
@@ -1530,7 +1530,7 @@ pub enum RingWidth {
 /// <https://tailwindcss.com/docs/ring-color>
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "ring")]
-pub struct RingColor(Color);
+pub struct RingColor(pub Color);
 
 /// Utilities for simulating an offset when adding outline rings.
 /// 
@@ -1580,4 +1580,4 @@ pub enum RingOffsetWidth {
 /// <https://tailwindcss.com/docs/ring-offset-color>
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "ring-offset")]
-pub struct RingOffsetColor(Color);
+pub struct RingOffsetColor(pub Color);
