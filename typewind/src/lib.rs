@@ -27,7 +27,8 @@ register_mods!(
     tables,
     transitions_animation,
     transforms,
-    interactivity
+    interactivity,
+    svg
 );
 
 /// Trait for converting types into a string of tailwind classes.
