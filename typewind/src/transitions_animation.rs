@@ -8,44 +8,60 @@ tailwind_types!(TransitionProperty, TransitionDuration, TransitionTimingFunction
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "transition")]
 pub enum TransitionProperty {
-    /// `transition-property: none;`
+    /// ```css
+    /// {
+    ///     transition-property: none;
+    /// }
+    /// ```
     None,
-    /// `transition-property: all;`
-    /// 
-    /// `transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);`
-    /// 
-    /// `transition-duration: 150ms;`
+    /// ```css
+    /// {
+    ///     transition-property: all;
+    ///     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    ///     transition-duration: 150ms;
+    /// }
+    /// ```
     All,
-    /// `transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;`
-    /// 
-    /// `transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);`
-    /// 
-    /// `transition-duration: 150ms;`
+    /// ```css
+    /// {
+    ///     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+    ///     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    ///     transition-duration: 150ms;
+    /// }
+    /// ```
     #[display(no_prefix)]
     Transition,
-    /// `transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;`
-    /// 
-    /// `transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);`
-    /// 
-    /// `transition-duration: 150ms;`
+    /// ```css
+    /// {
+    ///     transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    ///     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    ///     transition-duration: 150ms;
+    /// }
+    /// ```
     Colors,
-    /// `transition-property: opacity;`
-    /// 
-    /// `transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);`
-    /// 
-    /// `transition-duration: 150ms;`
+    /// ```css
+    /// {
+    ///     transition-property: opacity;
+    ///     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    ///     transition-duration: 150ms;
+    /// }
+    /// ```
     Opacity,
-    /// `transition-property: box-shadow;`
-    /// 
-    /// `transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);`
-    /// 
-    /// `transition-duration: 150ms;`
+    /// ```css
+    /// {
+    ///     transition-property: box-shadow;
+    ///     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    ///     transition-duration: 150ms;
+    /// }
+    /// ```
     Shadow,
-    /// `transition-property: transform;`
-    /// 
-    /// `transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);`
-    /// 
-    /// `transition-duration: 150ms;`
+    /// ```css
+    /// {
+    ///     transition-property: transform;
+    ///     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    ///     transition-duration: 150ms;
+    /// }
+    /// ```
     Transform,
 }
 
@@ -55,23 +71,59 @@ pub enum TransitionProperty {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "duration")]
 pub enum TransitionDuration {
-    /// `transition-duration: 0s;`
+    /// ```css
+    /// {
+    ///     transition-duration: 0s;
+    /// }
+    /// ```
     _0,
-    /// `transition-duration: 75ms;`
+    /// ```css
+    /// {
+    ///     transition-duration: 75ms;
+    /// }
+    /// ```
     _75,
-    /// `transition-duration: 100ms;`
+    /// ```css
+    /// {
+    ///     transition-duration: 100ms;
+    /// }
+    /// ```
     _100,
-    /// `transition-duration: 150ms;`
+    /// ```css
+    /// {
+    ///     transition-duration: 150ms;
+    /// }
+    /// ```
     _150,
-    /// `transition-duration: 200ms;`
+    /// ```css
+    /// {
+    ///     transition-duration: 200ms;
+    /// }
+    /// ```
     _200,
-    /// `transition-duration: 300ms;`
+    /// ```css
+    /// {
+    ///     transition-duration: 300ms;
+    /// }
+    /// ```
     _300,
-    /// `transition-duration: 500ms;`
+    /// ```css
+    /// {
+    ///     transition-duration: 500ms;
+    /// }
+    /// ```
     _500,
-    /// `transition-duration: 700ms;`
+    /// ```css
+    /// {
+    ///     transition-duration: 700ms;
+    /// }
+    /// ```
     _700,
-    /// `transition-duration: 1000ms;`
+    /// ```css
+    /// {
+    ///     transition-duration: 1000ms;
+    /// }
+    /// ```
     _1000,
 }
 
@@ -81,13 +133,29 @@ pub enum TransitionDuration {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "ease")]
 pub enum TransitionTimingFunction {
-    /// `transition-timing-function: linear;`
+    /// ```css
+    /// {
+    ///     transition-timing-function: linear;
+    /// }
+    /// ```
     Linear,
-    /// `transition-timing-function: cubic-bezier(0.4, 0, 1, 1);`
+    /// ```css
+    /// {
+    ///     transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+    /// }
+    /// ```
     In,
-    /// `transition-timing-function: cubic-bezier(0, 0, 0.2, 1);`
+    /// ```css
+    /// {
+    ///     transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+    /// }
+    /// ```
     Out,
-    /// `transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);`
+    /// ```css
+    /// {
+    ///     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    /// }
+    /// ```
     InOut,
 }
 
@@ -97,23 +165,59 @@ pub enum TransitionTimingFunction {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "delay")]
 pub enum TransitionDelay {
-    /// `transition-delay: 0s;`
+    /// ```css
+    /// {
+    ///     transition-delay: 0s;
+    /// }
+    /// ```
     _0,
-    /// `transition-delay: 75ms;`
+    /// ```css
+    /// {
+    ///     transition-delay: 75ms;
+    /// }
+    /// ```
     _75,
-    /// `transition-delay: 100ms;`
+    /// ```css
+    /// {
+    ///     transition-delay: 100ms;
+    /// }
+    /// ```
     _100,
-    /// `transition-delay: 150ms;`
+    /// ```css
+    /// {
+    ///     transition-delay: 150ms;
+    /// }
+    /// ```
     _150,
-    /// `transition-delay: 200ms;`
+    /// ```css
+    /// {
+    ///     transition-delay: 200ms;
+    /// }
+    /// ```
     _200,
-    /// `transition-delay: 300ms;`
+    /// ```css
+    /// {
+    ///     transition-delay: 300ms;
+    /// }
+    /// ```
     _300,
-    /// `transition-delay: 500ms;`
+    /// ```css
+    /// {
+    ///     transition-delay: 500ms;
+    /// }
+    /// ```
     _500,
-    /// `transition-delay: 700ms;`
+    /// ```css
+    /// {
+    ///     transition-delay: 700ms;
+    /// }
+    /// ```
     _700,
-    /// `transition-delay: 1000ms;`
+    /// ```css
+    /// {
+    ///     transition-delay: 1000ms;
+    /// }
+    /// ```
     _1000,
 }
 
@@ -124,7 +228,9 @@ pub enum TransitionDelay {
 #[display(prefix = "animate")]
 pub enum Animation {
     /// ```css
-    /// animation: none;
+    /// {
+    ///     animation: none;
+    /// }
     /// ```
     None,
     /// ```css

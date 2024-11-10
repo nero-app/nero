@@ -8,26 +8,30 @@ tailwind_types!(ScreenReaders, ForcedColorAdjust);
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 pub enum ScreenReaders {
     /// ```css
-    /// position: absolute;
-    /// width: 1px;
-    /// height: 1px;
-    /// padding: 0;
-    /// margin: -1px;
-    /// overflow: hidden;
-    /// clip: rect(0, 0, 0, 0);
-    /// white-space: nowrap;
-    /// border-width: 0;
+    /// {
+    ///     position: absolute;
+    ///     width: 1px;
+    ///     height: 1px;
+    ///     padding: 0;
+    ///     margin: -1px;
+    ///     overflow: hidden;
+    ///     clip: rect(0, 0, 0, 0);
+    ///     white-space: nowrap;
+    ///     border-width: 0;
+    /// }
     /// ```
     SrOnly,
     /// ```css
-    /// position: static;
-    /// width: auto;
-    /// height: auto;
-    /// padding: 0;
-    /// margin: 0;
-    /// overflow: visible;
-    /// clip: auto;
-    /// white-space: normal;
+    /// {
+    ///     position: static;
+    ///     width: auto;
+    ///     height: auto;
+    ///     padding: 0;
+    ///     margin: 0;
+    ///     overflow: visible;
+    ///     clip: auto;
+    ///     white-space: normal;
+    /// }
     /// ```
     NotSrOnly,
 }
@@ -39,11 +43,15 @@ pub enum ScreenReaders {
 #[display(prefix = "forced-color-adjust")]
 pub enum ForcedColorAdjust {
     /// ```css
-    /// forced-color-adjust: auto;
+    /// {
+    ///     forced-color-adjust: auto;
+    /// }
     /// ```
     Auto,
     /// ```css
-    /// forced-color-adjust: none;
+    /// {
+    ///     forced-color-adjust: none;
+    /// }
     /// ```
     None,
 }

@@ -16,11 +16,23 @@ tailwind_types!(
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "font")]
 pub enum FontFamily {
-    /// `font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";`
+    /// ```css
+    /// {
+    ///     font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    /// }
+    /// ```
     Sans,
-    /// `font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;`
+    /// ```css
+    /// {
+    ///     font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+    /// }
+    /// ```
     Serif,
-    /// `font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;`
+    /// ```css
+    /// {
+    ///     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    /// }
+    /// ```
     Mono,
 }
 
@@ -30,57 +42,96 @@ pub enum FontFamily {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "text")]
 pub enum FontSize {
-    /// `font-size: 0.75rem; /* 12px */`
-    /// 
-    /// `line-height: 1rem; /* 16px */`
+    /// ```css
+    /// {
+    ///     font-size: 0.75rem; /* 12px */
+    ///     line-height: 1rem; /* 16px */
+    /// }
+    /// ```
     Xs,
-    /// `font-size: 0.875rem; /* 14px */`
-    /// 
-    /// `line-height: 1.25rem; /* 20px */`
+    /// ```css
+    /// {
+    ///     font-size: 0.875rem; /* 14px */
+    ///     line-height: 1.25rem; /* 20px */
+    /// }
+    /// ```
     Sm,
-    /// `font-size: 1rem; /* 16px */`
-    /// 
-    /// `line-height: 1.5rem; /* 24px */`
+    /// ```css
+    /// {
+    ///     font-size: 1rem; /* 16px */
+    ///     line-height: 1.5rem; /* 24px */
+    /// }
+    /// ```
     Base,
-    /// `font-size: 1.125rem; /* 18px */`
-    /// 
-    /// `line-height: 1.75rem; /* 28px */`
+    /// ```css
+    /// {
+    ///     font-size: 1.125rem; /* 18px */
+    ///     line-height: 1.75rem; /* 28px */
+    /// }
+    /// ```
     Lg,
-    /// `font-size: 1.25rem; /* 20px */`
-    /// 
-    /// `line-height: 1.75rem; /* 28px */`
+    /// ```css
+    /// {
+    ///     font-size: 1.25rem; /* 20px */
+    ///     line-height: 1.75rem; /* 28px */
+    /// }
+    /// ```
     Xl,
-    /// `font-size: 1.5rem; /* 24px */`
-    /// 
-    /// `line-height: 2rem; /* 32px */`
+    /// ```css
+    /// {
+    ///     font-size: 1.5rem; /* 24px */
+    ///     line-height: 2rem; /* 32px */
+    /// }
+    /// ```
     _2xl,
-    /// `font-size: 1.875rem; /* 30px */`
-    /// 
-    /// `line-height: 2.25rem; /* 36px */`
+    /// ```css
+    /// {
+    ///     font-size: 1.875rem; /* 30px */
+    ///     line-height: 2.25rem; /* 36px */
+    /// }
+    /// ```
     _3xl,
-    /// `font-size: 2.25rem; /* 36px */`
-    /// 
-    /// `line-height: 2.5rem; /* 40px */`
+    /// ```css
+    /// {
+    ///     font-size: 2.25rem; /* 36px */
+    ///     line-height: 2.5rem; /* 40px */
+    /// }
+    /// ```
     _4xl,
-    /// `font-size: 3rem; /* 48px */`
-    /// 
-    /// `line-height: 1;`
+    /// ```css
+    /// {
+    ///     font-size: 3rem; /* 48px */
+    ///     line-height: 1;
+    /// }
+    /// ```
     _5xl,
-    /// `font-size: 3.75rem; /* 60px */`
-    /// 
-    /// `line-height: 1;`
+    /// ```css
+    /// {
+    ///     font-size: 3.75rem; /* 60px */
+    ///     line-height: 1;
+    /// }
+    /// ```
     _6xl,
-    /// `font-size: 4.5rem; /* 72px */`
-    /// 
-    /// `line-height: 1;`
+    /// ```css
+    /// {
+    ///     font-size: 4.5rem; /* 72px */
+    ///     line-height: 1;
+    /// }
+    /// ```
     _7xl,
-    /// `font-size: 6rem; /* 96px */`
-    /// 
-    /// `line-height: 1;`
+    /// ```css
+    /// {
+    ///     font-size: 6rem; /* 96px */
+    ///     line-height: 1;
+    /// }
+    /// ```
     _8xl,
-    /// `font-size: 8rem; /* 128px */`
-    /// 
-    /// `line-height: 1;`
+    /// ```css
+    /// {
+    ///     font-size: 8rem; /* 128px */
+    ///     line-height: 1;
+    /// }
+    /// ```
     _9xl,
 }
 
@@ -89,13 +140,19 @@ pub enum FontSize {
 /// <https://tailwindcss.com/docs/font-smoothing>
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 pub enum FontSmoothing {
-    /// `-webkit-font-smoothing: antialiased;`
-    /// 
-    /// `-moz-osx-font-smoothing: grayscale;`
+    /// ```css
+    /// {
+    ///     -webkit-font-smoothing: antialiased;
+    ///     -moz-osx-font-smoothing: grayscale;
+    /// }
+    /// ```
     Antialiased,
-    /// `-webkit-font-smoothing: auto;`
-    /// 
-    /// `-moz-osx-font-smoothing: auto;`
+    /// ```css
+    /// {
+    ///     -webkit-font-smoothing: auto;
+    ///     -moz-osx-font-smoothing: auto;
+    /// }
+    /// ```
     SubpixelAntialiased,
 }
 
@@ -104,9 +161,17 @@ pub enum FontSmoothing {
 /// <https://tailwindcss.com/docs/font-style>
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 pub enum FontStyle {
-    /// `font-style: italic;`
+    /// ```css
+    /// {
+    ///     font-style: italic;
+    /// }
+    /// ```
     Italic,
-    /// `font-style: normal;`
+    /// ```css
+    /// {
+    ///     font-style: normal;
+    /// }
+    /// ```
     NotItalic,
 }
 
@@ -116,23 +181,59 @@ pub enum FontStyle {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "font")]
 pub enum FontWeight {
-    /// `font-weight: 100;`
+    /// ```css
+    /// {
+    ///     font-weight: 100;
+    /// }
+    /// ```
     Thin,
-    /// `font-weight: 200;`
+    /// ```css
+    /// {
+    ///     font-weight: 200;
+    /// }
+    /// ```
     ExtraLight,
-    /// `font-weight: 300;`
+    /// ```css
+    /// {
+    ///     font-weight: 300;
+    /// }
+    /// ```
     Light,
-    /// `font-weight: 400;`
+    /// ```css
+    /// {
+    ///     font-weight: 400;
+    /// }
+    /// ```
     Normal,
-    /// `font-weight: 500;`
+    /// ```css
+    /// {
+    ///     font-weight: 500;
+    /// }
+    /// ```
     Medium,
-    /// `font-weight: 600;`
+    /// ```css
+    /// {
+    ///     font-weight: 600;
+    /// }
+    /// ```
     Semibold,
-    /// `font-weight: 700;`
+    /// ```css
+    /// {
+    ///     font-weight: 700;
+    /// }
+    /// ```
     Bold,
-    /// `font-weight: 800;`
+    /// ```css
+    /// {
+    ///     font-weight: 800;
+    /// }
+    /// ```
     Extrabold,
-    /// `font-weight: 900;`
+    /// ```css
+    /// {
+    ///     font-weight: 900;
+    /// }
+    /// ```
     Black,
 }
 
@@ -141,23 +242,59 @@ pub enum FontWeight {
 /// <https://tailwindcss.com/docs/font-variant-numeric>
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 pub enum FontVariantNumeric {
-    /// `font-variant-numeric: normal;`
+    /// ```css
+    /// {
+    ///     font-variant-numeric: normal;
+    /// }
+    /// ```
     NormalNums,
-    /// `font-variant-numeric: ordinal;`
+    /// ```css
+    /// {
+    ///     font-variant-numeric: ordinal;
+    /// }
+    /// ```
     Ordinal,
-    /// `font-variant-numeric: slashed-zero;`
+    /// ```css
+    /// {
+    ///     font-variant-numeric: slashed-zero;
+    /// }
+    /// ```
     SlashedZero,
-    /// `font-variant-numeric: lining-nums;`
+    /// ```css
+    /// {
+    ///     font-variant-numeric: lining-nums;
+    /// }
+    /// ```
     LiningNums,
-    /// `font-variant-numeric: oldstyle-nums;`
+    /// ```css
+    /// {
+    ///     font-variant-numeric: oldstyle-nums;
+    /// }
+    /// ```
     OldstyleNums,
-    /// `font-variant-numeric: proportional-nums;`
+    /// ```css
+    /// {
+    ///     font-variant-numeric: proportional-nums;
+    /// }
+    /// ```
     ProportionalNums,
-    /// `font-variant-numeric: tabular-nums;`
+    /// ```css
+    /// {
+    ///     font-variant-numeric: tabular-nums;
+    /// }
+    /// ```
     TabularNums,
-    /// `font-variant-numeric: diagonal-fractions;`
+    /// ```css
+    /// {
+    ///     font-variant-numeric: diagonal-fractions;
+    /// }
+    /// ```
     DiagonalFractions,
-    /// `font-variant-numeric: stacked-fractions;`
+    /// ```css
+    /// {
+    ///     font-variant-numeric: stacked-fractions;
+    /// }
+    /// ```
     StackedFractions,
 }
 
@@ -167,17 +304,41 @@ pub enum FontVariantNumeric {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "tracking")]
 pub enum LetterSpacing {
-    /// `letter-spacing: -0.05em;`
+    /// ```css
+    /// {
+    ///     letter-spacing: -0.05em;
+    /// }
+    /// ```
     Tighter,
-    /// `letter-spacing: -0.025em;`
+    /// ```css
+    /// {
+    ///     letter-spacing: -0.025em;
+    /// }
+    /// ```
     Tight,
-    /// `letter-spacing: 0em;`
+    /// ```css
+    /// {
+    ///     letter-spacing: 0em;
+    /// }
+    /// ```
     Normal,
-    /// `letter-spacing: 0.025em;`
+    /// ```css
+    /// {
+    ///     letter-spacing: 0.025em;
+    /// }
+    /// ```
     Wide,
-    /// `letter-spacing: 0.05em;`
+    /// ```css
+    /// {
+    ///     letter-spacing: 0.05em;
+    /// }
+    /// ```
     Wider,
-    /// `letter-spacing: 0.1em;`
+    /// ```css
+    /// {
+    ///     letter-spacing: 0.1em;
+    /// }
+    /// ```
     Widest,
 }
 
@@ -187,61 +348,68 @@ pub enum LetterSpacing {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "line-clamp")]
 pub enum LineClamp {
-    /// `overflow: hidden;`
-    /// 
-    /// `display: -webkit-box;`
-    /// 
-    /// `-webkit-box-orient: vertical;`
-    /// 
-    /// `-webkit-line-clamp: 1;`
+    /// ```css
+    /// {
+    ///     overflow: hidden;
+    ///     display: -webkit-box;
+    ///     -webkit-box-orient: vertical;
+    ///     -webkit-line-clamp: 1;
+    /// }
+    /// ```
     _1,
-    /// `overflow: hidden;`
-    /// 
-    /// `display: -webkit-box;`
-    /// 
-    /// `-webkit-box-orient: vertical;`
-    /// 
-    /// `-webkit-line-clamp: 2;`
+    /// ```css
+    /// {
+    ///     overflow: hidden;
+    ///     display: -webkit-box;
+    ///     -webkit-box-orient: vertical;
+    ///     -webkit-line-clamp: 2;
+    /// }
+    /// ```
     _2,
-    /// `overflow: hidden;`
-    /// 
-    /// `display: -webkit-box;`
-    /// 
-    /// `-webkit-box-orient: vertical;`
-    /// 
-    /// `-webkit-line-clamp: 3;`
+    /// ```css
+    /// {
+    ///     overflow: hidden;
+    ///     display: -webkit-box;
+    ///     -webkit-box-orient: vertical;
+    ///     -webkit-line-clamp: 3;
+    /// }
+    /// ```
     _3,
-    /// `overflow: hidden;`
-    /// 
-    /// `display: -webkit-box;`
-    /// 
-    /// `-webkit-box-orient: vertical;`
-    /// 
-    /// `-webkit-line-clamp: 4;`
+    /// ```css
+    /// {
+    ///     overflow: hidden;
+    ///     display: -webkit-box;
+    ///     -webkit-box-orient: vertical;
+    ///     -webkit-line-clamp: 4;
+    /// }
+    /// ```
     _4,
-    /// `overflow: hidden;`
-    /// 
-    /// `display: -webkit-box;`
-    /// 
-    /// `-webkit-box-orient: vertical;`
-    /// 
-    /// `-webkit-line-clamp: 5;`
+    /// ```css
+    /// {
+    ///     overflow: hidden;
+    ///     display: -webkit-box;
+    ///     -webkit-box-orient: vertical;
+    ///     -webkit-line-clamp: 5;
+    /// }
+    /// ```
     _5,
-    /// `overflow: hidden;`
-    /// 
-    /// `display: -webkit-box;`
-    /// 
-    /// `-webkit-box-orient: vertical;`
-    /// 
-    /// `-webkit-line-clamp: 6;`
+    /// ```css
+    /// {
+    ///     overflow: hidden;
+    ///     display: -webkit-box;
+    ///     -webkit-box-orient: vertical;
+    ///     -webkit-line-clamp: 6;
+    /// }
+    /// ```
     _6,
-    /// `overflow: visible;`
-    /// 
-    /// `display: block;`
-    /// 
-    /// `-webkit-box-orient: horizontal;`
-    /// 
-    /// `-webkit-line-clamp: none;`
+    /// ```css
+    /// {
+    ///     overflow: visible;
+    ///     display: block;
+    ///     -webkit-box-orient: horizontal;
+    ///     -webkit-line-clamp: none;
+    /// }
+    /// ```
     None,
 }
 
@@ -251,33 +419,89 @@ pub enum LineClamp {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "leading")]
 pub enum LineHeight {
-    /// `line-height: .75rem; /* 12px */`
+    /// ```css
+    /// {
+    ///     line-height: .75rem; /* 12px */
+    /// }
+    /// ```
     _3,
-    /// `line-height: 1rem; /* 16px */`
+    /// ```css
+    /// {
+    ///     line-height: 1rem; /* 16px */
+    /// }
+    /// ```
     _4,
-    /// `line-height: 1.25rem; /* 20px */`
+    /// ```css
+    /// {
+    ///     line-height: 1.25rem; /* 20px */
+    /// }
+    /// ```
     _5,
-    /// `line-height: 1.5rem; /* 24px */`
+    /// ```css
+    /// {
+    ///     line-height: 1.5rem; /* 24px */
+    /// }
+    /// ```
     _6,
-    /// `line-height: 1.75rem; /* 28px */`
+    /// ```css
+    /// {
+    ///     line-height: 1.75rem; /* 28px */
+    /// }
+    /// ```
     _7,
-    /// `line-height: 2rem; /* 32px */`
+    /// ```css
+    /// {
+    ///     line-height: 2rem; /* 32px */
+    /// }
+    /// ```
     _8,
-    /// `line-height: 2.25rem; /* 36px */`
+    /// ```css
+    /// {
+    ///     line-height: 2.25rem; /* 36px */
+    /// }
+    /// ```
     _9,
-    /// `line-height: 2.5rem; /* 40px */`
+    /// ```css
+    /// {
+    ///     line-height: 2.5rem; /* 40px */
+    /// }
+    /// ```
     _10,
-    /// `line-height: 1;`
+    /// ```css
+    /// {
+    ///     line-height: 1;
+    /// }
+    /// ```
     None,
-    /// `line-height: 1.25;`
+    /// ```css
+    /// {
+    ///     line-height: 1.25;
+    /// }
+    /// ```
     Tight,
-    /// `line-height: 1.375;`
+    /// ```css
+    /// {
+    ///     line-height: 1.375;
+    /// }
+    /// ```
     Snug,
-    /// `line-height: 1.5;`
+    /// ```css
+    /// {
+    ///     line-height: 1.5;
+    /// }
+    /// ```
     Normal,
-    /// `line-height: 1.625;`
+    /// ```css
+    /// {
+    ///     line-height: 1.625;
+    /// }
+    /// ```
     Relaxed,
-    /// `line-height: 2;`
+    /// ```css
+    /// {
+    ///     line-height: 2;
+    /// }
+    /// ```
     Loose,
 }
 
@@ -287,7 +511,11 @@ pub enum LineHeight {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "list-image")]
 pub enum ListStyleImage {
-    /// `list-style-image: none;`
+    /// ```css
+    /// {
+    ///     list-style-image: none;
+    /// }
+    /// ```
     None,
 }
 
@@ -297,9 +525,17 @@ pub enum ListStyleImage {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "list")]
 pub enum ListStylePosition {
-    /// `list-style-position: inside;`
+    /// ```css
+    /// {
+    ///     list-style-position: inside;
+    /// }
+    /// ```
     Inside,
-    /// `list-style-position: outside;`
+    /// ```css
+    /// {
+    ///     list-style-position: outside;
+    /// }
+    /// ```
     Outside,
 }
 
@@ -309,11 +545,23 @@ pub enum ListStylePosition {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "list")]
 pub enum ListStyleType {
-    /// `list-style-type: none;`
+    /// ```css
+    /// {
+    ///     list-style-type: none;
+    /// }
+    /// ```
     None,
-    /// `list-style-type: disc;`
+    /// ```css
+    /// {
+    ///     list-style-type: disc;
+    /// }
+    /// ```
     Disc,
-    /// `list-style-type: decimal;`
+    /// ```css
+    /// {
+    ///     list-style-type: decimal;
+    /// }
+    /// ```
     Decimal,
 }
 
@@ -323,17 +571,41 @@ pub enum ListStyleType {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "text")]
 pub enum TextAlign {
-    /// `text-align: left;`
+    /// ```css
+    /// {
+    ///     text-align: left;
+    /// }
+    /// ```
     Left,
-    /// `text-align: center;`
+    /// ```css
+    /// {
+    ///     text-align: center;
+    /// }
+    /// ```
     Center,
-    /// `text-align: right;`
+    /// ```css
+    /// {
+    ///     text-align: right;
+    /// }
+    /// ```
     Right,
-    /// `text-align: justify;`
+    /// ```css
+    /// {
+    ///     text-align: justify;
+    /// }
+    /// ```
     Justify,
-    /// `text-align: start;`
+    /// ```css
+    /// {
+    ///     text-align: start;
+    /// }
+    /// ```
     Start,
-    /// `text-align: end;`
+    /// ```css
+    /// {
+    ///     text-align: end;
+    /// }
+    /// ```
     End,
 }
 
@@ -349,13 +621,29 @@ pub struct TextColor(pub Color);
 /// <https://tailwindcss.com/docs/text-decoration>
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 pub enum TextDecoration {
-    /// `text-decoration-line: underline;`
+    /// ```css
+    /// {
+    ///     text-decoration-line: underline;
+    /// }
+    /// ```
     Underline,
-    /// `text-decoration-line: overline;`
+    /// ```css
+    /// {
+    ///     text-decoration-line: overline;
+    /// }
+    /// ```
     Overline,
-    /// `text-decoration-line: line-through;`
+    /// ```css
+    /// {
+    ///     text-decoration-line: line-through;
+    /// }
+    /// ```
     LineThrough,
-    /// `text-decoration-line: none;`
+    /// ```css
+    /// {
+    ///     text-decoration-line: none;
+    /// }
+    /// ```
     NoUnderline,
 }
 
@@ -372,15 +660,35 @@ pub struct TextDecorationColor(pub Color);
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "decoration")]
 pub enum TextDecorationStyle {
-    /// `text-decoration-style: solid;`
+    /// ```css
+    /// {
+    ///     text-decoration-style: solid;
+    /// }
+    /// ```
     Solid,
-    /// `text-decoration-style: double;`
+    /// ```css
+    /// {
+    ///     text-decoration-style: double;
+    /// }
+    /// ```
     Double,
-    /// `text-decoration-style: dotted;`
+    /// ```css
+    /// {
+    ///     text-decoration-style: dotted;
+    /// }
+    /// ```
     Dotted,
-    /// `text-decoration-style: dashed;`
+    /// ```css
+    /// {
+    ///     text-decoration-style: dashed;
+    /// }
+    /// ```
     Dashed,
-    /// `text-decoration-style: wavy;`
+    /// ```css
+    /// {
+    ///     text-decoration-style: wavy;
+    /// }
+    /// ```
     Wavy,
 }
 
@@ -390,19 +698,47 @@ pub enum TextDecorationStyle {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "decoration")]
 pub enum TextDecorationThickness {
-    /// `text-decoration-thickness: auto;`
+    /// ```css
+    /// {
+    ///     text-decoration-thickness: auto;
+    /// }
+    /// ```
     Auto,
-    /// `text-decoration-thickness: from-font;`
+    /// ```css
+    /// {
+    ///     text-decoration-thickness: from-font;
+    /// }
+    /// ```
     FromFont,
-    /// `text-decoration-thickness: 0px;`
+    /// ```css
+    /// {
+    ///     text-decoration-thickness: 0px;
+    /// }
+    /// ```
     _0,
-    /// `text-decoration-thickness: 1px;`
+    /// ```css
+    /// {
+    ///     text-decoration-thickness: 1px;
+    /// }
+    /// ```
     _1,
-    /// `text-decoration-thickness: 2px;`
+    /// ```css
+    /// {
+    ///     text-decoration-thickness: 2px;
+    /// }
+    /// ```
     _2,
-    /// `text-decoration-thickness: 4px;`
+    /// ```css
+    /// {
+    ///     text-decoration-thickness: 4px;
+    /// }
+    /// ```
     _4,
-    /// `text-decoration-thickness: 8px;`
+    /// ```css
+    /// {
+    ///     text-decoration-thickness: 8px;
+    /// }
+    /// ```
     _8,
 }
 
@@ -412,17 +748,41 @@ pub enum TextDecorationThickness {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "underline-offset")]
 pub enum TextUnderlineOffset {
-    /// `text-underline-offset: auto;`
+    /// ```css
+    /// {
+    ///     text-underline-offset: auto;
+    /// }
+    /// ```
     Auto,
-    /// `text-underline-offset: 0px;`
+    /// ```css
+    /// {
+    ///     text-underline-offset: 0px;
+    /// }
+    /// ```
     _0,
-    /// `text-underline-offset: 1px;`
+    /// ```css
+    /// {
+    ///     text-underline-offset: 1px;
+    /// }
+    /// ```
     _1,
-    /// `text-underline-offset: 2px;`
+    /// ```css
+    /// {
+    ///     text-underline-offset: 2px;
+    /// }
+    /// ```
     _2,
-    /// `text-underline-offset: 4px;`
+    /// ```css
+    /// {
+    ///     text-underline-offset: 4px;
+    /// }
+    /// ```
     _4,
-    /// `text-underline-offset: 8px;`
+    /// ```css
+    /// {
+    ///     text-underline-offset: 8px;
+    /// }
+    /// ```
     _8,
 }
 
@@ -431,13 +791,29 @@ pub enum TextUnderlineOffset {
 /// <https://tailwindcss.com/docs/text-transform>
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 pub enum TextTransform {
-    /// `text-transform: uppercase;`
+    /// ```css
+    /// {
+    ///     text-transform: uppercase;
+    /// }
+    /// ```
     Uppercase,
-    /// `text-transform: lowercase;`
+    /// ```css
+    /// {
+    ///     text-transform: lowercase;
+    /// }
+    /// ```
     Lowercase,
-    /// `text-transform: capitalize;`
+    /// ```css
+    /// {
+    ///     text-transform: capitalize;
+    /// }
+    /// ```
     Capitalize,
-    /// `text-transform: none;`
+    /// ```css
+    /// {
+    ///     text-transform: none;
+    /// }
+    /// ```
     NormalCase,
 }
 
@@ -446,15 +822,25 @@ pub enum TextTransform {
 /// <https://tailwindcss.com/docs/text-overflow>
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 pub enum TextOverflow {
-    /// `overflow: hidden;`
-    /// 
-    /// `text-overflow: ellipsis;`
-    /// 
-    /// `white-space: nowrap;`
+    /// ```css
+    /// {
+    ///     overflow: hidden;
+    ///     text-overflow: ellipsis;
+    ///     white-space: nowrap;
+    /// }
+    /// ```
     Truncate,
-    /// `text-overflow: ellipsis;`
+    /// ```css
+    /// {
+    ///     text-overflow: ellipsis;
+    /// }
+    /// ```
     TextEllipsis,
-    /// `text-overflow: clip;`
+    /// ```css
+    /// {
+    ///     text-overflow: clip;
+    /// }
+    /// ```
     TextClip
 }
 
@@ -464,13 +850,29 @@ pub enum TextOverflow {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "text")]
 pub enum TextWrap {
-    /// `text-wrap: wrap;`
+    /// ```css
+    /// {
+    ///     text-wrap: wrap;
+    /// }
+    /// ```
     Wrap,
-    /// `text-wrap: nowrap;`
+    /// ```css
+    /// {
+    ///     text-wrap: nowrap;
+    /// }
+    /// ```
     Nowrap,
-    /// `text-wrap: balance;`
+    /// ```css
+    /// {
+    ///     text-wrap: balance;
+    /// }
+    /// ```
     Balance,
-    /// `text-wrap: pretty;`
+    /// ```css
+    /// {
+    ///     text-wrap: pretty;
+    /// }
+    /// ```
     Pretty,
 }
 
@@ -480,75 +882,215 @@ pub enum TextWrap {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "indent", replace(from = "_", to = "."))] 
 pub enum TextIndent {
-    /// `text-indent: 0px;`
+    /// ```css
+    /// {
+    ///     text-indent: 0px;
+    /// }
+    /// ```
     _0,
-    /// `text-indent: 1px;`
+    /// ```css
+    /// {
+    ///     text-indent: 1px;
+    /// }
+    /// ```
     Px,
-    /// `text-indent: 0.125rem; /* 2px */`
+    /// ```css
+    /// {
+    ///     text-indent: 0.125rem; /* 2px */
+    /// }
+    /// ```
     _0_5,
-    /// `text-indent: 0.25rem; /* 4px */`
+    /// ```css
+    /// {
+    ///     text-indent: 0.25rem; /* 4px */
+    /// }
+    /// ```
     _1,
-    /// `text-indent: 0.375rem; /* 6px */`
+    /// ```css
+    /// {
+    ///     text-indent: 0.375rem; /* 6px */
+    /// }
+    /// ```
     _1_5,
-    /// `text-indent: 0.5rem; /* 8px */`
+    /// ```css
+    /// {
+    ///     text-indent: 0.5rem; /* 8px */
+    /// }
+    /// ```
     _2,
-    /// `text-indent: 0.625rem; /* 10px */`
+    /// ```css
+    /// {
+    ///     text-indent: 0.625rem; /* 10px */
+    /// }
+    /// ```
     _2_5,
-    /// `text-indent: 0.75rem; /* 12px */`
+    /// ```css
+    /// {
+    ///     text-indent: 0.75rem; /* 12px */
+    /// }
+    /// ```
     _3,
-    /// `text-indent: 0.875rem; /* 14px */`
+    /// ```css
+    /// {
+    ///     text-indent: 0.875rem; /* 14px */
+    /// }
+    /// ```
     _3_5,
-    /// `text-indent: 1rem; /* 16px */`
+    /// ```css
+    /// {
+    ///     text-indent: 1rem; /* 16px */
+    /// }
+    /// ```
     _4,
-    /// `text-indent: 1.25rem; /* 20px */`
+    /// ```css
+    /// {
+    ///     text-indent: 1.25rem; /* 20px */
+    /// }
+    /// ```
     _5,
-    /// `text-indent: 1.5rem; /* 24px */`
+    /// ```css
+    /// {
+    ///     text-indent: 1.5rem; /* 24px */
+    /// }
+    /// ```
     _6,
-    /// `text-indent: 1.75rem; /* 28px */`
+    /// ```css
+    /// {
+    ///     text-indent: 1.75rem; /* 28px */
+    /// }
+    /// ```
     _7,
-    /// `text-indent: 2rem; /* 32px */`
+    /// ```css
+    /// {
+    ///     text-indent: 2rem; /* 32px */
+    /// }
+    /// ```
     _8,
-    /// `text-indent: 2.25rem; /* 36px */`
+    /// ```css
+    /// {
+    ///     text-indent: 2.25rem; /* 36px */
+    /// }
+    /// ```
     _9,
-    /// `text-indent: 2.5rem; /* 40px */`
+    /// ```css
+    /// {
+    ///     text-indent: 2.5rem; /* 40px */
+    /// }
+    /// ```
     _10,
-    /// `text-indent: 2.75rem; /* 44px */`
+    /// ```css
+    /// {
+    ///     text-indent: 2.75rem; /* 44px */
+    /// }
+    /// ```
     _11,
-    /// `text-indent: 3rem; /* 48px */`
+    /// ```css
+    /// {
+    ///     text-indent: 3rem; /* 48px */
+    /// }
+    /// ```
     _12,
-    /// `text-indent: 3.5rem; /* 56px */`
+    /// ```css
+    /// {
+    ///     text-indent: 3.5rem; /* 56px */
+    /// }
+    /// ```
     _14,
-    /// `text-indent: 4rem; /* 64px */`
+    /// ```css
+    /// {
+    ///     text-indent: 4rem; /* 64px */
+    /// }
+    /// ```
     _16,
-    /// `text-indent: 5rem; /* 80px */`
+    /// ```css
+    /// {
+    ///     text-indent: 5rem; /* 80px */
+    /// }
+    /// ```
     _20,
-    /// `text-indent: 6rem; /* 96px */`
+    /// ```css
+    /// {
+    ///     text-indent: 6rem; /* 96px */
+    /// }
+    /// ```
     _24,
-    /// `text-indent: 7rem; /* 112px */`
+    /// ```css
+    /// {
+    ///     text-indent: 7rem; /* 112px */
+    /// }
+    /// ```
     _28,
-    /// `text-indent: 8rem; /* 128px */`
+    /// ```css
+    /// {
+    ///     text-indent: 8rem; /* 128px */
+    /// }
+    /// ```
     _32,
-    /// `text-indent: 9rem; /* 144px */`
+    /// ```css
+    /// {
+    ///     text-indent: 9rem; /* 144px */
+    /// }
+    /// ```
     _36,
-    /// `text-indent: 10rem; /* 160px */`
+    /// ```css
+    /// {
+    ///     text-indent: 10rem; /* 160px */
+    /// }
+    /// ```
     _40,
-    /// `text-indent: 11rem; /* 176px */`
+    /// ```css
+    /// {
+    ///     text-indent: 11rem; /* 176px */
+    /// }
+    /// ```
     _44,
-    /// `text-indent: 12rem; /* 192px */`
+    /// ```css
+    /// {
+    ///     text-indent: 12rem; /* 192px */
+    /// }
+    /// ```
     _48,
-    /// `text-indent: 13rem; /* 208px */`
+    /// ```css
+    /// {
+    ///     text-indent: 13rem; /* 208px */
+    /// }
+    /// ```
     _52,
-    /// `text-indent: 14rem; /* 224px */`
+    /// ```css
+    /// {
+    ///     text-indent: 14rem; /* 224px */
+    /// }
+    /// ```
     _56,
-    /// `text-indent: 15rem; /* 240px */`
+    /// ```css
+    /// {
+    ///     text-indent: 15rem; /* 240px */
+    /// }
+    /// ```
     _60,
-    /// `text-indent: 16rem; /* 256px */`
+    /// ```css
+    /// {
+    ///     text-indent: 16rem; /* 256px */
+    /// }
+    /// ```
     _64,
-    /// `text-indent: 18rem; /* 288px */`
+    /// ```css
+    /// {
+    ///     text-indent: 18rem; /* 288px */
+    /// }
+    /// ```
     _72,
-    /// `text-indent: 20rem; /* 320px */`
+    /// ```css
+    /// {
+    ///     text-indent: 20rem; /* 320px */
+    /// }
+    /// ```
     _80,
-    /// `text-indent: 24rem; /* 384px */`
+    /// ```css
+    /// {
+    ///     text-indent: 24rem; /* 384px */
+    /// }
+    /// ```
     _96,
 }
 
@@ -558,21 +1100,53 @@ pub enum TextIndent {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "align")]
 pub enum VerticalAlign {
-    /// `vertical-align: baseline;`
+    /// ```css
+    /// {
+    ///     vertical-align: baseline;
+    /// }
+    /// ```
     Baseline,
-    /// `vertical-align: top;`
+    /// ```css
+    /// {
+    ///     vertical-align: top;
+    /// }
+    /// ```
     Top,
-    /// `vertical-align: middle;`
+    /// ```css
+    /// {
+    ///     vertical-align: middle;
+    /// }
+    /// ```
     Middle,
-    /// `vertical-align: bottom;`
+    /// ```css
+    /// {
+    ///     vertical-align: bottom;
+    /// }
+    /// ```
     Bottom,
-    /// `vertical-align: text-top;`
+    /// ```css
+    /// {
+    ///     vertical-align: text-top;
+    /// }
+    /// ```
     TextTop,
-    /// `vertical-align: text-bottom;`
+    /// ```css
+    /// {
+    ///     vertical-align: text-bottom;
+    /// }
+    /// ```
     TextBottom,
-    /// `vertical-align: sub;`
+    /// ```css
+    /// {
+    ///     vertical-align: sub;
+    /// }
+    /// ```
     Sub,
-    /// `vertical-align: super;`
+    /// ```css
+    /// {
+    ///     vertical-align: super;
+    /// }
+    /// ```
     Super,
 }
 
@@ -582,17 +1156,41 @@ pub enum VerticalAlign {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "whitespace")]
 pub enum Whitespace {
-    /// `white-space: normal;`
+    /// ```css
+    /// {
+    ///     white-space: normal;
+    /// }
+    /// ```
     Normal,
-    /// `white-space: nowrap;`
+    /// ```css
+    /// {
+    ///     white-space: nowrap;
+    /// }
+    /// ```
     Nowrap,
-    /// `white-space: pre;`
+    /// ```css
+    /// {
+    ///     white-space: pre;
+    /// }
+    /// ```
     Pre,
-    /// `white-space: pre-line;`
+    /// ```css
+    /// {
+    ///     white-space: pre-line;
+    /// }
+    /// ```
     PreLine,
-    /// `white-space: pre-wrap;`
+    /// ```css
+    /// {
+    ///     white-space: pre-wrap;
+    /// }
+    /// ```
     PreWrap,
-    /// `white-space: break-spaces;`
+    /// ```css
+    /// {
+    ///     white-space: break-spaces;
+    /// }
+    /// ```
     BreakSpaces,
 }
 
@@ -602,15 +1200,30 @@ pub enum Whitespace {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "break")]
 pub enum WordBreak {
-    /// `overflow-wrap: normal;`
-    /// 
-    /// `word-break: normal;`
+    /// ```css
+    /// {
+    ///     overflow-wrap: normal;
+    ///     word-break: normal;
+    /// }
+    /// ```
     Normal,
-    /// `overflow-wrap: break-word;`
+    /// ```css
+    /// {
+    ///     overflow-wrap: break-word;
+    /// }
+    /// ```
     Words,
-    /// `word-break: break-all;`
+    /// ```css
+    /// {
+    ///     word-break: break-all;
+    /// }
+    /// ```
     All,
-    /// `word-break: keep-all;`
+    /// ```css
+    /// {
+    ///     word-break: keep-all;
+    /// }
+    /// ```
     Keep,
 }
 
@@ -620,11 +1233,23 @@ pub enum WordBreak {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "hyphens")]
 pub enum Hyphens {
-    /// `hyphens: none;`
+    /// ```css
+    /// {
+    ///     hyphens: none;
+    /// }
+    /// ```
     None,
-    /// `hyphens: manual;`
+    /// ```css
+    /// {
+    ///     hyphens: manual;
+    /// }
+    /// ```
     Manual,
-    /// `hyphens: auto;`
+    /// ```css
+    /// {
+    ///     hyphens: auto;
+    /// }
+    /// ```
     Auto,
 }
 
@@ -634,6 +1259,10 @@ pub enum Hyphens {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "content")]
 pub enum Content {
-    /// `content: none;`
+    /// ```css
+    /// {
+    ///     content: none;
+    /// }
+    /// ```
     None,
 }

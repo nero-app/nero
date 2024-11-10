@@ -11,22 +11,54 @@ tailwind_types!(
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "shadow")]
 pub enum BoxShadow {
-    /// `box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);`
+    /// ```css
+    /// {
+    ///     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    /// }
+    /// ```
     Sm,
-    /// `box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);`
+    /// ```css
+    /// {
+    ///     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+    /// }
+    /// ```
     #[display(no_prefix)]
     Shadow,
-    /// `box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);`
+    /// ```css
+    /// {
+    ///     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    /// }
+    /// ```
     Md,
-    /// `box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);`
+    /// ```css
+    /// {
+    ///     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    /// }
+    /// ```
     Lg,
-    /// `box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);`
+    /// ```css
+    /// {
+    ///     box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+    /// }
+    /// ```
     Xl,
-    /// `box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);`
+    /// ```css
+    /// {
+    ///     box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+    /// }
+    /// ```
     _2xl,
-    /// `box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);`
+    /// ```css
+    /// {
+    ///     box-shadow: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+    /// }
+    /// ```
     Inner,
-    /// `box-shadow: 0 0 #0000;`
+    /// ```css
+    /// {
+    ///     box-shadow: 0 0 #0000;
+    /// }
+    /// ```
     None,
 }
 
@@ -43,47 +75,131 @@ pub struct BoxShadowColor(pub Color);
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "opacity")]
 pub enum Opacity {
-    /// `opacity: 0;`
+    /// ```css
+    /// {
+    ///     opacity: 0;
+    /// }
+    /// ```
     _0,
-    /// `opacity: 0.05;`
+    /// ```css
+    /// {
+    ///     opacity: 0.05;
+    /// }
+    /// ```
     _5,
-    /// `opacity: 0.1;`
+    /// ```css
+    /// {
+    ///     opacity: 0.1;
+    /// }
+    /// ```
     _10,
-    /// `opacity: 0.15;`
+    /// ```css
+    /// {
+    ///     opacity: 0.15;
+    /// }
+    /// ```
     _15,
-    /// `opacity: 0.2;`
+    /// ```css
+    /// {
+    ///     opacity: 0.2;
+    /// }
+    /// ```
     _20,
-    /// `opacity: 0.25;`
+    /// ```css
+    /// {
+    ///     opacity: 0.25;
+    /// }
+    /// ```
     _25,
-    /// `opacity: 0.3;`
+    /// ```css
+    /// {
+    ///     opacity: 0.3;
+    /// }
+    /// ```
     _30,
-    /// `opacity: 0.35;`
+    /// ```css
+    /// {
+    ///     opacity: 0.35;
+    /// }
+    /// ```
     _35,
-    /// `opacity: 0.4;`
+    /// ```css
+    /// {
+    ///     opacity: 0.4;
+    /// }
+    /// ```
     _40,
-    /// `opacity: 0.45;`
+    /// ```css
+    /// {
+    ///     opacity: 0.45;
+    /// }
+    /// ```
     _45,
-    /// `opacity: 0.5;`
+    /// ```css
+    /// {
+    ///     opacity: 0.5;
+    /// }
+    /// ```
     _50,
-    /// `opacity: 0.55;`
+    /// ```css
+    /// {
+    ///     opacity: 0.55;
+    /// }
+    /// ```
     _55,
-    /// `opacity: 0.6;`
+    /// ```css
+    /// {
+    ///     opacity: 0.6;
+    /// }
+    /// ```
     _60,
-    /// `opacity: 0.65;`
+    /// ```css
+    /// {
+    ///     opacity: 0.65;
+    /// }
+    /// ```
     _65,
-    /// `opacity: 0.7;`
+    /// ```css
+    /// {
+    ///     opacity: 0.7;
+    /// }
+    /// ```
     _70,
-    /// `opacity: 0.75;`
+    /// ```css
+    /// {
+    ///     opacity: 0.75;
+    /// }
+    /// ```
     _75,
-    /// `opacity: 0.8;`
+    /// ```css
+    /// {
+    ///     opacity: 0.8;
+    /// }
+    /// ```
     _80,
-    /// `opacity: 0.85;`
+    /// ```css
+    /// {
+    ///     opacity: 0.85;
+    /// }
+    /// ```
     _85,
-    /// `opacity: 0.9;`
+    /// ```css
+    /// {
+    ///     opacity: 0.9;
+    /// }
+    /// ```
     _90,
-    /// `opacity: 0.95;`
+    /// ```css
+    /// {
+    ///     opacity: 0.95;
+    /// }
+    /// ```
     _95,
-    /// `opacity: 1;`
+    /// ```css
+    /// {
+    ///     opacity: 1;
+    /// }
+    /// ```
     _100,
 }
 
@@ -93,41 +209,113 @@ pub enum Opacity {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "mix-blend")]
 pub enum MixBlendMode {
-    /// `mix-blend-mode: normal;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: normal;
+    /// }
+    /// ```
     Normal,
-    /// `mix-blend-mode: multiply;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: multiply;
+    /// }
+    /// ```
     Multiply,
-    /// `mix-blend-mode: screen;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: screen;
+    /// }
+    /// ```
     Screen,
-    /// `mix-blend-mode: overlay;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: overlay;
+    /// }
+    /// ```
     Overlay,
-    /// `mix-blend-mode: darken;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: darken;
+    /// }
+    /// ```
     Darken,
-    /// `mix-blend-mode: lighten;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: lighten;
+    /// }
+    /// ```
     Lighten,
-    /// `mix-blend-mode: color-dodge;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: color-dodge;
+    /// }
+    /// ```
     ColorDodge,
-    /// `mix-blend-mode: color-burn;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: color-burn;
+    /// }
+    /// ```
     ColorBurn,
-    /// `mix-blend-mode: hard-light;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: hard-light;
+    /// }
+    /// ```
     HardLight,
-    /// `mix-blend-mode: soft-light;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: soft-light;
+    /// }
+    /// ```
     SoftLight,
-    /// `mix-blend-mode: difference;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: difference;
+    /// }
+    /// ```
     Difference,
-    /// `mix-blend-mode: exclusion;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: exclusion;
+    /// }
+    /// ```
     Exclusion,
-    /// `mix-blend-mode: hue;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: hue;
+    /// }
+    /// ```
     Hue,
-    /// `mix-blend-mode: saturation;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: saturation;
+    /// }
+    /// ```
     Saturation,
-    /// `mix-blend-mode: color;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: color;
+    /// }
+    /// ```
     Color,
-    /// `mix-blend-mode: luminosity;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: luminosity;
+    /// }
+    /// ```
     Luminosity,
-    /// `mix-blend-mode: plus-darker;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: plus-darker;
+    /// }
+    /// ```
     PlusDarker,
-    /// `mix-blend-mode: plus-lighter;`
+    /// ```css
+    /// {
+    ///     mix-blend-mode: plus-lighter;
+    /// }
+    /// ```
     PlusLighter,
 }
 
@@ -137,37 +325,101 @@ pub enum MixBlendMode {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "bg-blend")]
 pub enum BackgroundBlendMode {
-    /// `background-blend-mode: normal;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: normal;
+    /// }
+    /// ```
     Normal,
-    /// `background-blend-mode: multiply;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: multiply;
+    /// }
+    /// ```
     Multiply,
-    /// `background-blend-mode: screen;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: screen;
+    /// }
+    /// ```
     Screen,
-    /// `background-blend-mode: overlay;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: overlay;
+    /// }
+    /// ```
     Overlay,
-    /// `background-blend-mode: darken;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: darken;
+    /// }
+    /// ```
     Darken,
-    /// `background-blend-mode: lighten;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: lighten;
+    /// }
+    /// ```
     Lighten,
-    /// `background-blend-mode: color-dodge;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: color-dodge;
+    /// }
+    /// ```
     ColorDodge,
-    /// `background-blend-mode: color-burn;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: color-burn;
+    /// }
+    /// ```
     ColorBurn,
-    /// `background-blend-mode: hard-light;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: hard-light;
+    /// }
+    /// ```
     HardLight,
-    /// `background-blend-mode: soft-light;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: soft-light;
+    /// }
+    /// ```
     SoftLight,
-    /// `background-blend-mode: difference;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: difference;
+    /// }
+    /// ```
     Difference,
-    /// `background-blend-mode: exclusion;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: exclusion;
+    /// }
+    /// ```
     Exclusion,
-    /// `background-blend-mode: hue;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: hue;
+    /// }
+    /// ```
     Hue,
-    /// `background-blend-mode: saturation;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: saturation;
+    /// }
+    /// ```
     Saturation,
-    /// `background-blend-mode: color;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: color;
+    /// }
+    /// ```
     Color,
-    /// `background-blend-mode: luminosity;`
+    /// ```css
+    /// {
+    ///     background-blend-mode: luminosity;
+    /// }
+    /// ```
     Luminosity,
 }
 

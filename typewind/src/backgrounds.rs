@@ -13,11 +13,23 @@ tailwind_types!(
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "bg")]
 pub enum BackgroundAttachment {
-    /// `background-attachment: fixed;`
+    /// ```css
+    /// {
+    ///     background-attachment: fixed;
+    /// }
+    /// ```
     Fixed,
-    /// `background-attachment: local;`
+    /// ```css
+    /// {
+    ///     background-attachment: local;
+    /// }
+    /// ```
     Local,
-    /// `background-attachment: scroll;`
+    /// ```css
+    /// {
+    ///     background-attachment: scroll;
+    /// }
+    /// ```
     Scroll,
 }
 
@@ -27,13 +39,29 @@ pub enum BackgroundAttachment {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "bg-clip")]
 pub enum BackgroundClip {
-    /// `background-clip: border-box;`
+    /// ```css
+    /// {
+    ///     background-clip: border-box;
+    /// }
+    /// ```
     Border,
-    /// `background-clip: padding-box;`
+    /// ```css
+    /// {
+    ///     background-clip: padding-box;
+    /// }
+    /// ```
     Padding,
-    /// `background-clip: content-box;`
+    /// ```css
+    /// {
+    ///     background-clip: content-box;
+    /// }
+    /// ```
     Content,
-    /// `background-clip: text;`
+    /// ```css
+    /// {
+    ///     background-clip: text;
+    /// }
+    /// ```
     Text,
 }
 
@@ -50,11 +78,23 @@ pub struct BackgroundColor(pub Color);
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "bg-origin")]
 pub enum BackgroundOrigin {
-    /// `background-origin: border-box;`
+    /// ```css
+    /// {
+    ///     background-origin: border-box;
+    /// }
+    /// ```
     Border,
-    /// `background-origin: padding-box;`
+    /// ```css
+    /// {
+    ///     background-origin: padding-box;
+    /// }
+    /// ```
     Padding,
-    /// `background-origin: content-box;`
+    /// ```css
+    /// {
+    ///     background-origin: content-box;
+    /// }
+    /// ```
     Content,
 }
 
@@ -64,23 +104,59 @@ pub enum BackgroundOrigin {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "bg")]
 pub enum BackgroundPosition {
-    /// `background-position: bottom;`
+    /// ```css
+    /// {
+    ///     background-position: bottom;
+    /// }
+    /// ```
     Bottom,
-    /// `background-position: center;`
+    /// ```css
+    /// {
+    ///     background-position: center;
+    /// }
+    /// ```
     Center,
-    /// `background-position: left;`
+    /// ```css
+    /// {
+    ///     background-position: left;
+    /// }
+    /// ```
     Left,
-    /// `background-position: left bottom;`
+    /// ```css
+    /// {
+    ///     background-position: left bottom;
+    /// }
+    /// ```
     LeftBottom,
-    /// `background-position: left top;`
+    /// ```css
+    /// {
+    ///     background-position: left top;
+    /// }
+    /// ```
     LeftTop,
-    /// `background-position: right;`
+    /// ```css
+    /// {
+    ///     background-position: right;
+    /// }
+    /// ```
     Right,
-    /// `background-position: right bottom;`
+    /// ```css
+    /// {
+    ///     background-position: right bottom;
+    /// }
+    /// ```
     RightBottom,
-    /// `background-position: right top;`
+    /// ```css
+    /// {
+    ///     background-position: right top;
+    /// }
+    /// ```
     RightTop,
-    /// `background-position: top;`
+    /// ```css
+    /// {
+    ///     background-position: top;
+    /// }
+    /// ```
     Top,
 }
 
@@ -90,17 +166,41 @@ pub enum BackgroundPosition {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "bg")]
 pub enum BackgroundRepeat {
-    /// `background-repeat: repeat;`
+    /// ```css
+    /// {
+    ///     background-repeat: repeat;
+    /// }
+    /// ```
     Repeat,
-    /// `background-repeat: no-repeat;`
+    /// ```css
+    /// {
+    ///     background-repeat: no-repeat;
+    /// }
+    /// ```
     NoRepeat,
-    /// `background-repeat: repeat-x;`
+    /// ```css
+    /// {
+    ///     background-repeat: repeat-x;
+    /// }
+    /// ```
     RepeatX,
-    /// `background-repeat: repeat-y;`
+    /// ```css
+    /// {
+    ///     background-repeat: repeat-y;
+    /// }
+    /// ```
     RepeatY,
-    /// `background-repeat: round;`
+    /// ```css
+    /// {
+    ///     background-repeat: round;
+    /// }
+    /// ```
     RepeatRound,
-    /// `background-repeat: space;`
+    /// ```css
+    /// {
+    ///     background-repeat: space;
+    /// }
+    /// ```
     RepeatSpace,
 }
 
@@ -110,11 +210,23 @@ pub enum BackgroundRepeat {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "bg")]
 pub enum BackgroundSize {
-    /// `background-size: auto;`
+    /// ```css
+    /// {
+    ///     background-size: auto;
+    /// }
+    /// ```
     Auto,
-    /// `background-size: cover;`
+    /// ```css
+    /// {
+    ///     background-size: cover;
+    /// }
+    /// ```
     Cover,
-    /// `background-size: contain;`
+    /// ```css
+    /// {
+    ///     background-size: contain;
+    /// }
+    /// ```
     Contain,
 }
 
@@ -124,23 +236,59 @@ pub enum BackgroundSize {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "bg")]
 pub enum BackgroundImage {
-    /// `background-image: none;`
+    /// ```css
+    /// {
+    ///     background-image: none;
+    /// }
+    /// ```
     None,
-    /// `background-image: linear-gradient(to top, var(--tw-gradient-stops));`
+    /// ```css
+    /// {
+    ///     background-image: linear-gradient(to top, var(--tw-gradient-stops));
+    /// }
+    /// ```
     GradientToT,
-    /// `background-image: linear-gradient(to top right, var(--tw-gradient-stops));`
+    /// ```css
+    /// {
+    ///     background-image: linear-gradient(to top right, var(--tw-gradient-stops));
+    /// }
+    /// ```
     GradientToTr,
-    /// `background-image: linear-gradient(to right, var(--tw-gradient-stops));`
+    /// ```css
+    /// {
+    ///     background-image: linear-gradient(to right, var(--tw-gradient-stops));
+    /// }
+    /// ```
     GradientToR,
-    /// `background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));`
+    /// ```css
+    /// {
+    ///     background-image: linear-gradient(to bottom right, var(--tw-gradient-stops));
+    /// }
+    /// ```
     GradientToBr,
-    /// `background-image: linear-gradient(to bottom, var(--tw-gradient-stops));`
+    /// ```css
+    /// {
+    ///     background-image: linear-gradient(to bottom, var(--tw-gradient-stops));
+    /// }
+    /// ```
     GradientToB,
-    /// `background-image: linear-gradient(to bottom left, var(--tw-gradient-stops));`
+    /// ```css
+    /// {
+    ///     background-image: linear-gradient(to bottom left, var(--tw-gradient-stops));
+    /// }
+    /// ```
     GradientToBl,
-    /// `background-image: linear-gradient(to left, var(--tw-gradient-stops));`
+    /// ```css
+    /// {
+    ///     background-image: linear-gradient(to left, var(--tw-gradient-stops));
+    /// }
+    /// ```
     GradientToL,
-    /// `background-image: linear-gradient(to top left, var(--tw-gradient-stops));`
+    /// ```css
+    /// {
+    ///     background-image: linear-gradient(to top left, var(--tw-gradient-stops));
+    /// }
+    /// ```
     GradientToTl,
 }
 

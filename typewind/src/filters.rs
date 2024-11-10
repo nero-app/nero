@@ -13,22 +13,54 @@ tailwind_types!(
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "blur")]
 pub enum Blur {
-    /// `filter:  ;`
+    /// ```css
+    /// {
+    ///     filter:  ;
+    /// }
+    /// ```
     None,
-    /// `filter: blur(4px);`
+    /// ```css
+    /// {
+    ///     filter: blur(4px);
+    /// }
+    /// ```
     Sm,
-    /// `filter: blur(8px);`
+    /// ```css
+    /// {
+    ///     filter: blur(8px);
+    /// }
+    /// ```
     #[display(no_prefix)]
     Blur,
-    /// `filter: blur(12px);`
+    /// ```css
+    /// {
+    ///     filter: blur(12px);
+    /// }
+    /// ```
     Md,
-    /// `filter: blur(16px);`
+    /// ```css
+    /// {
+    ///     filter: blur(16px);
+    /// }
+    /// ```
     Lg,
-    /// `filter: blur(24px);`
+    /// ```css
+    /// {
+    ///     filter: blur(24px);
+    /// }
+    /// ```
     Xl,
-    /// `filter: blur(40px);`
+    /// ```css
+    /// {
+    ///     filter: blur(40px);
+    /// }
+    /// ```
     _2xl,
-    /// `filter: blur(64px);`
+    /// ```css
+    /// {
+    ///     filter: blur(64px);
+    /// }
+    /// ```
     _3xl,
 }
 
@@ -38,27 +70,71 @@ pub enum Blur {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "brightness")]
 pub enum Brightness {
-    /// `filter: brightness(0);`
+    /// ```css
+    /// {
+    ///     filter: brightness(0);
+    /// }
+    /// ```
     _0,
-    /// `filter: brightness(.5);`
+    /// ```css
+    /// {
+    ///     filter: brightness(.5);
+    /// }
+    /// ```
     _50,
-    /// `filter: brightness(.75);`
+    /// ```css
+    /// {
+    ///     filter: brightness(.75);
+    /// }
+    /// ```
     _75,
-    /// `filter: brightness(.9);`
+    /// ```css
+    /// {
+    ///     filter: brightness(.9);
+    /// }
+    /// ```
     _90,
-    /// `filter: brightness(.95);`
+    /// ```css
+    /// {
+    ///     filter: brightness(.95);
+    /// }
+    /// ```
     _95,
-    /// `filter: brightness(1);`
+    /// ```css
+    /// {
+    ///     filter: brightness(1);
+    /// }
+    /// ```
     _100,
-    /// `filter: brightness(1.05);`
+    /// ```css
+    /// {
+    ///     filter: brightness(1.05);
+    /// }
+    /// ```
     _105,
-    /// `filter: brightness(1.1);`
+    /// ```css
+    /// {
+    ///     filter: brightness(1.1);
+    /// }
+    /// ```
     _110,
-    /// `filter: brightness(1.25);`
+    /// ```css
+    /// {
+    ///     filter: brightness(1.25);
+    /// }
+    /// ```
     _125,
-    /// `filter: brightness(1.5);`
+    /// ```css
+    /// {
+    ///     filter: brightness(1.5);
+    /// }
+    /// ```
     _150,
-    /// `filter: brightness(2);`
+    /// ```css
+    /// {
+    ///     filter: brightness(2);
+    /// }
+    /// ```
     _200,
 }
 
@@ -68,19 +144,47 @@ pub enum Brightness {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "contrast")]
 pub enum Contrast {
-    /// `filter: contrast(0);`
+    /// ```css
+    /// {
+    ///     filter: contrast(0);
+    /// }
+    /// ```
     _0,
-    /// `filter: contrast(.5);`
+    /// ```css
+    /// {
+    ///     filter: contrast(.5);
+    /// }
+    /// ```
     _50,
-    /// `filter: contrast(.75);`
+    /// ```css
+    /// {
+    ///     filter: contrast(.75);
+    /// }
+    /// ```
     _75,
-    /// `filter: contrast(1);`
+    /// ```css
+    /// {
+    ///     filter: contrast(1);
+    /// }
+    /// ```
     _100,
-    /// `filter: contrast(1.25);`
+    /// ```css
+    /// {
+    ///     filter: contrast(1.25);
+    /// }
+    /// ```
     _125,
-    /// `filter: contrast(1.5);`
+    /// ```css
+    /// {
+    ///     filter: contrast(1.5);
+    /// }
+    /// ```
     _150,
-    /// `filter: contrast(2);`
+    /// ```css
+    /// {
+    ///     filter: contrast(2);
+    /// }
+    /// ```
     _200,
 }
 
@@ -90,20 +194,48 @@ pub enum Contrast {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "drop-shadow")]
 pub enum DropShadow {
-    /// `filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05));`
+    /// ```css
+    /// {
+    ///     filter: drop-shadow(0 1px 1px rgb(0 0 0 / 0.05));
+    /// }
+    /// ```
     Sm,
-    /// `filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));`
+    /// ```css
+    /// {
+    ///     filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.1)) drop-shadow(0 1px 1px rgb(0 0 0 / 0.06));
+    /// }
+    /// ```
     #[display(no_prefix)]
     DropShadow,
-    /// `filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));`
+    /// ```css
+    /// {
+    ///     filter: drop-shadow(0 4px 3px rgb(0 0 0 / 0.07)) drop-shadow(0 2px 2px rgb(0 0 0 / 0.06));
+    /// }
+    /// ```
     Md,
-    /// `filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));`
+    /// ```css
+    /// {
+    ///     filter: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+    /// }
+    /// ```
     Lg,
-    /// `filter: drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08));`
+    /// ```css
+    /// {
+    ///     filter: drop-shadow(0 20px 13px rgb(0 0 0 / 0.03)) drop-shadow(0 8px 5px rgb(0 0 0 / 0.08));
+    /// }
+    /// ```
     Xl,
-    /// `filter: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));`
+    /// ```css
+    /// {
+    ///     filter: drop-shadow(0 25px 25px rgb(0 0 0 / 0.15));
+    /// }
+    /// ```
     _2xl,
-    /// `filter: drop-shadow(0 0 #0000);`
+    /// ```css
+    /// {
+    ///     filter: drop-shadow(0 0 #0000);
+    /// }
+    /// ```
     None,
 }
 
@@ -113,9 +245,17 @@ pub enum DropShadow {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "grayscale")]
 pub enum Grayscale {
-    /// `filter: grayscale(0);`
+    /// ```css
+    /// {
+    ///     filter: grayscale(0);
+    /// }
+    /// ```
     _0,
-    /// `filter: grayscale(100%);`
+    /// ```css
+    /// {
+    ///     filter: grayscale(100%);
+    /// }
+    /// ```
     #[display(no_prefix)]
     Grayscale,
 }
@@ -126,17 +266,41 @@ pub enum Grayscale {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "hue-rotate")]
 pub enum HueRotate {
-    /// `filter: hue-rotate(0deg);`
+    /// ```css
+    /// {
+    ///     filter: hue-rotate(0deg);
+    /// }
+    /// ```
     _0,
-    /// `filter: hue-rotate(15deg);`
+    /// ```css
+    /// {
+    ///     filter: hue-rotate(15deg);
+    /// }
+    /// ```
     _15,
-    /// `filter: hue-rotate(30deg);`
+    /// ```css
+    /// {
+    ///     filter: hue-rotate(30deg);
+    /// }
+    /// ```
     _30,
-    /// `filter: hue-rotate(60deg);`
+    /// ```css
+    /// {
+    ///     filter: hue-rotate(60deg);
+    /// }
+    /// ```
     _60,
-    /// `filter: hue-rotate(90deg);`
+    /// ```css
+    /// {
+    ///     filter: hue-rotate(90deg);
+    /// }
+    /// ```
     _90,
-    /// `filter: hue-rotate(180deg);`
+    /// ```css
+    /// {
+    ///     filter: hue-rotate(180deg);
+    /// }
+    /// ```
     _180,
 }
 
@@ -146,9 +310,17 @@ pub enum HueRotate {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "invert")]
 pub enum Invert {
-    /// `filter: invert(0);`
+    /// ```css
+    /// {
+    ///     filter: invert(0);
+    /// }
+    /// ```
     _0,
-    /// `filter: invert(100%);`
+    /// ```css
+    /// {
+    ///     filter: invert(100%);
+    /// }
+    /// ```
     #[display(no_prefix)]
     Invert,
 }
@@ -159,15 +331,35 @@ pub enum Invert {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "saturate")]
 pub enum Saturate {
-    /// `filter: saturate(0);`
+    /// ```css
+    /// {
+    ///     filter: saturate(0);
+    /// }
+    /// ```
     _0,
-    /// `filter: saturate(.5);`
+    /// ```css
+    /// {
+    ///     filter: saturate(.5);
+    /// }
+    /// ```
     _50,
-    /// `filter: saturate(1);`
+    /// ```css
+    /// {
+    ///     filter: saturate(1);
+    /// }
+    /// ```
     _100,
-    /// `filter: saturate(1.5);`
+    /// ```css
+    /// {
+    ///     filter: saturate(1.5);
+    /// }
+    /// ```
     _150,
-    /// `filter: saturate(2);`
+    /// ```css
+    /// {
+    ///     filter: saturate(2);
+    /// }
+    /// ```
     _200,
 }
 
@@ -177,9 +369,17 @@ pub enum Saturate {
 #[derive(Debug, Clone, PartialEq, Display, Parse)]
 #[display(prefix = "sepia")]
 pub enum Sepia {
-    /// `filter: sepia(0);`
+    /// ```css
+    /// {
+    ///     filter: sepia(0);
+    /// }
+    /// ```
     _0,
-    /// `filter: sepia(100%);`
+    /// ```css
+    /// {
+    ///     filter: sepia(100%);
+    /// }
+    /// ```
     #[display(no_prefix)]
     Sepia,
 }

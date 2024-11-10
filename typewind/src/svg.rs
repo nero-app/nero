@@ -24,15 +24,21 @@ pub struct Stroke(pub Color);
 #[display(prefix = "stroke")]
 pub enum StrokeWidth {
     /// ```css
-    /// stroke-width: 0;
+    /// {
+    ///     stroke-width: 0;
+    /// }
     /// ```
     _0,
     /// ```css
-    /// stroke-width: 1;
+    /// {
+    ///     stroke-width: 1;
+    /// }
     /// ```
     _1,
     /// ```css
-    /// stroke-width: 2;
+    /// {
+    ///     stroke-width: 2;
+    /// }
     /// ```
     _2,
 }
