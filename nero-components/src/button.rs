@@ -12,7 +12,7 @@ use typewind::{
     ToClasses,
 };
 
-use crate::{layout::Layout, Icon, IntoComponent, Label, LabelTag};
+use crate::{layout::HStack, Icon, IntoComponent, Label, LabelTag};
 
 /// Represents a button with configurable properties for background color,
 /// border radius, and on click callback.
@@ -69,7 +69,7 @@ impl<T: FnMut(MouseEvent) + 'static> Button<T> {
     /// ```
     pub fn with_icon_label(icon: Icon, label: Signal<String>, on_click: T) -> Self {
         Self::new(
-            Layout::h_stack((
+            HStack::new((
                 icon.into_component(),
                 Label::new(label).tag(LabelTag::Span).into_component(),
             ))

@@ -13,7 +13,7 @@ use super::Layout;
 /// Represents a grid-based layout system, allowing elements to be arranged
 /// in a structured grid format with customizable row and column properties.
 #[derive(ToClasses)]
-pub struct GridLayout {
+pub struct Grid {
     display: Display,
     template_columns: Option<GridTemplateColumns>,
     auto_flow: Option<GridAutoFlow>,
@@ -22,11 +22,11 @@ pub struct GridLayout {
     template_rows: Option<GridTemplateRows>,
 }
 
-impl Layout<GridLayout> {
+impl Grid {
     /// Creates a new `GridLayout` with the specified children element.
-    pub fn grid(children: impl IntoView + 'static) -> Self {
+    pub fn new(children: impl IntoView + 'static) -> Layout<Self> {
         Layout::new(
-            GridLayout {
+            Self {
                 display: Display::Grid,
                 template_columns: None,
                 auto_flow: None,
@@ -37,7 +37,9 @@ impl Layout<GridLayout> {
             children,
         )
     }
+}
 
+impl Layout<Grid> {
     /// Sets a custom column template to define explicit column sizes in the grid layout.
     pub fn template_columns(mut self, template_columns: GridTemplateColumns) -> Self {
         self.layout.template_columns = Some(template_columns);
@@ -77,18 +79,20 @@ pub struct GridItem {
     row: Vec<GridRowStartEnd>,
 }
 
-impl Layout<GridItem> {
+impl GridItem {
     /// Creates a new `GridItem` with the specified children element.
-    pub fn grid_item(children: impl IntoView + 'static) -> Self {
+    pub fn new(children: impl IntoView + 'static) -> Layout<Self> {
         Layout::new(
-            GridItem {
+            Self {
                 column: vec![],
                 row: vec![],
             },
             children,
         )
     }
+}
 
+impl Layout<GridItem> {
     /// Sets the column start or end position for the grid item.
     pub fn column(mut self, column: GridColumnStartEnd) -> Self {
         self.layout.column.push(column);

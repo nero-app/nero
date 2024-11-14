@@ -1,7 +1,8 @@
 use leptos::IntoView;
 use typewind::{
     flexbox_grid::{
-        AlignItems, Flex, FlexBasis, FlexDirection, FlexGrow, FlexShrink, FlexWrap, JustifyContent,
+        AlignItems, Flex as FlexType, FlexBasis, FlexDirection, FlexGrow, FlexShrink, FlexWrap,
+        JustifyContent,
     },
     layout::Display,
     ToClasses,
@@ -13,7 +14,7 @@ use super::Layout;
 /// in a configurable flexbox layout, allowing for dynamic alignment, spacing,
 /// direction, and growth or shrinkage of items within the container.
 #[derive(ToClasses)]
-pub struct FlexLayout {
+pub struct Flex {
     display: Display,
     align: Option<AlignItems>,
     justify: Option<JustifyContent>,
@@ -22,14 +23,14 @@ pub struct FlexLayout {
     basis: Option<FlexBasis>,
     grow: Option<FlexGrow>,
     shrink: Option<FlexShrink>,
-    flex: Option<Flex>,
+    flex: Option<FlexType>,
 }
 
-impl Layout<FlexLayout> {
+impl Flex {
     /// Creates a new `FlexLayout` with the specified children.
-    pub fn flex(children: impl IntoView + 'static) -> Self {
+    pub fn new(children: impl IntoView + 'static) -> Layout<Self> {
         Layout::new(
-            FlexLayout {
+            Self {
                 display: Display::Flex,
                 align: None,
                 justify: None,
@@ -43,7 +44,9 @@ impl Layout<FlexLayout> {
             children,
         )
     }
+}
 
+impl Layout<Flex> {
     /// Sets the alignment of items along the cross-axis.
     pub fn align_items(mut self, align: AlignItems) -> Self {
         self.layout.align = Some(align);
@@ -87,7 +90,7 @@ impl Layout<FlexLayout> {
     }
 
     /// Sets the shorthand `flex` property.
-    pub fn flex_type(mut self, flex: Flex) -> Self {
+    pub fn flex_type(mut self, flex: FlexType) -> Self {
         self.layout.flex = Some(flex);
         self
     }

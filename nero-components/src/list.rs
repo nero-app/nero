@@ -11,7 +11,7 @@ use typewind::{
     ToClasses,
 };
 
-use crate::{layout::Layout, IntoComponent};
+use crate::{layout::VStack, IntoComponent};
 
 /// List header component that can be used with the `List` component.
 #[derive(ToClasses)]
@@ -119,7 +119,7 @@ impl IntoComponent for List {
             .child(self.children);
 
         match self.header {
-            Some(header) => Layout::v_stack((header.into_component(), ul))
+            Some(header) => VStack::new((header.into_component(), ul))
                 .gap(self.gap.unwrap_or(Gap::_0))
                 .into_component()
                 .into_any(),
