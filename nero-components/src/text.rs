@@ -12,8 +12,8 @@ use typewind::{
 
 use crate::IntoComponent;
 
-/// Possible HTML tags that can be used for labels.
-pub enum LabelTag {
+/// Possible HTML tags that can be used for texts.
+pub enum TextTag {
     /// `<h1>`
     H1,
     /// `<h2>`
@@ -26,14 +26,14 @@ pub enum LabelTag {
     Span,
 }
 
-/// Represents a label with configurable properties for text color, font size,
+/// Represents a text with configurable properties for text color, font size,
 /// line clamp, text alignment, text transform and text overflow.
 #[derive(ToClasses)]
-pub struct Label {
+pub struct Text {
     #[tw(skip)]
     text: Signal<String>,
     #[tw(skip)]
-    tag: LabelTag,
+    tag: TextTag,
     font_size: Option<FontSize>,
     font_weight: Option<FontWeight>,
     line_clamp: Option<LineClamp>,
@@ -43,10 +43,10 @@ pub struct Label {
     overflow: Option<TextOverflow>,
 }
 
-impl Label {
-    /// Creates a new `Label` with the specified [`Signal<String>`] text.
+impl Text {
+    /// Creates a new `Text` with the specified [`Signal<String>`] text.
     ///
-    /// By default the label is created with the `P` tag.
+    /// By default the text is created with the `P` tag.
     ///
     /// # Example
     /// ```
@@ -55,17 +55,17 @@ impl Label {
     ///     prelude::{signal, Get, Signal, Update},
     ///     IntoView
     /// };
-    /// use nero_components::{IntoComponent, Label, LabelTag, Button};
+    /// use nero_components::{IntoComponent, Text, TextTag, Button};
     ///
     /// fn counter() -> impl IntoView {
     ///     let (value, set_value) = signal(0);
     ///     
     ///     div().child((
-    ///         Label::new(Signal::derive(move || value.get().to_string()))
-    ///             .tag(LabelTag::H1)
+    ///         Text::new(Signal::derive(move || value.get().to_string()))
+    ///             .tag(TextTag::H1)
     ///             .into_component(),
     ///         Button::new(
-    ///             Label::new("Click me!".into()).into_component(),
+    ///             Text::new("Click me!".into()).into_component(),
     ///             move |_| set_value.update(|value| *value += 1),
     ///         )
     ///         .into_component()
@@ -75,7 +75,7 @@ impl Label {
     pub fn new(text: Signal<String>) -> Self {
         Self {
             text,
-            tag: LabelTag::P,
+            tag: TextTag::P,
             font_size: None,
             font_weight: None,
             line_clamp: None,
@@ -86,102 +86,102 @@ impl Label {
         }
     }
 
-    /// Creates a new large title `Label` with the specified text.
+    /// Creates a new large title `Text` with the specified text.
     ///
-    /// By default the large title label is created with the `H1` tag and `TextOverflow::Truncate`,
+    /// By default the large title text is created with the `H1` tag and `TextOverflow::Truncate`,
     /// `FontSize::_3xl` and `FontWeight::Bold` properties.
     ///
     /// # Example
     /// ```
-    /// use nero_components::Label;
+    /// use nero_components::Text;
     ///
-    /// let label = Label::large_title("Large title!".into());
+    /// let text = Text::large_title("Large title!".into());
     /// ```
     pub fn large_title(text: Signal<String>) -> Self {
         Self::new(text)
-            .tag(LabelTag::H1)
+            .tag(TextTag::H1)
             .overflow(TextOverflow::Truncate)
             .font_size(FontSize::_3xl)
             .font_weight(FontWeight::Bold)
     }
 
-    /// Creates a new medium title `Label` with the specified text.
+    /// Creates a new medium title `Text` with the specified text.
     ///
-    /// By default the medium title label is created with the `H2` tag and `TextOverflow::Truncate`,
+    /// By default the medium title text is created with the `H2` tag and `TextOverflow::Truncate`,
     /// `FontSize::_2xl` and `FontWeight::Semibold` properties.
     ///
     /// # Example
     /// ```
-    /// use nero_components::Label;
+    /// use nero_components::Text;
     ///
-    /// let label = Label::medium_title("Medium title!".into());
+    /// let text = Text::medium_title("Medium title!".into());
     /// ```
     pub fn medium_title(text: Signal<String>) -> Self {
         Self::new(text)
-            .tag(LabelTag::H2)
+            .tag(TextTag::H2)
             .overflow(TextOverflow::Truncate)
             .font_size(FontSize::_2xl)
             .font_weight(FontWeight::Semibold)
     }
 
-    /// Sets the HTML tag to be used for the label (defaults to `P`).
-    pub fn tag(mut self, tag: LabelTag) -> Self {
+    /// Sets the HTML tag to be used for the text (defaults to `P`).
+    pub fn tag(mut self, tag: TextTag) -> Self {
         self.tag = tag;
         self
     }
 
-    /// Sets the `font-size` property of the label.
+    /// Sets the `font-size` property of the text.
     pub fn font_size(mut self, font_size: FontSize) -> Self {
         self.font_size = Some(font_size);
         self
     }
 
-    /// Sets the `font-weight` property of the label.
+    /// Sets the `font-weight` property of the text.
     pub fn font_weight(mut self, font_weight: FontWeight) -> Self {
         self.font_weight = Some(font_weight);
         self
     }
 
-    /// Sets the line clamp of the label.
+    /// Sets the line clamp of the text.
     pub fn line_clamp(mut self, line_clamp: LineClamp) -> Self {
         self.line_clamp = Some(line_clamp);
         self
     }
 
-    /// Sets the text alignment of the label.
+    /// Sets the text alignment of the text.
     pub fn align(mut self, align: TextAlign) -> Self {
         self.align = Some(align);
         self
     }
 
-    /// Sets the text color of the label.
+    /// Sets the text color of the text.
     pub fn color(mut self, color: TextColor) -> Self {
         self.color = Some(color);
         self
     }
 
-    /// Sets the `text-transform` property of the label.
+    /// Sets the `text-transform` property of the text.
     pub fn transform(mut self, transform: TextTransform) -> Self {
         self.transform = Some(transform);
         self
     }
 
-    /// Sets the `text-overflow` property of the label.
+    /// Sets the `text-overflow` property of the text.
     pub fn overflow(mut self, overflow: TextOverflow) -> Self {
         self.overflow = Some(overflow);
         self
     }
 }
 
-impl IntoComponent for Label {
+impl IntoComponent for Text {
     fn into_component(self) -> impl IntoView {
         let classes = self.classes();
         match self.tag {
-            LabelTag::H1 => h1().class(classes).child(self.text).into_any(),
-            LabelTag::H2 => h2().class(classes).child(self.text).into_any(),
-            LabelTag::H3 => h3().class(classes).child(self.text).into_any(),
-            LabelTag::P => p().class(classes).child(self.text).into_any(),
-            LabelTag::Span => span().class(classes).child(self.text).into_any(),
+            TextTag::H1 => h1().class(classes).child(self.text).into_any(),
+            TextTag::H2 => h2().class(classes).child(self.text).into_any(),
+            TextTag::H3 => h3().class(classes).child(self.text).into_any(),
+            TextTag::P => p().class(classes).child(self.text).into_any(),
+            TextTag::Span => span().class(classes).child(self.text).into_any(),
         }
     }
 }

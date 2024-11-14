@@ -12,7 +12,7 @@ use typewind::{
     ToClasses,
 };
 
-use crate::{layout::HStack, Icon, IntoComponent, Label, LabelTag};
+use crate::{layout::HStack, Icon, IntoComponent, Text, TextTag};
 
 /// Represents a button with configurable properties for background color,
 /// border radius, and on click callback.
@@ -52,7 +52,7 @@ impl<T: FnMut(MouseEvent) + 'static> Button<T> {
         Self::new(icon.into_component(), on_click)
     }
 
-    /// Creates a new `Button` with the specified icon and label.
+    /// Creates a new `Button` with the specified icon and text.
     ///
     /// By default the button is created with the `Gap::_2`, `Padding::Px3`, `Padding::Py1_5`,
     /// `AlignItems::Center` and `BorderRadius::Lg` properties.
@@ -61,17 +61,17 @@ impl<T: FnMut(MouseEvent) + 'static> Button<T> {
     /// ```
     /// use nero_components::{Button, Icon, IconType};
     ///
-    /// let button = Button::with_icon_label(
+    /// let button = Button::with_icon_text(
     ///     Icon::new(IconType::Share),
     ///     "Share".into(),
     ///     |_| todo!()
     /// );
     /// ```
-    pub fn with_icon_label(icon: Icon, label: Signal<String>, on_click: T) -> Self {
+    pub fn with_icon_text(icon: Icon, text: Signal<String>, on_click: T) -> Self {
         Self::new(
             HStack::new((
                 icon.into_component(),
-                Label::new(label).tag(LabelTag::Span).into_component(),
+                Text::new(text).tag(TextTag::Span).into_component(),
             ))
             .gap(Gap::_2)
             .paddings(vec![Padding::Px3, Padding::Py1_5])

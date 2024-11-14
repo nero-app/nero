@@ -1,16 +1,16 @@
 mod button;
 mod icons;
 mod image;
-mod label;
 pub mod layout;
 mod list;
+mod text;
 mod transition;
 
 pub use button::*;
 pub use icons::*;
 pub use image::*;
-pub use label::*;
 pub use list::*;
+pub use text::*;
 pub use transition::*;
 
 use leptos::IntoView;
