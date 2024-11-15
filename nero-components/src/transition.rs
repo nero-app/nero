@@ -1,7 +1,6 @@
 use leptos::{
     html::{div, ElementChild},
-    prelude::{AnyView, ClassAttribute, IntoAny, StyleAttribute},
-    tachys::html::style::IntoStyle,
+    prelude::{AnyView, ClassAttribute, IntoAny},
     IntoView,
 };
 use typewind::{
@@ -15,18 +14,16 @@ use crate::IntoComponent;
 
 /// A component that applies a transition to its children.
 #[derive(ToClasses)]
-pub struct Transition<T: IntoStyle + 'static> {
+pub struct Transition {
     property: Option<TransitionProperty>,
     duration: Option<TransitionDuration>,
     timing_function: Option<TransitionTimingFunction>,
     delay: Option<TransitionDelay>,
     #[tw(skip)]
-    style: Option<T>,
-    #[tw(skip)]
     children: AnyView,
 }
 
-impl<T: IntoStyle> Transition<T> {
+impl Transition {
     /// Creates a new `Transition` with the given children.
     pub fn new(children: impl IntoView + 'static) -> Self {
         Self {
@@ -34,7 +31,6 @@ impl<T: IntoStyle> Transition<T> {
             duration: None,
             timing_function: None,
             delay: None,
-            style: None,
             children: children.into_any(),
         }
     }
@@ -62,29 +58,10 @@ impl<T: IntoStyle> Transition<T> {
         self.delay = Some(delay);
         self
     }
-
-    /// Sets a custom style for the transition component.
-    ///
-    /// # Example
-    /// ```
-    /// use nero_components::Transition;
-    ///
-    /// let transition = Transition::new("Hello, world!")
-    ///     .style("width: 100px; height: 100px;");
-    /// ```
-    pub fn style(mut self, style: T) -> Self {
-        self.style = Some(style);
-        self
-    }
 }
 
-impl<T: IntoStyle> IntoComponent for Transition<T> {
+impl IntoComponent for Transition {
     fn into_component(self) -> impl IntoView {
-        let div = div().class(self.classes()).child(self.children);
-
-        match self.style {
-            Some(style) => div.style(style).into_any(),
-            None => div.into_any(),
-        }
+        div().class(self.classes()).child(self.children)
     }
 }
