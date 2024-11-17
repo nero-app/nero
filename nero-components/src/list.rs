@@ -1,13 +1,16 @@
 use leptos::{
-    html::{header, hr, ul, ElementChild},
-    prelude::{AnyView, ClassAttribute, IntoAny},
+    either::Either,
+    ev::MouseEvent,
+    html::{header, hr, li, ul, ElementChild},
+    prelude::{AnyView, ClassAttribute, IntoAny, OnAttribute},
     IntoView,
 };
 use typewind::{
     backgrounds::BackgroundColor,
+    borders::BorderRadius,
     flexbox_grid::{FlexDirection, Gap},
     layout::{Display, Overflow, Position, TopRightBottomLeft},
-    sizing::Width,
+    sizing::{Height, Width},
     ToClasses,
 };
 
@@ -124,6 +127,71 @@ impl IntoComponent for List {
                 .into_component()
                 .into_any(),
             None => ul.into_any(),
+        }
+    }
+}
+
+/// List item component with configurable properties for
+/// height, width, and border radius.
+#[derive(ToClasses)]
+pub struct ListItem {
+    height: Option<Height>,
+    width: Option<Width>,
+    radius: Option<BorderRadius>,
+    #[tw(skip)]
+    on_click: Option<Box<dyn FnMut(MouseEvent)>>,
+    #[tw(skip)]
+    children: AnyView,
+}
+
+impl ListItem {
+    /// Creates a new `ListItem` with the specified children element.
+    pub fn new(children: impl IntoView + 'static) -> Self {
+        Self {
+            height: None,
+            width: None,
+            radius: None,
+            on_click: None,
+            children: children.into_any(),
+        }
+    }
+
+    /// Sets the height of the list item.
+    pub fn height(mut self, height: Height) -> Self {
+        self.height = Some(height);
+        self
+    }
+
+    /// Sets the width of the list item.
+    pub fn width(mut self, width: Width) -> Self {
+        self.width = Some(width);
+        self
+    }
+
+    /// Sets the border radius of the list item.
+    pub fn radius(mut self, radius: BorderRadius) -> Self {
+        self.radius = Some(radius);
+        self
+    }
+
+    /// Sets the on_click handler of the list item.
+    pub fn on_click(mut self, handler: impl FnMut(MouseEvent) + 'static) -> Self {
+        self.on_click = Some(Box::new(handler));
+        self
+    }
+}
+
+impl IntoComponent for ListItem {
+    fn into_component(self) -> impl IntoView {
+        let classes = self.classes();
+
+        match self.on_click {
+            Some(click) => Either::Left(
+                li().class(classes)
+                    .child(self.children)
+                    .on(leptos::ev::click, click),
+            ),
+            None => Either::Right(li().class(classes).child(self.children)),
         }
     }
 }
