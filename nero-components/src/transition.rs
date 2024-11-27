@@ -1,16 +1,10 @@
-use leptos::{
-    html::{div, ElementChild},
-    prelude::{AnyView, ClassAttribute, IntoAny},
-    IntoView,
-};
+use sycamore::web::{tags::div, GlobalProps, HtmlGlobalAttributes, View};
 use typewind::{
     transitions_animation::{
         TransitionDelay, TransitionDuration, TransitionProperty, TransitionTimingFunction,
     },
     ToClasses,
 };
-
-use crate::IntoComponent;
 
 /// A component that applies a transition to its children.
 #[derive(ToClasses)]
@@ -20,18 +14,18 @@ pub struct Transition {
     timing_function: Option<TransitionTimingFunction>,
     delay: Option<TransitionDelay>,
     #[tw(skip)]
-    children: AnyView,
+    children: View,
 }
 
 impl Transition {
     /// Creates a new `Transition` with the given children.
-    pub fn new(children: impl IntoView + 'static) -> Self {
+    pub fn new(children: impl Into<View>) -> Self {
         Self {
             property: None,
             duration: None,
             timing_function: None,
             delay: None,
-            children: children.into_any(),
+            children: children.into(),
         }
     }
 
@@ -60,8 +54,8 @@ impl Transition {
     }
 }
 
-impl IntoComponent for Transition {
-    fn into_component(self) -> impl IntoView {
-        div().class(self.classes()).child(self.children)
+impl From<Transition> for View {
+    fn from(value: Transition) -> Self {
+        div().class(value.classes()).children(value.children).into()
     }
 }

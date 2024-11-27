@@ -1,12 +1,13 @@
-use leptos::{html::img, prelude::ClassAttribute, IntoView};
+use sycamore::{
+    prelude::HtmlImgAttributes,
+    web::{tags::img, HtmlGlobalAttributes, View},
+};
 use typewind::{
     borders::BorderRadius,
     layout::ObjectFit,
     sizing::{Height, Width},
     ToClasses,
 };
-
-use crate::IntoComponent;
 
 /// Represents an image with configurable properties for dimensions, object fit,
 /// and border radius.
@@ -63,8 +64,12 @@ impl Image {
     }
 }
 
-impl IntoComponent for Image {
-    fn into_component(self) -> impl IntoView {
-        img().class(self.classes()).src(self.src).alt(self.alt)
+impl From<Image> for View {
+    fn from(value: Image) -> Self {
+        img()
+            .class(value.classes())
+            .src(value.src)
+            .alt(value.alt)
+            .into()
     }
 }

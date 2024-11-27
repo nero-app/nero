@@ -1,7 +1,6 @@
-use leptos::{
-    html::{article, aside, div, main, section, ElementChild},
-    prelude::{AnyView, ClassAttribute, IntoAny},
-    IntoView,
+use sycamore::web::{
+    tags::{article, aside, div, main, section},
+    GlobalProps, HtmlGlobalAttributes, View,
 };
 use typewind::{
     flexbox_grid::Gap,
@@ -18,8 +17,6 @@ pub use grid::*;
 
 mod stack;
 pub use stack::*;
-
-use crate::IntoComponent;
 
 /// Possible HTML tags that can be used for layout containers.
 pub enum LayoutTag {
@@ -52,11 +49,11 @@ pub struct Layout<L> {
     padding: Vec<Padding>,
     overflow: Option<Overflow>,
     #[tw(skip)]
-    children: AnyView,
+    children: View,
 }
 
 impl<L> Layout<L> {
-    fn new(layout: L, children: impl IntoView + 'static) -> Self {
+    fn new(layout: L, children: impl Into<View>) -> Self {
         Self {
             layout,
             tag: LayoutTag::Div,
@@ -66,7 +63,7 @@ impl<L> Layout<L> {
             gap: None,
             padding: vec![],
             overflow: None,
-            children: children.into_any(),
+            children: children.into(),
         }
     }
 
@@ -119,16 +116,16 @@ impl<L> Layout<L> {
     }
 }
 
-impl<L: ToClasses> IntoComponent for Layout<L> {
-    fn into_component(self) -> impl IntoView {
-        let classes = format!("{} {}", self.classes(), self.layout.classes());
+impl<L: ToClasses> From<Layout<L>> for View {
+    fn from(value: Layout<L>) -> Self {
+        let classes = format!("{} {}", value.classes(), value.layout.classes());
 
-        match self.tag {
-            LayoutTag::Div => div().class(classes).child(self.children).into_any(),
-            LayoutTag::Main => main().class(classes).child(self.children).into_any(),
-            LayoutTag::Aside => aside().class(classes).child(self.children).into_any(),
-            LayoutTag::Section => section().class(classes).child(self.children).into_any(),
-            LayoutTag::Article => article().class(classes).child(self.children).into_any(),
+        match value.tag {
+            LayoutTag::Div => div().class(classes).children(value.children).into(),
+            LayoutTag::Main => main().class(classes).children(value.children).into(),
+            LayoutTag::Aside => aside().class(classes).children(value.children).into(),
+            LayoutTag::Section => section().class(classes).children(value.children).into(),
+            LayoutTag::Article => article().class(classes).children(value.children).into(),
         }
     }
 }

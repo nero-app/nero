@@ -1,6 +1,6 @@
 #![allow(clippy::new_ret_no_self)]
 
-use leptos::IntoView;
+use sycamore::web::View;
 use typewind::flexbox_grid::FlexDirection;
 
 use super::{Flex, Layout};
@@ -11,7 +11,7 @@ pub struct VStack;
 
 impl VStack {
     /// Creates a vertical stack layout with child elements aligned in a column.
-    pub fn new(children: impl IntoView + 'static) -> Layout<Flex> {
+    pub fn new(children: impl Into<View>) -> Layout<Flex> {
         Flex::new(children).direction(FlexDirection::Col)
     }
 }
@@ -22,7 +22,7 @@ pub struct HStack;
 
 impl HStack {
     /// Creates a horizontal stack layout with child elements aligned in a row.
-    pub fn new(children: impl IntoView + 'static) -> Layout<Flex> {
+    pub fn new(children: impl Into<View>) -> Layout<Flex> {
         Flex::new(children).direction(FlexDirection::Row)
     }
 }

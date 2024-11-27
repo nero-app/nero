@@ -1,9 +1,7 @@
-use leptos::{
-    either::Either,
-    ev::MouseEvent,
-    html::{header, hr, li, ul, ElementChild},
-    prelude::{AnyView, ClassAttribute, IntoAny, OnAttribute},
-    IntoView,
+use sycamore::web::{
+    events::MouseEvent,
+    tags::{header, hr, li, ul},
+    GlobalAttributes, GlobalProps, HtmlGlobalAttributes, View,
 };
 use typewind::{
     backgrounds::BackgroundColor,
@@ -14,7 +12,7 @@ use typewind::{
     ToClasses,
 };
 
-use crate::{layout::VStack, IntoComponent};
+use crate::layout::VStack;
 
 /// List header component that can be used with the `List` component.
 #[derive(ToClasses)]
@@ -23,19 +21,19 @@ pub struct ListHeader {
     top_right_bottom_left: Option<TopRightBottomLeft>,
     position: Option<Position>,
     #[tw(skip)]
-    children: AnyView,
+    children: View,
 }
 
 impl ListHeader {
     /// Creates a new `ListHeader` with the specified children element.
     ///
     /// By default the list header is created with the `TopRightBottomLeft::Top0` and `Position::Sticky` properties.
-    pub fn new(children: impl IntoView + 'static) -> Self {
+    pub fn new(children: impl Into<View>) -> Self {
         Self {
             background_color: None,
             top_right_bottom_left: Some(TopRightBottomLeft::Top0),
             position: Some(Position::Sticky),
-            children: children.into_any(),
+            children: children.into(),
         }
     }
 
@@ -58,11 +56,12 @@ impl ListHeader {
     }
 }
 
-impl IntoComponent for ListHeader {
-    fn into_component(self) -> impl IntoView {
+impl From<ListHeader> for View {
+    fn from(value: ListHeader) -> Self {
         header()
-            .class(format!("{} {}", self.classes(), Width::Full))
-            .child((self.children, hr()))
+            .class(value.classes())
+            .children((value.children, hr()))
+            .into()
     }
 }
 
@@ -75,18 +74,18 @@ pub struct List {
     gap: Option<Gap>,
     overflow: Option<Overflow>,
     #[tw(skip)]
-    children: AnyView,
+    children: View,
 }
 
 impl List {
     /// Creates a new `List` with the specified children element.
-    pub fn new(children: impl IntoView + 'static) -> Self {
+    pub fn new(children: impl Into<View>) -> Self {
         Self {
             header: None,
             direction: None,
             gap: None,
             overflow: None,
-            children: children.into_any(),
+            children: children.into(),
         }
     }
 
@@ -115,18 +114,17 @@ impl List {
     }
 }
 
-impl IntoComponent for List {
-    fn into_component(self) -> impl IntoView {
+impl From<List> for View {
+    fn from(value: List) -> Self {
         let ul = ul()
-            .class(format!("{} {}", Display::Flex, self.classes()))
-            .child(self.children);
+            .class(format!("{} {}", Display::Flex, value.classes()))
+            .children(value.children);
 
-        match self.header {
-            Some(header) => VStack::new((header.into_component(), ul))
-                .gap(self.gap.unwrap_or(Gap::_0))
-                .into_component()
-                .into_any(),
-            None => ul.into_any(),
+        match value.header {
+            Some(header) => VStack::new((header, ul))
+                .gap(value.gap.unwrap_or(Gap::_0))
+                .into(),
+            None => ul.into(),
         }
     }
 }
@@ -141,18 +139,18 @@ pub struct ListItem {
     #[tw(skip)]
     on_click: Option<Box<dyn FnMut(MouseEvent)>>,
     #[tw(skip)]
-    children: AnyView,
+    children: View,
 }
 
 impl ListItem {
     /// Creates a new `ListItem` with the specified children element.
-    pub fn new(children: impl IntoView + 'static) -> Self {
+    pub fn new(children: impl Into<View>) -> Self {
         Self {
             height: None,
             width: None,
             radius: None,
             on_click: None,
-            children: children.into_any(),
+            children: children.into(),
         }
     }
 
@@ -181,17 +179,17 @@ impl ListItem {
     }
 }
 
-impl IntoComponent for ListItem {
-    fn into_component(self) -> impl IntoView {
-        let classes = self.classes();
+impl From<ListItem> for View {
+    fn from(value: ListItem) -> Self {
+        let classes = value.classes();
 
-        match self.on_click {
-            Some(click) => Either::Left(
-                li().class(classes)
-                    .child(self.children)
-                    .on(leptos::ev::click, click),
-            ),
-            None => Either::Right(li().class(classes).child(self.children)),
+        match value.on_click {
+            Some(click) => li()
+                .class(classes)
+                .children(value.children)
+                .on(sycamore::web::events::click, click),
+            None => li().class(classes).children(value.children),
         }
+        .into()
     }
 }

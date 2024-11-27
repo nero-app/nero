@@ -1,4 +1,4 @@
-use leptos::IntoView;
+use sycamore::web::View;
 use typewind::{
     flexbox_grid::{
         GridAutoColumns, GridAutoFlow, GridAutoRows, GridColumnStartEnd, GridRowStartEnd,
@@ -24,7 +24,7 @@ pub struct Grid {
 
 impl Grid {
     /// Creates a new `GridLayout` with the specified children element.
-    pub fn new(children: impl IntoView + 'static) -> Layout<Self> {
+    pub fn new(children: impl Into<View>) -> Layout<Self> {
         Layout::new(
             Self {
                 display: Display::Grid,
@@ -81,7 +81,7 @@ pub struct GridItem {
 
 impl GridItem {
     /// Creates a new `GridItem` with the specified children element.
-    pub fn new(children: impl IntoView + 'static) -> Layout<Self> {
+    pub fn new(children: impl Into<View>) -> Layout<Self> {
         Layout::new(
             Self {
                 column: vec![],

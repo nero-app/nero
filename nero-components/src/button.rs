@@ -1,8 +1,5 @@
-use leptos::{
-    ev::MouseEvent,
-    html::{button, ElementChild},
-    prelude::{AnyView, ClassAttribute, IntoAny, OnAttribute, Signal},
-    IntoView,
+use sycamore::web::{
+    events::MouseEvent, tags::button, GlobalAttributes, GlobalProps, HtmlGlobalAttributes, View,
 };
 use typewind::{
     backgrounds::BackgroundColor,
@@ -12,7 +9,7 @@ use typewind::{
     ToClasses,
 };
 
-use crate::{layout::HStack, Icon, IntoComponent, Text, TextTag};
+use crate::{layout::HStack, Icon, Text, TextTag};
 
 /// Represents a button with configurable properties for background color,
 /// border radius, and on click callback.
@@ -22,18 +19,18 @@ where
     T: FnMut(MouseEvent) + 'static,
 {
     #[tw(skip)]
-    children: AnyView,
+    children: View,
     background_color: Option<BackgroundColor>,
     radius: Option<BorderRadius>,
     #[tw(skip)]
     on_click: T,
 }
 
-impl<T: FnMut(MouseEvent) + 'static> Button<T> {
+impl<T: FnMut(MouseEvent)> Button<T> {
     /// Creates a new `Button` with the specified children and on_click callback.
-    pub fn new(children: impl IntoView + 'static, on_click: T) -> Self {
+    pub fn new(children: impl Into<View>, on_click: T) -> Self {
         Self {
-            children: children.into_any(),
+            children: children.into(),
             background_color: None,
             radius: None,
             on_click,
@@ -49,7 +46,7 @@ impl<T: FnMut(MouseEvent) + 'static> Button<T> {
     /// let button = Button::with_icon(Icon::new(IconType::Play), |_| todo!());
     /// ```
     pub fn with_icon(icon: Icon, on_click: T) -> Self {
-        Self::new(icon.into_component(), on_click)
+        Self::new(icon, on_click)
     }
 
     /// Creates a new `Button` with the specified icon and text.
@@ -63,20 +60,16 @@ impl<T: FnMut(MouseEvent) + 'static> Button<T> {
     ///
     /// let button = Button::with_icon_text(
     ///     Icon::new(IconType::Share),
-    ///     "Share".into(),
+    ///     "Share".to_owned(),
     ///     |_| todo!()
     /// );
     /// ```
-    pub fn with_icon_text(icon: Icon, text: Signal<String>, on_click: T) -> Self {
+    pub fn with_icon_text(icon: Icon, text: String, on_click: T) -> Self {
         Self::new(
-            HStack::new((
-                icon.into_component(),
-                Text::new(text).tag(TextTag::Span).into_component(),
-            ))
-            .gap(Gap::_2)
-            .paddings(vec![Padding::Px3, Padding::Py1_5])
-            .align_items(AlignItems::Center)
-            .into_component(),
+            HStack::new((icon, Text::new(text).tag(TextTag::Span)))
+                .gap(Gap::_2)
+                .paddings(vec![Padding::Px3, Padding::Py1_5])
+                .align_items(AlignItems::Center),
             on_click,
         )
         .radius(BorderRadius::Lg)
@@ -95,11 +88,12 @@ impl<T: FnMut(MouseEvent) + 'static> Button<T> {
     }
 }
 
-impl<T: FnMut(MouseEvent) + 'static> IntoComponent for Button<T> {
-    fn into_component(mut self) -> impl IntoView {
+impl<T: FnMut(MouseEvent)> From<Button<T>> for View {
+    fn from(value: Button<T>) -> Self {
         button()
-            .class(self.classes())
-            .child(self.children)
-            .on(leptos::ev::click, move |ev| (self.on_click)(ev))
+            .class(value.classes())
+            .children(value.children)
+            .on(sycamore::web::events::click, value.on_click)
+            .into()
     }
 }

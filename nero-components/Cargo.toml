@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 typewind = { path = "../typewind" }
-leptos = { version = "0.7.0-rc1", default-features = false }
+sycamore = "0.9.1"
 
 [build-dependencies]
 typewind = { path = "../typewind" }

@@ -1,22 +1,19 @@
-use leptos::{
-    html::{h1, ElementChild},
-    mount::mount_to_body,
-    prelude::ClassAttribute,
-};
-use nero_components::{layout::Layout, IntoComponent};
+use nero_components::{layout::HStack, Text};
+use sycamore::render;
 use typewind::{
-    customization::{Color, ColorTone},
-    typography::TextColor,
+    customization::{Color, ColorTone}, typography::{FontSize, TextColor}
 };
 
 fn main() {
     console_error_panic_hook::set_once();
 
-    let color = TextColor(Color::Red(ColorTone::_500)).to_string();
-    let stack = Layout::h_stack((
-        h1().class(color.clone()).child("Hello,"),
-        h1().class(color).child("World!"),
+    let color = TextColor(Color::Red(ColorTone::_500));
+    let stack = HStack::new((
+        Text::new("Hello,".to_owned())
+            .color(color.clone())
+            .font_size(FontSize::_3xl),
+        Text::new("World!".to_owned()).color(color),
     ));
 
-    mount_to_body(|| stack.into_component())
+    render(|| stack.into())
 }

@@ -1,7 +1,6 @@
-use leptos::{
-    html::{h1, h2, h3, p, span, ElementChild},
-    prelude::{ClassAttribute, IntoAny, Signal},
-    IntoView,
+use sycamore::web::{
+    tags::{h1, h2, h3, p, span},
+    GlobalProps, HtmlGlobalAttributes, View,
 };
 use typewind::{
     typography::{
@@ -9,8 +8,6 @@ use typewind::{
     },
     ToClasses,
 };
-
-use crate::IntoComponent;
 
 /// Possible HTML tags that can be used for texts.
 pub enum TextTag {
@@ -31,7 +28,7 @@ pub enum TextTag {
 #[derive(ToClasses)]
 pub struct Text {
     #[tw(skip)]
-    text: Signal<String>,
+    text: String,
     #[tw(skip)]
     tag: TextTag,
     font_size: Option<FontSize>,
@@ -47,32 +44,7 @@ impl Text {
     /// Creates a new `Text` with the specified [`Signal<String>`] text.
     ///
     /// By default the text is created with the `P` tag.
-    ///
-    /// # Example
-    /// ```
-    /// use leptos::{
-    ///     html::{div, ElementChild},
-    ///     prelude::{signal, Get, Signal, Update},
-    ///     IntoView
-    /// };
-    /// use nero_components::{IntoComponent, Text, TextTag, Button};
-    ///
-    /// fn counter() -> impl IntoView {
-    ///     let (value, set_value) = signal(0);
-    ///     
-    ///     div().child((
-    ///         Text::new(Signal::derive(move || value.get().to_string()))
-    ///             .tag(TextTag::H1)
-    ///             .into_component(),
-    ///         Button::new(
-    ///             Text::new("Click me!".into()).into_component(),
-    ///             move |_| set_value.update(|value| *value += 1),
-    ///         )
-    ///         .into_component()
-    ///     ))
-    /// }    
-    /// ```
-    pub fn new(text: Signal<String>) -> Self {
+    pub fn new(text: String) -> Self {
         Self {
             text,
             tag: TextTag::P,
@@ -95,9 +67,9 @@ impl Text {
     /// ```
     /// use nero_components::Text;
     ///
-    /// let text = Text::large_title("Large title!".into());
+    /// let text = Text::large_title("Large title!".to_owned());
     /// ```
-    pub fn large_title(text: Signal<String>) -> Self {
+    pub fn large_title(text: String) -> Self {
         Self::new(text)
             .tag(TextTag::H1)
             .overflow(TextOverflow::Truncate)
@@ -114,9 +86,9 @@ impl Text {
     /// ```
     /// use nero_components::Text;
     ///
-    /// let text = Text::medium_title("Medium title!".into());
+    /// let text = Text::medium_title("Medium title!".to_owned());
     /// ```
-    pub fn medium_title(text: Signal<String>) -> Self {
+    pub fn medium_title(text: String) -> Self {
         Self::new(text)
             .tag(TextTag::H2)
             .overflow(TextOverflow::Truncate)
@@ -173,15 +145,15 @@ impl Text {
     }
 }
 
-impl IntoComponent for Text {
-    fn into_component(self) -> impl IntoView {
-        let classes = self.classes();
-        match self.tag {
-            TextTag::H1 => h1().class(classes).child(self.text).into_any(),
-            TextTag::H2 => h2().class(classes).child(self.text).into_any(),
-            TextTag::H3 => h3().class(classes).child(self.text).into_any(),
-            TextTag::P => p().class(classes).child(self.text).into_any(),
-            TextTag::Span => span().class(classes).child(self.text).into_any(),
+impl From<Text> for View {
+    fn from(value: Text) -> Self {
+        let classes = value.classes();
+        match value.tag {
+            TextTag::H1 => h1().class(classes).children(value.text).into(),
+            TextTag::H2 => h2().class(classes).children(value.text).into(),
+            TextTag::H3 => h3().class(classes).children(value.text).into(),
+            TextTag::P => p().class(classes).children(value.text).into(),
+            TextTag::Span => span().class(classes).children(value.text).into(),
         }
     }
 }

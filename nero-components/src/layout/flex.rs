@@ -1,4 +1,4 @@
-use leptos::IntoView;
+use sycamore::web::View;
 use typewind::{
     flexbox_grid::{
         AlignItems, Flex as FlexType, FlexBasis, FlexDirection, FlexGrow, FlexShrink, FlexWrap,
@@ -28,7 +28,7 @@ pub struct Flex {
 
 impl Flex {
     /// Creates a new `FlexLayout` with the specified children.
-    pub fn new(children: impl IntoView + 'static) -> Layout<Self> {
+    pub fn new(children: impl Into<View>) -> Layout<Self> {
         Layout::new(
             Self {
                 display: Display::Flex,
