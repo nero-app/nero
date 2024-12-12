@@ -1,3 +1,3 @@
 [workspace]
 resolver = "2"
-members = ["nero-app", "nero-ui", "typewind", "typewind-macros"]
+members = ["nero-app", "nero-ui"]
