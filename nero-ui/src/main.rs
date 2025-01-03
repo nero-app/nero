@@ -1,19 +1,12 @@
-mod macros;
-
 use sycamore::{
     render,
-    web::{tags::h1, GlobalProps, HtmlGlobalAttributes},
+    web::{tags::h1, GlobalProps},
 };
-use typewind::typography::{FontFamily, FontSize, TextColor};
 
 fn main() {
     console_error_panic_hook::set_once();
 
-    let title = h1().children("Hello, World!").class(format2!(
-        TextColor::Red500,
-        FontFamily::Mono,
-        FontSize::_3xl,
-    ));
+    let title = h1().children("Hello, World!");
 
     render(|| title.into())
 }
