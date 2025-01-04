@@ -1,3 +1,8 @@
+mod components;
+mod macros;
+mod pages;
+mod utils;
+
 use sycamore::{
     render,
     web::{tags::h1, GlobalProps},
