@@ -1,3 +1,6 @@
+mod series;
+pub use series::*;
+
 use rustwind::{
     flexbox_grid::{Flex, FlexDirection, Gap},
     layout::{Display, Overflow, Position},
