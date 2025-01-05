@@ -3,11 +3,11 @@ mod macros;
 mod pages;
 mod utils;
 
-use pages::{BaseLayout, SeriesPage};
+use pages::{BaseLayout, WatchPage};
 use sycamore::render;
 
 fn main() {
     console_error_panic_hook::set_once();
 
-    render(|| BaseLayout::new(SeriesPage).into())
+    render(|| BaseLayout::new(WatchPage).into())
 }

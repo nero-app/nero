@@ -7,7 +7,7 @@ use rustwind::{
     typography::{FontSize, FontWeight},
 };
 use sycamore::web::{
-    tags::{div, h2, header, hr, section, ul},
+    tags::{div, h2, header, hr, p, section, ul},
     GlobalProps, HtmlGlobalAttributes, View,
 };
 
@@ -92,13 +92,18 @@ impl List {
 
 impl From<List> for View {
     fn from(list: List) -> Self {
-        section()
-            .class(tw!(Display::Flex, FlexDirection::Col))
-            .when_some(list.header, |this, header| this.children(header))
-            .map(|this| match list.children.as_web_sys().is_empty() {
-                true => this.children(list.empty_message),
-                false => this.children(ul().children(list.children)),
-            })
-            .into()
+        let content: View = match list.children.as_web_sys().is_empty() {
+            true => p().children(list.empty_message).into(),
+            false => ul().children(list.children).into(),
+        };
+
+        match list.header {
+            Some(list_header) => section()
+                .class(tw!(Display::Flex, FlexDirection::Col))
+                .children(list_header)
+                .children(content)
+                .into(),
+            None => content,
+        }
     }
 }
