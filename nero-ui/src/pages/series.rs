@@ -15,21 +15,20 @@ use sycamore::{
 };
 
 use crate::{
-    components::{Button, Icon, IconType, List, ListHeader},
+    components::{Button, Icon, IconType, IntoCard, List, ListHeader},
     tw,
+    types::{Episode, Series},
+    utils::ViewBuilder,
 };
 
 use super::SplitLayout;
-
-// Sample data
-const SERIES_TITLE: &str = "SPY x FAMILY";
-const SERIES_POSTER_URL: &str = "https://m.media-amazon.com/images/M/MV5BMDlmZGJkYTUtNDcwNi00YWMzLTkyNmMtOWQ3MzVhOTU5YWY0XkEyXkFqcGc@._V1_.jpg";
-const SERIES_SYNOPSIS: &str =  "World peace is at stake and secret agent Twilight must undergo his most difficult mission yet—pretend to be a family man. Posing as a loving husband and father, he’ll infiltrate an elite school to get close to a high-profile politician. He has the perfect cover, except his wife’s a deadly assassin and neither knows each other’s identity. But someone does, his adopted daughter who’s a telepath!";
 
 pub struct SeriesPage;
 
 impl From<SeriesPage> for View {
     fn from(_: SeriesPage) -> Self {
+        let series = Series::default();
+
         SplitLayout::new_default(
             img()
                 .class(tw!(
@@ -38,8 +37,8 @@ impl From<SeriesPage> for View {
                     BorderRadius::Xl,
                     ObjectFit::Cover
                 ))
-                .src(SERIES_POSTER_URL)
-                .alt(SERIES_TITLE),
+                .src(series.poster_url)
+                .alt(series.title.clone()),
             (
                 header()
                     .class(tw!(Display::Flex, FlexDirection::Col, Gap::_4))
@@ -49,7 +48,7 @@ impl From<SeriesPage> for View {
                             FontWeight::Bold,
                             TextOverflow::Truncate
                         ))
-                        .children(SERIES_TITLE),
+                        .children(series.title),
                     )
                     .children(
                         div()
@@ -71,10 +70,12 @@ impl From<SeriesPage> for View {
                                 .color(BackgroundColor::Red300),
                             ),
                     )
-                    .children(p().class(tw!(LineClamp::_5)).children(SERIES_SYNOPSIS)),
+                    .when_some(series.synopsis, |this, synopsis| {
+                        this.children(p().class(tw!(LineClamp::_5)).children(synopsis))
+                    }),
                 List::new(
-                    (0..100)
-                        .map(|i| li().children(i).into())
+                    (1..13)
+                        .map(|_| li().children(Episode::default().into_card()).into())
                         .collect::<Vec<_>>(),
                 )
                 .header(

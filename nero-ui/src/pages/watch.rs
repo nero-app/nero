@@ -1,7 +1,6 @@
 use rustwind::{
     flexbox_grid::{FlexDirection, Gap},
-    layout::AspectRatio,
-    layout::Display,
+    layout::{AspectRatio, Display},
     sizing::Width,
     spacing::SpaceBetween,
     typography::{FontSize, FontWeight, LineClamp},
@@ -14,26 +13,27 @@ use sycamore::{
     },
 };
 
-use crate::{components::List, tw, utils::ViewBuilder};
+use crate::{
+    components::{IntoSmallCard, List},
+    tw,
+    types::{Episode, Video},
+    utils::ViewBuilder,
+};
 
 use super::SplitLayout;
-
-// Sample data
-const VIDEO_URL: &str =
-    "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4";
-const VIDEO_TITLE: &str = "Big Buck Bunny";
-const VIDEO_SYNOPSIS: Option<&'static str> = Some("Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself. When one sunny day three rodents rudely harass him, something snaps... and the rabbit ain't no bunny anymore! In the typical cartoon tradition he prepares the nasty rodents a comical revenge.\n\nLicensed under the Creative Commons Attribution license\nhttp://www.bigbuckbunny.org");
 
 pub struct WatchPage;
 
 impl From<WatchPage> for View {
     fn from(_: WatchPage) -> Self {
+        let sample_video = Video::default();
+
         SplitLayout::new_watch(
             (
                 video()
                     .class(tw!(Width::Full, AspectRatio::Video))
                     .controls(true)
-                    .src(VIDEO_URL),
+                    .src(sample_video.url),
                 section()
                     .class(tw!(Display::Flex, FlexDirection::Col, Gap::_2))
                     .children(
@@ -43,15 +43,15 @@ impl From<WatchPage> for View {
                             FontSize::_2xl,
                             FontWeight::Semibold
                         ))
-                        .children(VIDEO_TITLE),
+                        .children(Video::VIDEO_TITLE),
                     )
-                    .when_some(VIDEO_SYNOPSIS, |this, synopsis| {
+                    .when_some(Video::VIDEO_SYNOPSIS, |this, synopsis| {
                         this.children(p().class(tw!(LineClamp::_3)).children(synopsis))
                     }),
             ),
             List::new(
-                (0..100)
-                    .map(|i| li().children(i).into())
+                (1..13)
+                    .map(|_| li().children(Episode::default().into_small_card()).into())
                     .collect::<Vec<_>>(),
             ),
         )

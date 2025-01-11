@@ -1,6 +1,7 @@
 mod components;
 mod macros;
 mod pages;
+mod types;
 mod utils;
 
 use pages::{BaseLayout, WatchPage};
