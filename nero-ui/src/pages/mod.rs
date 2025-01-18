@@ -1,9 +1,12 @@
+mod home;
 mod series;
 mod watch;
 
+pub use home::*;
 // Marked as unused until router is created
 #[allow(unused_imports)]
 pub use series::*;
+#[allow(unused_imports)]
 pub use watch::*;
 
 use rustwind::{
