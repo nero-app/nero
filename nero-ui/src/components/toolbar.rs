@@ -29,7 +29,7 @@ impl From<Toolbar> for View {
             .children(p().children("Nero app v1.0"))
             .children(
                 ul().class(tw!(Display::Flex, Gap::_4))
-                    .children(li().children(a().href("#").children("Home")))
+                    .children(li().children(a().href("/").children("Home")))
                     .children(li().children(a().href("#").children("Extensions")))
                     .children(li().children(a().href("#").children("Settings"))),
             )

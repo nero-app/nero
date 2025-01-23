@@ -6,6 +6,7 @@ pub use home::*;
 // Marked as unused until router is created
 #[allow(unused_imports)]
 pub use series::*;
+use sycamore_router::{HistoryIntegration, Route, Router, RouterProps};
 #[allow(unused_imports)]
 pub use watch::*;
 
@@ -22,7 +23,35 @@ use sycamore::web::{
 
 use crate::{components::Toolbar, tw};
 
-pub struct BaseLayout {
+#[derive(Clone, Route)]
+enum AppRoutes {
+    #[to("/")]
+    Home,
+    #[to("/series")]
+    Series,
+    #[to("/watch")]
+    Watch,
+    #[not_found]
+    NotFound,
+}
+
+pub struct App;
+
+impl From<App> for View {
+    fn from(_: App) -> Self {
+        Router(RouterProps::new(HistoryIntegration::new(), |route| {
+            BaseLayout::new(move || match route.get_clone() {
+                AppRoutes::Home => Into::<View>::into(HomePage),
+                AppRoutes::Series => SeriesPage.into(),
+                AppRoutes::Watch => WatchPage.into(),
+                AppRoutes::NotFound => todo!(),
+            })
+            .into()
+        }))
+    }
+}
+
+struct BaseLayout {
     children: View,
 }
 

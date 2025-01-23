@@ -15,6 +15,7 @@ use sycamore::{
         GlobalProps, HtmlGlobalAttributes, View,
     },
 };
+use sycamore_router::navigate;
 
 use crate::{
     components::{Button, Icon, IconType},
@@ -84,7 +85,9 @@ impl From<HomePage> for View {
                         Button::icon_label(
                             Icon::new(IconType::Search),
                             "Search series",
-                            |_| todo!(),
+                            // This is to be able to navigate to the series screen for the moment.
+                            // TODO: Remove when the search page is created.
+                            |_| navigate("/series"),
                         )
                         .color(BackgroundColor::Orange200),
                     ),

@@ -14,6 +14,7 @@ use sycamore::{
         GlobalProps, HtmlGlobalAttributes, View,
     },
 };
+use sycamore_router::navigate;
 
 use crate::{
     components::{Button, Icon, IconType, IntoCard, List, ListHeader},
@@ -73,7 +74,7 @@ impl From<SeriesPage> for View {
                                         Button::icon_label(
                                             Icon::new(IconType::Play),
                                             "Watch now",
-                                            |_| todo!(),
+                                            |_| navigate("/watch"),
                                         )
                                         .color(BackgroundColor::Red300),
                                     )

@@ -13,9 +13,9 @@ use rustwind::{
     typography::{FontSize, FontWeight, LineClamp, TextColor, TextOverflow},
 };
 use sycamore::{
-    prelude::HtmlImgAttributes,
+    prelude::{HtmlAAttributes, HtmlImgAttributes},
     web::{
-        tags::{div, h3, img, p, span, HtmlDiv},
+        tags::{a, div, h3, img, p, span, HtmlA},
         GlobalProps, HtmlGlobalAttributes, View,
     },
 };
@@ -42,9 +42,9 @@ const BASE_EPISODE_CARD_CLASSES: &str = tw!(
     active!(Scale::_95)
 );
 
-impl IntoSmallCard<HtmlDiv> for Episode {
-    fn into_small_card(self) -> HtmlDiv {
-        div()
+impl IntoSmallCard<HtmlA> for Episode {
+    fn into_small_card(self) -> HtmlA {
+        a().href("/watch")
             .class(BASE_EPISODE_CARD_CLASSES)
             .children(
                 img()
@@ -84,11 +84,11 @@ impl IntoSmallCard<HtmlDiv> for Episode {
     }
 }
 
-impl IntoCard<HtmlDiv> for Episode {
-    fn into_card(self) -> HtmlDiv {
+impl IntoCard<HtmlA> for Episode {
+    fn into_card(self) -> HtmlA {
         let title = self.title.unwrap_or(format!("Episode {}", self.number));
 
-        div()
+        a().href("/watch")
             .class(BASE_EPISODE_CARD_CLASSES)
             .children(
                 span()
