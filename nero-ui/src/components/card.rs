@@ -15,19 +15,19 @@ use rustwind::{
 use sycamore::{
     prelude::{HtmlAAttributes, HtmlImgAttributes},
     web::{
-        tags::{a, div, h3, img, p, span, HtmlA},
+        tags::{a, div, h3, img, p, span},
         GlobalProps, HtmlGlobalAttributes, View,
     },
 };
 
 use crate::{tw, types::Episode, utils::ViewBuilder};
 
-pub trait IntoSmallCard<T: Into<View>> {
-    fn into_small_card(self) -> T;
+pub trait IntoSmallCard {
+    fn into_small_card(self) -> View;
 }
 
-pub trait IntoCard<T: Into<View>> {
-    fn into_card(self) -> T;
+pub trait IntoCard {
+    fn into_card(self) -> View;
 }
 
 const BASE_EPISODE_CARD_CLASSES: &str = tw!(
@@ -42,8 +42,8 @@ const BASE_EPISODE_CARD_CLASSES: &str = tw!(
     active!(Scale::Number("95"))
 );
 
-impl IntoSmallCard<HtmlA> for Episode {
-    fn into_small_card(self) -> HtmlA {
+impl IntoSmallCard for Episode {
+    fn into_small_card(self) -> View {
         a().href("/watch")
             .class(BASE_EPISODE_CARD_CLASSES)
             .children(
@@ -81,11 +81,12 @@ impl IntoSmallCard<HtmlA> for Episode {
                         )
                     }),
             )
+            .into()
     }
 }
 
-impl IntoCard<HtmlA> for Episode {
-    fn into_card(self) -> HtmlA {
+impl IntoCard for Episode {
+    fn into_card(self) -> View {
         let title = self.title.unwrap_or(format!("Episode {}", self.number));
 
         a().href("/watch")
@@ -127,5 +128,6 @@ impl IntoCard<HtmlA> for Episode {
                         )
                     }),
             )
+            .into()
     }
 }
