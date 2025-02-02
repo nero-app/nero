@@ -10,7 +10,7 @@ use rustwind::{
     spacing::Padding,
     transforms::Scale,
     transitions_animation::TransitionDuration,
-    typography::{FontSize, FontWeight, LineClamp, TextColor, TextOverflow},
+    typography::{Color, FontSize, FontWeight, LineClamp, TextOverflow},
 };
 use sycamore::{
     prelude::{HtmlAAttributes, HtmlImgAttributes},
@@ -33,13 +33,13 @@ pub trait IntoCard<T: Into<View>> {
 const BASE_EPISODE_CARD_CLASSES: &str = tw!(
     Display::Flex,
     AlignItems::Center,
-    Gap::_4,
-    Padding::P1,
+    Gap::Number("4"),
+    Padding::Number("1"),
     Cursor::Pointer,
     BorderRadius::Md,
-    TransitionDuration::_300,
+    TransitionDuration::Number("300"),
     hover!(BackgroundColor::Gray100),
-    active!(Scale::_95)
+    active!(Scale::Number("95"))
 );
 
 impl IntoSmallCard<HtmlA> for Episode {
@@ -49,7 +49,7 @@ impl IntoSmallCard<HtmlA> for Episode {
             .children(
                 img()
                     .class(tw!(
-                        Width::_1over2,
+                        Width::WFraction(1, 2),
                         BorderRadius::Lg,
                         AspectRatio::Video,
                         ObjectFit::Cover
@@ -65,10 +65,10 @@ impl IntoSmallCard<HtmlA> for Episode {
             .children(
                 div()
                     .class(tw!(
-                        Width::_1over2,
+                        Width::WFraction(1, 2),
                         Display::Flex,
                         FlexDirection::Col,
-                        Gap::_1
+                        Gap::Number("1")
                     ))
                     .children(
                         h3().class(tw!(TextOverflow::Truncate, FontWeight::Semibold))
@@ -76,7 +76,7 @@ impl IntoSmallCard<HtmlA> for Episode {
                     )
                     .when_some(self.title, |this, title| {
                         this.children(
-                            p().class(tw!(LineClamp::_2, TextColor::Gray500, FontSize::Sm))
+                            p().class(tw!(LineClamp::Number("2"), Color::Gray500, FontSize::Sm))
                                 .children(title),
                         )
                     }),
@@ -93,7 +93,7 @@ impl IntoCard<HtmlA> for Episode {
             .children(
                 span()
                     .class(tw!(
-                        Width::_1over12,
+                        Width::WFraction(1, 12),
                         Display::Flex,
                         JustifyContent::Center,
                         FontWeight::Semibold
@@ -103,7 +103,7 @@ impl IntoCard<HtmlA> for Episode {
             .children(
                 img()
                     .class(tw!(
-                        Width::_4over12,
+                        Width::WFraction(4, 12),
                         BorderRadius::Lg,
                         AspectRatio::Video,
                         ObjectFit::Cover
@@ -114,11 +114,15 @@ impl IntoCard<HtmlA> for Episode {
             )
             .children(
                 div()
-                    .class(tw!(Display::Flex, FlexDirection::Col, Width::_7over12))
+                    .class(tw!(
+                        Display::Flex,
+                        FlexDirection::Col,
+                        Width::WFraction(7, 12)
+                    ))
                     .children(h3().class(tw!(FontWeight::Semibold)).children(title))
                     .when_some(self.description, |this, description| {
                         this.children(
-                            p().class(tw!(TextColor::Gray500, FontSize::Sm, LineClamp::_3))
+                            p().class(tw!(Color::Gray500, FontSize::Sm, LineClamp::Number("3")))
                                 .children(description),
                         )
                     }),

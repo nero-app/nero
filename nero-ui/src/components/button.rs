@@ -63,12 +63,12 @@ where
     pub fn icon_label(icon: Icon, label: &'static str, on_click: T) -> Self {
         Self::new(
             div()
-                .class(tw!(Display::Flex, Gap::_2, AlignItems::Center))
+                .class(tw!(Display::Flex, Gap::Number("2"), AlignItems::Center))
                 .children(icon)
                 .children(span().children(label)),
             on_click,
         )
-        .box_shadow(BoxShadow::Lg)
+        .box_shadow(BoxShadow::ShadowLg)
     }
 }
 
@@ -78,17 +78,14 @@ impl<T: FnMut(MouseEvent)> From<Button<T>> for View {
             .class(format!(
                 "{} {} {}",
                 tw!(
-                    Padding::Px3,
-                    Padding::Py1_5,
+                    Padding::XNumber("3"),
+                    Padding::YNumber("1.5"),
                     BorderRadius::Lg,
-                    TransitionDuration::_300,
-                    active!(Scale::_95)
+                    TransitionDuration::Number("300"),
+                    active!(Scale::Number("95"))
                 ),
-                button
-                    .color
-                    .unwrap_or(BackgroundColor::Transparent)
-                    .as_class(),
-                button.box_shadow.unwrap_or(BoxShadow::None).as_class()
+                button.color.unwrap_or(BackgroundColor::Transparent),
+                button.box_shadow.unwrap_or(BoxShadow::ShadowNone)
             ))
             .children(button.children)
             .on(click, button.on_click)

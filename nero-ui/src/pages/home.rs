@@ -32,16 +32,20 @@ impl From<HomePage> for View {
         let sample_series = Series::default();
 
         div()
-            .class(tw!(Display::Flex, Height::Full))
+            .class(tw!(Display::Flex, Height::HFull))
             .children(
                 figure()
-                    .class(tw!(Width::_2over5, Padding::Pb8, Overflow::Hidden))
+                    .class(tw!(
+                        Width::WFraction(2, 5),
+                        Padding::BNumber("8"),
+                        Overflow::Hidden
+                    ))
                     // TODO: Dynamic series poster
                     .children(
                         img()
                             .class(tw!(
-                                Width::Full,
-                                Height::Full,
+                                Width::WFull,
+                                Height::HFull,
                                 ObjectFit::Cover,
                                 BorderRadius::Xl
                             ))
@@ -54,12 +58,15 @@ impl From<HomePage> for View {
                 // TODO: Progress indicators
                 div()
                     .class(tw!(
-                        Width::_20,
+                        Width::WNumber("20"),
                         Display::Flex,
                         AlignItems::Center,
-                        Padding::Pb8
+                        Padding::BNumber("8")
                     ))
-                    .children(p().class(tw!(Rotate::_90)).children("Indicators...")),
+                    .children(
+                        p().class(tw!(Rotate::Number("90")))
+                            .children("Indicators..."),
+                    ),
             )
             .children(
                 // TODO: Series categories if the filter search is available in the extension
@@ -68,17 +75,21 @@ impl From<HomePage> for View {
                     .class(tw!(
                         Display::Flex,
                         FlexDirection::Col,
-                        Width::_3over5,
+                        Width::WFraction(3, 5),
                         Overflow::Auto,
                         JustifyContent::Center,
                         AlignItems::Center,
-                        Padding::Pb8
+                        Padding::BNumber("8")
                     ))
-                    .children(img().class(tw!(Width::_64)).src(SHOCKED_CAT_IMG_PATH))
                     .children(
-                        p().class(tw!(TextAlign::Center, Padding::Pb2))
+                        img()
+                            .class(tw!(Width::WNumber("64")))
+                            .src(SHOCKED_CAT_IMG_PATH),
+                    )
+                    .children(
+                        p().class(tw!(TextAlign::Center, Padding::BNumber("2")))
                             .children("Whoops...")
-                            .children(br)
+                            .children(br())
                             .children("Apparently there's nothing around here."),
                     )
                     .children(

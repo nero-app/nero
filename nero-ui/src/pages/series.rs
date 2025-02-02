@@ -30,15 +30,19 @@ impl From<SeriesPage> for View {
         let sample_series = Series::default();
 
         div()
-            .class(tw!(Display::Flex, Height::Full, Gap::_20))
+            .class(tw!(Display::Flex, Height::HFull, Gap::Number("20")))
             .children(
                 figure()
-                    .class(tw!(Width::_2over5, Padding::Pb8, Overflow::Hidden))
+                    .class(tw!(
+                        Width::WFraction(2, 5),
+                        Padding::BNumber("8"),
+                        Overflow::Hidden
+                    ))
                     .children(
                         img()
                             .class(tw!(
-                                Width::Full,
-                                Height::Full,
+                                Width::WFull,
+                                Height::HFull,
                                 ObjectFit::Cover,
                                 BorderRadius::Xl
                             ))
@@ -52,16 +56,16 @@ impl From<SeriesPage> for View {
                     .class(tw!(
                         Display::Flex,
                         FlexDirection::Col,
-                        Width::_3over5,
+                        Width::WFraction(3, 5),
                         Overflow::Auto,
-                        Gap::_4
+                        Gap::Number("4")
                     ))
                     .children(
                         header()
-                            .class(tw!(Display::Flex, FlexDirection::Col, Gap::_4))
+                            .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("4")))
                             .children(
                                 h1().class(tw!(
-                                    FontSize::_3xl,
+                                    FontSize::_3Xl,
                                     FontWeight::Bold,
                                     TextOverflow::Truncate
                                 ))
@@ -69,7 +73,7 @@ impl From<SeriesPage> for View {
                             )
                             .children(
                                 div()
-                                    .class(tw!(Display::Flex, Gap::_4))
+                                    .class(tw!(Display::Flex, Gap::Number("4")))
                                     .children(
                                         Button::icon_label(
                                             Icon::new(IconType::Play),
@@ -88,7 +92,9 @@ impl From<SeriesPage> for View {
                                     ),
                             )
                             .when_some(sample_series.synopsis, |this, synopsis| {
-                                this.children(p().class(tw!(LineClamp::_5)).children(synopsis))
+                                this.children(
+                                    p().class(tw!(LineClamp::Number("5"))).children(synopsis),
+                                )
                             }),
                     )
                     .children(

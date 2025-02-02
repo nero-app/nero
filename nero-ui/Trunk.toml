@@ -4,6 +4,9 @@ target = "./index.html"
 [watch]
 ignore = ["./assets"]
 
+[tools]
+tailwindcss = "4.0.3"
+
 # Workaround to wait until the build.rs finishes to generate the necessary tailwind classes
 # https://github.com/trunk-rs/trunk/issues/701
 [[hooks]]

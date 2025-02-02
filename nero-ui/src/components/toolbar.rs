@@ -6,7 +6,7 @@ use rustwind::{
     sizing::Width,
     spacing::Padding,
     svg::Fill,
-    typography::TextColor,
+    typography::Color,
 };
 use sycamore::{
     prelude::{HtmlAAttributes, HtmlInputAttributes},
@@ -25,10 +25,14 @@ pub struct Toolbar;
 impl From<Toolbar> for View {
     fn from(_: Toolbar) -> Self {
         nav()
-            .class(tw!(Width::Full, Display::Grid, GridTemplateColumns::_3))
+            .class(tw!(
+                Width::WFull,
+                Display::Grid,
+                GridTemplateColumns::Number("3")
+            ))
             .children(p().children("Nero app v1.0"))
             .children(
-                ul().class(tw!(Display::Flex, Gap::_4))
+                ul().class(tw!(Display::Flex, Gap::Number("4")))
                     .children(li().children(a().href("/").children("Home")))
                     .children(li().children(a().href("#").children("Extensions")))
                     .children(li().children(a().href("#").children("Settings"))),
@@ -38,11 +42,11 @@ impl From<Toolbar> for View {
                     .class(tw!(
                         Display::Flex,
                         AlignItems::Center,
-                        Gap::_2,
+                        Gap::Number("2"),
                         BorderRadius::Lg,
                         BackgroundColor::Slate100,
-                        Padding::Px3,
-                        Padding::Py1
+                        Padding::XNumber("3"),
+                        Padding::YNumber("1")
                     ))
                     .children(Icon::new(IconType::Search).fill(Fill::Slate500))
                     .children(
@@ -50,7 +54,7 @@ impl From<Toolbar> for View {
                             .class(tw!(
                                 BackgroundColor::Slate100,
                                 OutlineStyle::None,
-                                TextColor::Slate400
+                                Color::Slate400
                             ))
                             .r#type("search")
                             .placeholder("Search"),

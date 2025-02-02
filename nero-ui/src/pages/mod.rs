@@ -70,16 +70,16 @@ impl From<BaseLayout> for View {
                 Position::Fixed,
                 Display::Flex,
                 FlexDirection::Col,
-                Height::Screen,
-                Width::Full,
-                Gap::_4,
-                Padding::Px12,
-                Padding::Pt4
+                Height::HScreen,
+                Width::WFull,
+                Gap::Number("4"),
+                Padding::XNumber("12"),
+                Padding::TNumber("4")
             ))
             .children(Toolbar)
             .children(
                 main()
-                    .class(tw!(Height::Full, Flex::_1, Overflow::Auto))
+                    .class(tw!(Height::HFull, Flex::Number("1"), Overflow::Auto))
                     .children(layout.children),
             )
             .into()

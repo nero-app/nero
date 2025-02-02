@@ -1,5 +1,6 @@
 use rustwind::{
     backgrounds::BackgroundColor,
+    borders::BorderColor,
     flexbox_grid::{AlignItems, FlexDirection, JustifyContent},
     layout::{Display, Position, TopRightBottomLeft},
     sizing::Width,
@@ -45,26 +46,26 @@ impl From<ListHeader> for View {
             .when(list_header.sticky, |this| {
                 this.class(tw!(
                     Position::Sticky,
-                    TopRightBottomLeft::Top0,
+                    TopRightBottomLeft::TopNumber("0"),
                     BackgroundColor::White
                 ))
             })
             .children(
                 div()
                     .class(tw!(
-                        Width::Full,
+                        Width::WFull,
                         Display::Flex,
                         JustifyContent::Between,
                         AlignItems::Center,
-                        Padding::P0_5
+                        Padding::Number("0.5")
                     ))
                     .children(
-                        h2().class(tw!(FontSize::_2xl, FontWeight::Semibold))
+                        h2().class(tw!(FontSize::_2Xl, FontWeight::Semibold))
                             .children(list_header.label),
                     )
                     .when_some(list_header.end_slot, |this, slot| this.children(slot)),
             )
-            .children(hr())
+            .children(hr().class(tw!(BorderColor::BorderGray300)))
             .into()
     }
 }

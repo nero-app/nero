@@ -90,7 +90,7 @@ impl From<Icon> for View {
             })
             .width(icon.widht)
             .height(icon.height)
-            .class(icon.fill.unwrap_or(Fill::Black).as_class())
+            .when_some(icon.fill, |this, fill| this.class(fill.to_string()))
             .into()
     }
 }
