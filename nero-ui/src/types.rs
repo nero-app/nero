@@ -1,5 +1,31 @@
 #![allow(dead_code)]
 
+// TODO: instead of type aliases, use structs. (.wit file must be updated)
+// name - id
+pub type Filter = (String, String);
+// id - [id]
+pub type SearchFilter = (String, Vec<String>);
+
+pub struct SeriesFilter {
+    pub id: String,
+    pub display_name: String,
+    pub filters: Vec<Filter>,
+}
+
+impl Default for SeriesFilter {
+    fn default() -> Self {
+        SeriesFilter {
+            id: "genre".to_owned(),
+            display_name: "Genre".to_owned(),
+            filters: vec![
+                ("Slice of life".to_owned(), "slice_of_life".to_owned()),
+                ("Romance".to_owned(), "romance".to_owned()),
+                ("Comedy".to_owned(), "comedy".to_owned()),
+            ],
+        }
+    }
+}
+
 pub struct Series {
     pub id: String,
     pub title: String,

@@ -1,14 +1,14 @@
 mod home;
+mod search;
 mod series;
 mod watch;
 
 pub use home::*;
-// Marked as unused until router is created
-#[allow(unused_imports)]
+pub use search::*;
 pub use series::*;
-use sycamore_router::{HistoryIntegration, Route, Router, RouterProps};
-#[allow(unused_imports)]
 pub use watch::*;
+
+use sycamore_router::{use_search_query, HistoryIntegration, Route, Router, RouterProps};
 
 use rustwind::{
     flexbox_grid::{Flex, FlexDirection, Gap},
@@ -27,6 +27,8 @@ use crate::{components::Toolbar, tw};
 enum AppRoutes {
     #[to("/")]
     Home,
+    #[to("/search")]
+    Search,
     #[to("/series")]
     Series,
     #[to("/watch")]
@@ -42,6 +44,10 @@ impl From<App> for View {
         Router(RouterProps::new(HistoryIntegration::new(), |route| {
             BaseLayout::new(move || match route.get_clone() {
                 AppRoutes::Home => Into::<View>::into(HomePage),
+                AppRoutes::Search => {
+                    let q = use_search_query("q");
+                    SearchPage::new(q.get_clone().unwrap_or_default()).into()
+                }
                 AppRoutes::Series => SeriesPage.into(),
                 AppRoutes::Watch => WatchPage.into(),
                 AppRoutes::NotFound => todo!(),
