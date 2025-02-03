@@ -13,7 +13,7 @@ use sycamore::{
 };
 
 use crate::{
-    components::{IntoSmallCard, List},
+    components::{IntoSmallCard, List, ListHeader},
     tw,
     types::{Episode, Video},
     utils::ViewBuilder,
@@ -67,11 +67,14 @@ impl From<WatchPage> for View {
             .children(
                 aside()
                     .class(tw!(Width::WFraction(2, 6), Overflow::YAuto))
-                    .children(List::new(
-                        (1..13)
-                            .map(|_| li().children(Episode::default().into_small_card()).into())
-                            .collect::<Vec<_>>(),
-                    )),
+                    .children(
+                        List::new(
+                            (1..13)
+                                .map(|_| li().children(Episode::default().into_small_card()).into())
+                                .collect::<Vec<_>>(),
+                        )
+                        .header(ListHeader::new("Episodes")),
+                    ),
             )
             .into()
     }
