@@ -11,21 +11,56 @@ use rustwind::{
 use sycamore::{
     prelude::HtmlImgAttributes,
     web::{
+        document,
         tags::{article, br, div, figure, img, p},
         GlobalProps, HtmlGlobalAttributes, View,
     },
 };
-use sycamore_router::navigate;
+use wasm_bindgen::JsCast;
+use web_sys::HtmlInputElement;
 
 use crate::{
-    components::{Button, Icon, IconType},
+    components::{Button, Icon, IconType, Toolbar},
     tw,
     types::Series,
 };
 
-const SHOCKED_CAT_IMG_PATH: &str = "assets/images/shocked_cat.svg";
-
 pub struct HomePage;
+
+impl HomePage {
+    fn empty_feedback() -> View {
+        article()
+            .class(tw!(
+                Display::Flex,
+                FlexDirection::Col,
+                Width::WFraction(3, 5),
+                Overflow::Auto,
+                JustifyContent::Center,
+                AlignItems::Center,
+                Padding::BNumber("8")
+            ))
+            .children(
+                img()
+                    .class(tw!(Width::WNumber("64")))
+                    .src("assets/images/shocked_cat.svg"),
+            )
+            .children(
+                p().class(tw!(TextAlign::Center, Padding::BNumber("2")))
+                    .children("Whoops...")
+                    .children(br())
+                    .children("Apparently there's nothing around here."),
+            )
+            .children(
+                Button::icon_label(Icon::new(IconType::Search), "Search series", |_| {
+                    if let Some(el) = document().get_element_by_id(Toolbar::SEARCH_INPUT_ID) {
+                        el.unchecked_into::<HtmlInputElement>().focus().unwrap();
+                    }
+                })
+                .color(BackgroundColor::Orange200),
+            )
+            .into()
+    }
+}
 
 impl From<HomePage> for View {
     fn from(_: HomePage) -> Self {
@@ -71,37 +106,7 @@ impl From<HomePage> for View {
             .children(
                 // TODO: Series categories if the filter search is available in the extension
                 // (series card is needed to display the category with its series)
-                article()
-                    .class(tw!(
-                        Display::Flex,
-                        FlexDirection::Col,
-                        Width::WFraction(3, 5),
-                        Overflow::Auto,
-                        JustifyContent::Center,
-                        AlignItems::Center,
-                        Padding::BNumber("8")
-                    ))
-                    .children(
-                        img()
-                            .class(tw!(Width::WNumber("64")))
-                            .src(SHOCKED_CAT_IMG_PATH),
-                    )
-                    .children(
-                        p().class(tw!(TextAlign::Center, Padding::BNumber("2")))
-                            .children("Whoops...")
-                            .children(br())
-                            .children("Apparently there's nothing around here."),
-                    )
-                    .children(
-                        Button::icon_label(
-                            Icon::new(IconType::Search),
-                            "Search series",
-                            // This is to be able to navigate to the series screen for the moment.
-                            // TODO: Remove when the search page is created.
-                            |_| navigate("/series"),
-                        )
-                        .color(BackgroundColor::Orange200),
-                    ),
+                HomePage::empty_feedback(),
             )
             .into()
     }

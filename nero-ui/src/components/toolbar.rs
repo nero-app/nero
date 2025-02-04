@@ -26,6 +26,8 @@ use super::{Icon, IconType};
 pub struct Toolbar;
 
 impl Toolbar {
+    pub const SEARCH_INPUT_ID: &str = "search-input";
+
     fn search_form() -> View {
         let query = create_signal(String::new());
 
@@ -48,6 +50,7 @@ impl Toolbar {
                         OutlineStyle::None,
                         Color::Slate400
                     ))
+                    .id(Self::SEARCH_INPUT_ID)
                     .r#type("search")
                     .placeholder("Search")
                     .bind(bind::value, query),
