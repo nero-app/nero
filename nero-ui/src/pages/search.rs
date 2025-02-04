@@ -1,5 +1,5 @@
 use rustwind::{
-    flexbox_grid::{AlignItems, FlexDirection, Gap},
+    flexbox_grid::{AlignItems, FlexDirection, Gap, GridTemplateColumns},
     layout::{Display, Overflow},
     sizing::{Height, Width},
     spacing::Padding,
@@ -7,18 +7,19 @@ use rustwind::{
 use sycamore::{
     prelude::HtmlInputAttributes,
     web::{
-        tags::{details, div, input, label, li, span, summary},
+        tags::{details, div, input, label, li, span, summary, ul},
         GlobalProps, HtmlGlobalAttributes, View,
     },
 };
 
 use crate::{
-    components::{List, ListHeader},
+    components::{IntoCard, List, ListHeader},
     tw,
-    types::{Filter, SeriesFilter},
+    types::{Filter, Series, SeriesFilter},
 };
 
 pub struct SearchPage {
+    #[allow(unused)]
     query: String,
 }
 
@@ -70,7 +71,7 @@ impl SearchPage {
 }
 
 impl From<SearchPage> for View {
-    fn from(page: SearchPage) -> Self {
+    fn from(_: SearchPage) -> Self {
         div()
             .class(tw!(
                 Height::HFull,
@@ -80,8 +81,15 @@ impl From<SearchPage> for View {
             ))
             .children(
                 div()
-                    .class(tw!(Width::WFraction(4, 6)))
-                    .children(page.query),
+                    .class(tw!(Width::WFraction(4, 6), Overflow::YAuto))
+                    .children(
+                        ul().class(tw!(Display::Grid, GridTemplateColumns::Number("4")))
+                            .children(
+                                (1..=5)
+                                    .map(|_| li().children(Series::default().into_card()).into())
+                                    .collect::<Vec<_>>(),
+                            ),
+                    ),
             )
             .children(
                 div()
