@@ -20,7 +20,24 @@ use sycamore::{
     },
 };
 
-use crate::{tw, types::Episode, utils::ViewBuilder};
+use crate::{
+    tw,
+    types::{Episode, Series},
+    utils::ViewBuilder,
+};
+
+// TODO: set a fixed size for posters, to handle cases where images are of different sizes
+
+const BASE_CARD_CLASSES: &str = tw!(
+    Display::Flex,
+    AlignItems::Center,
+    Padding::Number("1"),
+    Cursor::Pointer,
+    BorderRadius::Md,
+    TransitionDuration::Number("300"),
+    hover!(BackgroundColor::Gray100),
+    active!(Scale::Number("95"))
+);
 
 pub trait IntoSmallCard {
     fn into_small_card(self) -> View;
@@ -30,22 +47,33 @@ pub trait IntoCard {
     fn into_card(self) -> View;
 }
 
-const BASE_EPISODE_CARD_CLASSES: &str = tw!(
-    Display::Flex,
-    AlignItems::Center,
-    Gap::Number("4"),
-    Padding::Number("1"),
-    Cursor::Pointer,
-    BorderRadius::Md,
-    TransitionDuration::Number("300"),
-    hover!(BackgroundColor::Gray100),
-    active!(Scale::Number("95"))
-);
+impl IntoCard for Series {
+    fn into_card(self) -> View {
+        a().href("/series")
+            .class(tw!(FlexDirection::Col, Gap::Number("1"), BASE_CARD_CLASSES))
+            .children(
+                img()
+                    .class(tw!(BorderRadius::Lg))
+                    // TODO: use a default thumbnail if none is provided
+                    .src(self.poster_url.unwrap_or_default())
+                    .alt(self.title.clone()),
+            )
+            .children(
+                h3().class(tw!(
+                    TextOverflow::Truncate,
+                    FontSize::Sm,
+                    FontWeight::Semibold
+                ))
+                .children(self.title),
+            )
+            .into()
+    }
+}
 
 impl IntoSmallCard for Episode {
     fn into_small_card(self) -> View {
         a().href("/watch")
-            .class(BASE_EPISODE_CARD_CLASSES)
+            .class(tw!(Gap::Number("4"), BASE_CARD_CLASSES))
             .children(
                 img()
                     .class(tw!(
@@ -90,7 +118,7 @@ impl IntoCard for Episode {
         let title = self.title.unwrap_or(format!("Episode {}", self.number));
 
         a().href("/watch")
-            .class(BASE_EPISODE_CARD_CLASSES)
+            .class(tw!(Gap::Number("4"), BASE_CARD_CLASSES))
             .children(
                 span()
                     .class(tw!(
