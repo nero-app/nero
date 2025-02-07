@@ -46,38 +46,46 @@ interface extractor {
         has-next-page: bool
     }
 
-    /// Represents a filter used in search queries.
+    /// Represents an individual filter used in search queries.
     ///
-    /// The filter is defined as a tuple where the first element is the displayable name
-    /// and the second element is the filter value (such as an ID or key),
-    /// (e.g., ("Slice of life", "slice_of_life")).
-    ///
-    /// This structure is useful for pairing user-friendly names with their corresponding
-    /// internal values used in search operations.
-    type filter = tuple<string, string>;
-
-    /// Wrapper for the `filter` type designed to include additional information
-    /// that can be displayed to the end user.
-    record series-filter {
-        /// Unique identifier for the filter (e.g., "genre").
+    /// This structure is useful for associating a user-friendly name with its corresponding
+    /// unique filter identifier that will be used in search operations.
+    record filter {
+        /// Unique identifier for the filter (e.g., "slice_of_life").
         id: string,
-        /// Display name for the filter (e.g., "Genre").
+        /// Display name for the filter (e.g., "Slice of life").
         display-name: string,
-        /// List of applicable filters where each filter contains the displayable name and its value.
+    }
+
+    /// Represents a category of filters that groups multiple related filters under a common type.
+    ///
+    /// This record acts as a wrapper for multiple `filter` entries, allowing the definition
+    /// of filter categories such as "Genre" or "Release Year".
+    record filter-category {
+        /// Unique identifier for the filter category (e.g., "genre").
+        id: string,
+        /// Display name for the filter category (e.g., "Genre").
+        display-name: string,
+        /// List of filters that belong to this category.
         filters: list<filter>
     }
 
     /// Represents a filter to be used specifically in the `search` method.
     ///
-    /// Unlike `series-filter`, this type omits displayable information (like `display-name`),
-    /// focusing only on the filter identifier and selected values.
-    ///
-    /// The first element of the tuple is the filter identifier (e.g., "genre"),
-    /// and the second element is a list of selected values (e.g., ["slice_of_life", "romance"]).
-    type search-filter = tuple<string, list<string>>;
+    /// Unlike `filter-category` and `filter`, this record omits displayable information (like `display-name`),
+    /// focusing only on the filter category identifier and selected values.
+    record search-filter {
+        /// Unique identifier of the filter category (e.g., "genre").
+        id: string,
+        /// List of selected filters identifiers that apply to the given filter category.
+        ///
+        /// Each value corresponds to a specific filter identifier within the category.
+        /// Example for a `genre` filter: `["action", "drama"]`.
+        values: list<string>,
+    }
 
     /// Returns the list of available filters for the series search.
-    filters: func() -> list<series-filter>;
+    filters: func() -> list<filter-category>;
 
     /// Searches for series based on a query string, optional pagination, and a list of filters.
     ///
