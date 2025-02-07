@@ -84,7 +84,7 @@ interface extractor {
         values: list<string>,
     }
 
-    /// Returns the list of available filters for the series search.
+    /// Returns a list of available filters to use in the `search` method.
     filters: func() -> list<filter-category>;
 
     /// Searches for series based on a query string, optional pagination, and a list of filters.
@@ -142,7 +142,7 @@ interface extractor {
     record series-video {
         /// URL to the video stream.
         video-url: url,
-        /// HTTP headers required to access the video stream.
+        /// HTTP headers required to access the video stream, if necessary.
         ///
         /// These headers are essential for loading the video stream in case the video requires it.
         /// Ensure that all necessary headers are included (e.g. Referer or Content-Type headers).
