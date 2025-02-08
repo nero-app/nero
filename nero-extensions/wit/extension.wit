@@ -85,7 +85,7 @@ interface extractor {
     }
 
     /// Returns a list of available filters to use in the `search` method.
-    filters: func() -> list<filter-category>;
+    filters: func() -> result<list<filter-category>, error-code>;
 
     /// Searches for series based on a query string, optional pagination, and a list of filters.
     ///
