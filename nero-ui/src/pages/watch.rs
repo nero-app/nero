@@ -15,7 +15,7 @@ use sycamore::{
 use crate::{
     components::{IntoSmallCard, List, ListHeader},
     tw,
-    types::{Episode, Video},
+    types::{sample_episode, sample_series_video, SAMPLE_VIDEO_SYNOPSIS, SAMPLE_VIDEO_TITLE},
     utils::ViewBuilder,
 };
 
@@ -23,7 +23,7 @@ pub struct WatchPage;
 
 impl From<WatchPage> for View {
     fn from(_: WatchPage) -> Self {
-        let sample_video = Video::default();
+        let sample_video = sample_series_video();
 
         div()
             .class(tw!(
@@ -44,7 +44,7 @@ impl From<WatchPage> for View {
                         video()
                             .class(tw!(Width::WFull, AspectRatio::Video))
                             .controls(true)
-                            .src(sample_video.url),
+                            .src(sample_video.video_url.to_string()),
                     )
                     .children(
                         section()
@@ -55,9 +55,9 @@ impl From<WatchPage> for View {
                                     FontSize::_2Xl,
                                     FontWeight::Semibold
                                 ))
-                                .children(Video::VIDEO_TITLE),
+                                .children(SAMPLE_VIDEO_TITLE),
                             )
-                            .when_some(Video::VIDEO_SYNOPSIS, |this, synopsis| {
+                            .when_some(SAMPLE_VIDEO_SYNOPSIS, |this, synopsis| {
                                 this.children(
                                     p().class(tw!(LineClamp::Number("3"))).children(synopsis),
                                 )
@@ -70,7 +70,7 @@ impl From<WatchPage> for View {
                     .children(
                         List::new(
                             (1..13)
-                                .map(|_| li().children(Episode::default().into_small_card()).into())
+                                .map(|_| li().children(sample_episode().into_small_card()).into())
                                 .collect::<Vec<_>>(),
                         )
                         .header(ListHeader::new("Episodes")),

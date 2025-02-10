@@ -19,7 +19,7 @@ use sycamore_router::navigate;
 use crate::{
     components::{Button, Icon, IconType, IntoCard, List, ListHeader},
     tw,
-    types::{Episode, Series},
+    types::{sample_episode, sample_series},
     utils::ViewBuilder,
 };
 
@@ -27,7 +27,7 @@ pub struct SeriesPage;
 
 impl From<SeriesPage> for View {
     fn from(_: SeriesPage) -> Self {
-        let sample_series = Series::default();
+        let sample_series = sample_series();
 
         div()
             .class(tw!(Display::Flex, Height::HFull, Gap::Number("20")))
@@ -47,7 +47,7 @@ impl From<SeriesPage> for View {
                                 BorderRadius::Xl
                             ))
                             // TODO: Default image
-                            .src(sample_series.poster_url.unwrap_or_default())
+                            .src(sample_series.poster_url.unwrap().to_string())
                             .alt(sample_series.title.clone()),
                     ),
             )
@@ -100,7 +100,7 @@ impl From<SeriesPage> for View {
                     .children(
                         List::new(
                             (1..13)
-                                .map(|_| li().children(Episode::default().into_card()).into())
+                                .map(|_| li().children(sample_episode().into_card()).into())
                                 .collect::<Vec<_>>(),
                         )
                         .header(

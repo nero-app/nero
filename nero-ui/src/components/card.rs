@@ -1,3 +1,4 @@
+use nero_extensions::types::{Episode, Series};
 use rustwind::{
     active,
     backgrounds::BackgroundColor,
@@ -20,11 +21,7 @@ use sycamore::{
     },
 };
 
-use crate::{
-    tw,
-    types::{Episode, Series},
-    utils::ViewBuilder,
-};
+use crate::{tw, utils::ViewBuilder};
 
 // TODO: set a fixed size for posters, to handle cases where images are of different sizes
 
@@ -55,7 +52,7 @@ impl IntoCard for Series {
                 img()
                     .class(tw!(BorderRadius::Lg))
                     // TODO: use a default thumbnail if none is provided
-                    .src(self.poster_url.unwrap_or_default())
+                    .src(self.poster_url.unwrap().to_string())
                     .alt(self.title.clone()),
             )
             .children(
@@ -83,7 +80,7 @@ impl IntoSmallCard for Episode {
                         ObjectFit::Cover
                     ))
                     // TODO: use a default thumbnail if none is provided
-                    .src(self.thumbnail_url.unwrap_or_default())
+                    .src(self.thumbnail_url.unwrap().to_string())
                     .alt(
                         self.title
                             .clone()
@@ -138,7 +135,7 @@ impl IntoCard for Episode {
                         ObjectFit::Cover
                     ))
                     // TODO: use a default thumbnail if none is provided
-                    .src(self.thumbnail_url.unwrap_or_default())
+                    .src(self.thumbnail_url.unwrap().to_string())
                     .alt(title.clone()),
             )
             .children(

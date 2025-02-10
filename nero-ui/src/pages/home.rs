@@ -22,7 +22,7 @@ use web_sys::HtmlInputElement;
 use crate::{
     components::{Button, Icon, IconType, Toolbar},
     tw,
-    types::Series,
+    types::sample_series,
 };
 
 pub struct HomePage;
@@ -64,7 +64,7 @@ impl HomePage {
 
 impl From<HomePage> for View {
     fn from(_: HomePage) -> Self {
-        let sample_series = Series::default();
+        let sample_series = sample_series();
 
         div()
             .class(tw!(Display::Flex, Height::HFull))
@@ -85,7 +85,7 @@ impl From<HomePage> for View {
                                 BorderRadius::Xl
                             ))
                             // TODO: Default image
-                            .src(sample_series.poster_url.unwrap_or_default())
+                            .src(sample_series.poster_url.unwrap().to_string())
                             .alt(sample_series.title.clone()),
                     ),
             )

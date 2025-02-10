@@ -1,3 +1,4 @@
+use nero_extensions::types::{Filter, FilterCategory};
 use rustwind::{
     flexbox_grid::{AlignItems, FlexDirection, Gap, GridTemplateColumns},
     layout::{Display, Overflow},
@@ -15,7 +16,7 @@ use sycamore::{
 use crate::{
     components::{IntoCard, List, ListHeader},
     tw,
-    types::{Filter, Series, SeriesFilter},
+    types::{sample_filter_category, sample_series},
 };
 
 pub struct SearchPage {
@@ -28,7 +29,7 @@ impl SearchPage {
         Self { query }
     }
 
-    fn render_filters(filters: Vec<SeriesFilter>) -> View {
+    fn render_filters(filters: Vec<FilterCategory>) -> View {
         List::new(
             filters
                 .into_iter()
@@ -39,7 +40,7 @@ impl SearchPage {
         .into()
     }
 
-    fn render_filter(filter: SeriesFilter) -> View {
+    fn render_filter(filter: FilterCategory) -> View {
         details()
             .children(summary().children(filter.display_name))
             .children(
@@ -65,7 +66,7 @@ impl SearchPage {
         label()
             .class(tw!(Display::Flex, AlignItems::Center, Gap::Number("2")))
             .children(input().r#type("checkbox"))
-            .children(span().children(filter.0))
+            .children(span().children(filter.display_name))
             .into()
     }
 }
@@ -86,7 +87,7 @@ impl From<SearchPage> for View {
                         ul().class(tw!(Display::Grid, GridTemplateColumns::Number("4")))
                             .children(
                                 (1..=5)
-                                    .map(|_| li().children(Series::default().into_card()).into())
+                                    .map(|_| li().children(sample_series().into_card()).into())
                                     .collect::<Vec<_>>(),
                             ),
                     ),
@@ -95,7 +96,7 @@ impl From<SearchPage> for View {
                 div()
                     .class(tw!(Width::WFraction(2, 6), Overflow::YAuto))
                     .children(SearchPage::render_filters(
-                        (1..=10).map(|_| SeriesFilter::default()).collect(),
+                        (1..=10).map(|_| sample_filter_category()).collect(),
                     )),
             )
             .into()
