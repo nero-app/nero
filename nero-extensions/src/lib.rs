@@ -11,6 +11,7 @@ cfg_not_wasm32! {
 }
 
 pub mod types;
+pub use url;
 
 use anyhow::Result;
 use types::{EpisodesPage, FilterCategory, SearchFilter, SeriesPage, SeriesVideo};
