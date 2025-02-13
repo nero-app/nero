@@ -1,3 +1,5 @@
+use std::path::Path;
+
 use anyhow::{Ok, Result};
 use wasmtime::{
     Engine, Store,
@@ -26,7 +28,12 @@ impl Default for WasmHost {
 }
 
 impl WasmHost {
-    pub async fn load_extension_async(&self, path: &str) -> wasmtime::Result<WasmExtension> {
+    pub async fn load_extension_async<P: AsRef<Path>>(
+        &self,
+        path: P,
+    ) -> wasmtime::Result<WasmExtension> {
+        let path = path.as_ref();
+
         let wasm_bytes = std::fs::read(path)?;
         let version = Self::get_extension_version(&wasm_bytes)?;
 
