@@ -14,10 +14,11 @@ use rustwind::{
     typography::{Color, FontSize, FontWeight, LineClamp, TextOverflow},
 };
 use sycamore::{
-    prelude::{HtmlAAttributes, HtmlImgAttributes},
+    prelude::HtmlImgAttributes,
     web::{
-        tags::{a, div, h3, img, p, span},
-        GlobalProps, HtmlGlobalAttributes, View,
+        events::{click, MouseEvent},
+        tags::{div, h3, img, p, span},
+        GlobalAttributes, GlobalProps, HtmlGlobalAttributes, View,
     },
 };
 
@@ -36,17 +37,17 @@ const BASE_CARD_CLASSES: &str = tw!(
     active!(Scale::Number("95"))
 );
 
-pub trait IntoSmallCard {
-    fn into_small_card(self) -> View;
+pub trait IntoSmallClickableCard {
+    fn into_small_clickable_card(self, on_click: impl FnMut(MouseEvent) + 'static) -> View;
 }
 
-pub trait IntoCard {
-    fn into_card(self) -> View;
+pub trait IntoClickableCard {
+    fn into_clickable_card(self, on_click: impl FnMut(MouseEvent) + 'static) -> View;
 }
 
-impl IntoCard for Series {
-    fn into_card(self) -> View {
-        a().href("/series")
+impl IntoClickableCard for Series {
+    fn into_clickable_card(self, on_click: impl FnMut(MouseEvent) + 'static) -> View {
+        div()
             .class(tw!(FlexDirection::Col, Gap::Number("1"), BASE_CARD_CLASSES))
             .children(
                 img()
@@ -63,13 +64,14 @@ impl IntoCard for Series {
                 ))
                 .children(self.title),
             )
+            .on(click, on_click)
             .into()
     }
 }
 
-impl IntoSmallCard for Episode {
-    fn into_small_card(self) -> View {
-        a().href("/watch")
+impl IntoSmallClickableCard for Episode {
+    fn into_small_clickable_card(self, on_click: impl FnMut(MouseEvent) + 'static) -> View {
+        div()
             .class(tw!(Gap::Number("4"), BASE_CARD_CLASSES))
             .children(
                 img()
@@ -106,15 +108,16 @@ impl IntoSmallCard for Episode {
                         )
                     }),
             )
+            .on(click, on_click)
             .into()
     }
 }
 
-impl IntoCard for Episode {
-    fn into_card(self) -> View {
+impl IntoClickableCard for Episode {
+    fn into_clickable_card(self, on_click: impl FnMut(MouseEvent) + 'static) -> View {
         let title = self.title.unwrap_or(format!("Episode {}", self.number));
 
-        a().href("/watch")
+        div()
             .class(tw!(Gap::Number("4"), BASE_CARD_CLASSES))
             .children(
                 span()
@@ -153,6 +156,7 @@ impl IntoCard for Episode {
                         )
                     }),
             )
+            .on(click, on_click)
             .into()
     }
 }

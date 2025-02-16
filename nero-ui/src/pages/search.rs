@@ -12,9 +12,10 @@ use sycamore::{
         GlobalProps, HtmlGlobalAttributes, View,
     },
 };
+use sycamore_router::navigate;
 
 use crate::{
-    components::{IntoCard, List, ListHeader},
+    components::{IntoClickableCard, List, ListHeader},
     tw,
     types::{sample_filter_category, sample_series},
 };
@@ -81,7 +82,10 @@ impl SearchPage {
             .children(
                 series
                     .into_iter()
-                    .map(|s| li().children(s.into_card()).into())
+                    .map(|s| {
+                        li().children(s.into_clickable_card(|_| navigate("/series")))
+                            .into()
+                    })
                     .collect::<Vec<_>>(),
             )
             .into()

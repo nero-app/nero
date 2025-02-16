@@ -21,7 +21,7 @@ use sycamore::{
 use sycamore_router::navigate;
 
 use crate::{
-    components::{Button, Icon, IconType, IntoCard, List, ListHeader},
+    components::{Button, Icon, IconType, IntoClickableCard, List, ListHeader},
     tw,
     types::{sample_episode, sample_series},
     utils::ViewBuilder,
@@ -99,7 +99,10 @@ impl SeriesPage {
             episodes
                 .items
                 .into_iter()
-                .map(|e| li().children(e.into_card()).into())
+                .map(|e| {
+                    li().children(e.into_clickable_card(|_| navigate("/watch")))
+                        .into()
+                })
                 .collect::<Vec<_>>(),
         )
         .header(

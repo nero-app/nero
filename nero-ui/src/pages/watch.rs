@@ -15,9 +15,10 @@ use sycamore::{
         GlobalProps, HtmlGlobalAttributes, View,
     },
 };
+use sycamore_router::navigate;
 
 use crate::{
-    components::{IntoSmallCard, List, ListHeader},
+    components::{IntoSmallClickableCard, List, ListHeader},
     tw,
     types::{sample_episode, sample_series, sample_series_video},
     utils::ViewBuilder,
@@ -76,7 +77,10 @@ impl WatchPage {
             episodes
                 .items
                 .into_iter()
-                .map(|e| li().children(e.into_small_card()).into())
+                .map(|e| {
+                    li().children(e.into_small_clickable_card(|_| navigate("/watch")))
+                        .into()
+                })
                 .collect::<Vec<_>>(),
         )
         .header(ListHeader::new("Episodes"))
