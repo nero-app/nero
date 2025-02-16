@@ -11,6 +11,7 @@ cfg_not_wasm32! {
 }
 
 pub mod types;
+pub use anyhow;
 pub use url;
 
 use anyhow::Result;
