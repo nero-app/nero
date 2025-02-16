@@ -57,14 +57,6 @@ pub fn sample_episode() -> Episode {
     }
 }
 
-pub const SAMPLE_VIDEO_TITLE: &str = "Big Buck Bunny";
-pub const SAMPLE_VIDEO_SYNOPSIS: Option<&str> = Some(
-    r#"
-    Big Buck Bunny tells the story of a giant rabbit with a heart bigger than himself.
-    When one sunny day three rodents rudely harass him, something snaps... and the rabbit ain't no bunny anymore!
-    In the typical cartoon tradition he prepares the nasty rodents a comical revenge."#,
-);
-
 pub fn sample_series_video() -> SeriesVideo {
     SeriesVideo {
         video_url: Url::parse(

@@ -1,3 +1,4 @@
+use nero_extensions::types::Series;
 use rustwind::{
     backgrounds::BackgroundColor,
     borders::BorderRadius,
@@ -25,10 +26,45 @@ use crate::{
     types::sample_series,
 };
 
-pub struct HomePage;
+pub struct HomePage {
+    series: Vec<Series>,
+}
+
+impl Default for HomePage {
+    fn default() -> Self {
+        Self {
+            series: (1..=5).map(|_| sample_series()).collect::<Vec<_>>(),
+        }
+    }
+}
 
 impl HomePage {
-    fn empty_feedback() -> View {
+    // TODO: Dynamic series poster
+    fn render_dynamic_series(series: Vec<Series>) -> View {
+        let series = series.into_iter().next().unwrap();
+
+        img()
+            .class(tw!(
+                Width::WFull,
+                Height::HFull,
+                ObjectFit::Cover,
+                BorderRadius::Xl
+            ))
+            // TODO: Default image
+            .src(series.poster_url.unwrap().to_string())
+            .alt(series.title.clone())
+            .into()
+    }
+
+    // TODO: Progress indicators
+    // should this be in a separate function?
+    fn render_dynamic_indicators() -> View {
+        p().class(tw!(Rotate::Number("90")))
+            .children("Indicators...")
+            .into()
+    }
+
+    fn render_empty_feedback() -> View {
         article()
             .class(tw!(
                 Display::Flex,
@@ -63,9 +99,7 @@ impl HomePage {
 }
 
 impl From<HomePage> for View {
-    fn from(_: HomePage) -> Self {
-        let sample_series = sample_series();
-
+    fn from(page: HomePage) -> Self {
         div()
             .class(tw!(Display::Flex, Height::HFull))
             .children(
@@ -75,22 +109,9 @@ impl From<HomePage> for View {
                         Padding::BNumber("8"),
                         Overflow::Hidden
                     ))
-                    // TODO: Dynamic series poster
-                    .children(
-                        img()
-                            .class(tw!(
-                                Width::WFull,
-                                Height::HFull,
-                                ObjectFit::Cover,
-                                BorderRadius::Xl
-                            ))
-                            // TODO: Default image
-                            .src(sample_series.poster_url.unwrap().to_string())
-                            .alt(sample_series.title.clone()),
-                    ),
+                    .children(HomePage::render_dynamic_series(page.series)),
             )
             .children(
-                // TODO: Progress indicators
                 div()
                     .class(tw!(
                         Width::WNumber("20"),
@@ -98,15 +119,12 @@ impl From<HomePage> for View {
                         AlignItems::Center,
                         Padding::BNumber("8")
                     ))
-                    .children(
-                        p().class(tw!(Rotate::Number("90")))
-                            .children("Indicators..."),
-                    ),
+                    .children(HomePage::render_dynamic_indicators()),
             )
             .children(
                 // TODO: Series categories if the filter search is available in the extension
                 // (series card is needed to display the category with its series)
-                HomePage::empty_feedback(),
+                HomePage::render_empty_feedback(),
             )
             .into()
     }

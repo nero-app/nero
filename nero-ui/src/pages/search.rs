@@ -1,4 +1,4 @@
-use nero_extensions::types::{Filter, FilterCategory};
+use nero_extensions::types::{Filter, FilterCategory, Series};
 use rustwind::{
     flexbox_grid::{AlignItems, FlexDirection, Gap, GridTemplateColumns},
     layout::{Display, Overflow},
@@ -19,30 +19,13 @@ use crate::{
     types::{sample_filter_category, sample_series},
 };
 
-pub struct SearchPage {
-    #[allow(unused)]
-    query: String,
-}
+/// A wrapper around [`FilterCategory`] that implements [`From`] for [`View`].
+struct FilterCategoryWrapper(FilterCategory);
 
-impl SearchPage {
-    pub fn new(query: String) -> Self {
-        Self { query }
-    }
-
-    fn render_filters(filters: Vec<FilterCategory>) -> View {
-        List::new(
-            filters
-                .into_iter()
-                .map(|f| li().children(Self::render_filter(f)).into())
-                .collect::<Vec<_>>(),
-        )
-        .header(ListHeader::new("Filters"))
-        .into()
-    }
-
-    fn render_filter(filter: FilterCategory) -> View {
+impl From<FilterCategoryWrapper> for View {
+    fn from(category: FilterCategoryWrapper) -> Self {
         details()
-            .children(summary().children(filter.display_name))
+            .children(summary().children(category.0.display_name))
             .children(
                 div()
                     .class(tw!(
@@ -52,27 +35,72 @@ impl SearchPage {
                         Padding::YNumber("2")
                     ))
                     .children(
-                        filter
+                        category
+                            .0
                             .filters
                             .into_iter()
-                            .map(Self::render_filter_option)
+                            .map(|f| FilterWrapper(f).into())
                             .collect::<Vec<_>>(),
                     ),
             )
             .into()
     }
+}
 
-    fn render_filter_option(filter: Filter) -> View {
+/// A wrapper around [`Filter`] that implements [`From`] for [`View`].
+struct FilterWrapper(Filter);
+
+impl From<FilterWrapper> for View {
+    fn from(filter: FilterWrapper) -> Self {
         label()
             .class(tw!(Display::Flex, AlignItems::Center, Gap::Number("2")))
             .children(input().r#type("checkbox"))
-            .children(span().children(filter.display_name))
+            .children(span().children(filter.0.display_name))
             .into()
     }
 }
 
+pub struct SearchPage {
+    results: Vec<Series>,
+    filters: Vec<FilterCategory>,
+}
+
+impl SearchPage {
+    #[allow(unused_variables)]
+    pub fn new(query: String) -> Self {
+        Self {
+            results: (1..=5).map(|_| sample_series()).collect::<Vec<_>>(),
+            filters: (1..=10).map(|_| sample_filter_category()).collect(),
+        }
+    }
+}
+
+impl SearchPage {
+    fn render_search_results(series: Vec<Series>) -> View {
+        ul().class(tw!(Display::Grid, GridTemplateColumns::Number("4")))
+            .children(
+                series
+                    .into_iter()
+                    .map(|s| li().children(s.into_card()).into())
+                    .collect::<Vec<_>>(),
+            )
+            .into()
+    }
+
+    fn render_search_filters(filters: Vec<FilterCategory>) -> View {
+        List::new(
+            filters
+                .into_iter()
+                .map(|f| li().children(FilterCategoryWrapper(f)).into())
+                .collect::<Vec<_>>(),
+        )
+        .header(ListHeader::new("Filters"))
+        .into()
+    }
+}
+
 impl From<SearchPage> for View {
-    fn from(_: SearchPage) -> Self {
+    fn from(page: SearchPage) -> Self {
         div()
             .class(tw!(
                 Height::HFull,
@@ -83,21 +111,12 @@ impl From<SearchPage> for View {
             .children(
                 div()
                     .class(tw!(Width::WFraction(4, 6), Overflow::YAuto))
-                    .children(
-                        ul().class(tw!(Display::Grid, GridTemplateColumns::Number("4")))
-                            .children(
-                                (1..=5)
-                                    .map(|_| li().children(sample_series().into_card()).into())
-                                    .collect::<Vec<_>>(),
-                            ),
-                    ),
+                    .children(SearchPage::render_search_results(page.results)),
             )
             .children(
                 div()
                     .class(tw!(Width::WFraction(2, 6), Overflow::YAuto))
-                    .children(SearchPage::render_filters(
-                        (1..=10).map(|_| sample_filter_category()).collect(),
-                    )),
+                    .children(SearchPage::render_search_filters(page.filters)),
             )
             .into()
     }

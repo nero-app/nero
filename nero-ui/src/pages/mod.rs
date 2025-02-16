@@ -43,14 +43,14 @@ impl From<App> for View {
     fn from(_: App) -> Self {
         Router(RouterProps::new(HistoryIntegration::new(), |route| {
             BaseLayout::new(move || match route.get_clone() {
-                AppRoutes::Home => Into::<View>::into(HomePage),
+                AppRoutes::Home => Into::<View>::into(HomePage::default()),
                 AppRoutes::Search => {
                     let q = use_search_query("q");
                     SearchPage::new(q.get_clone().unwrap_or_default()).into()
                 }
-                AppRoutes::Series => SeriesPage.into(),
-                AppRoutes::Watch => WatchPage.into(),
-                AppRoutes::NotFound => todo!(),
+                AppRoutes::Series => SeriesPage::new().into(),
+                AppRoutes::Watch => WatchPage::new().into(),
+                AppRoutes::NotFound => unreachable!(),
             })
             .into()
         }))
