@@ -25,7 +25,6 @@ use crate::{
 };
 
 pub struct WatchPage {
-    #[allow(dead_code)]
     series: Series,
     episode: Episode,
     episodes: EpisodesPage,
@@ -33,7 +32,8 @@ pub struct WatchPage {
 }
 
 impl WatchPage {
-    pub fn new() -> Self {
+    #[allow(unused_variables)]
+    pub fn new(series_id: String, episode_id: String) -> Self {
         Self {
             series: sample_series(),
             episode: sample_episode(),
@@ -72,13 +72,14 @@ impl WatchPage {
             .into()
     }
 
-    fn render_episodes(episodes: EpisodesPage) -> View {
+    fn render_series_episodes(series_id: String, episodes: EpisodesPage) -> View {
         List::new(
             episodes
                 .items
                 .into_iter()
                 .map(|e| {
-                    li().children(e.into_small_clickable_card(|_| navigate("/watch")))
+                    let nav_to = format!("/watch/{}/{}", series_id, e.id);
+                    li().children(e.into_small_clickable_card(move |_| navigate(&nav_to)))
                         .into()
                 })
                 .collect::<Vec<_>>(),
@@ -116,7 +117,10 @@ impl From<WatchPage> for View {
             .children(
                 aside()
                     .class(tw!(Width::WFraction(2, 6), Overflow::YAuto))
-                    .children(WatchPage::render_episodes(page.episodes)),
+                    .children(WatchPage::render_series_episodes(
+                        page.series.id,
+                        page.episodes,
+                    )),
             )
             .into()
     }

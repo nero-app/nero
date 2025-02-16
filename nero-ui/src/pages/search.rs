@@ -83,7 +83,8 @@ impl SearchPage {
                 series
                     .into_iter()
                     .map(|s| {
-                        li().children(s.into_clickable_card(|_| navigate("/series")))
+                        let nav_to = format!("/series/{}", s.id);
+                        li().children(s.into_clickable_card(move |_| navigate(&nav_to)))
                             .into()
                     })
                     .collect::<Vec<_>>(),

@@ -33,7 +33,8 @@ pub struct SeriesPage {
 }
 
 impl SeriesPage {
-    pub fn new() -> Self {
+    #[allow(unused_variables)]
+    pub fn new(series_id: String) -> Self {
         Self {
             series: sample_series(),
             episodes: EpisodesPage {
@@ -59,7 +60,20 @@ impl SeriesPage {
             .into()
     }
 
-    fn render_series_details(title: String, synopsis: Option<String>) -> View {
+    /// Renders the series details, including the title, synopsis and a list of quick action buttons.
+    ///
+    /// # Arguments
+    ///
+    /// * `id` - The series ID.
+    /// * `title` - The series title.
+    /// * `synopsis` - The series synopsis.
+    /// * `first_episode_id` - The ID of the first episode in the series, used to render a "Watch now" button.
+    fn render_series_details(
+        id: String,
+        title: String,
+        synopsis: Option<String>,
+        first_episode_id: String,
+    ) -> View {
         header()
             .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("4")))
             .children(
@@ -74,8 +88,9 @@ impl SeriesPage {
                 div()
                     .class(tw!(Display::Flex, Gap::Number("4")))
                     .children(
-                        Button::icon_label(Icon::new(IconType::Play), "Watch now", |_| {
-                            navigate("/watch")
+                        Button::icon_label(Icon::new(IconType::Play), "Watch now", move |_| {
+                            let nav_to = format!("/watch/{}/{}", id, first_episode_id);
+                            navigate(&nav_to)
                         })
                         .color(BackgroundColor::Red300),
                     )
@@ -94,13 +109,14 @@ impl SeriesPage {
             .into()
     }
 
-    fn render_series_episodes(episodes: EpisodesPage) -> View {
+    fn render_series_episodes(series_id: String, episodes: EpisodesPage) -> View {
         List::new(
             episodes
                 .items
                 .into_iter()
                 .map(|e| {
-                    li().children(e.into_clickable_card(|_| navigate("/watch")))
+                    let nav_to = format!("/watch/{}/{}", series_id, e.id);
+                    li().children(e.into_clickable_card(move |_| navigate(&nav_to)))
                         .into()
                 })
                 .collect::<Vec<_>>(),
@@ -139,10 +155,15 @@ impl From<SeriesPage> for View {
                         Gap::Number("4")
                     ))
                     .children(SeriesPage::render_series_details(
+                        page.series.id.clone(),
                         page.series.title,
                         page.series.synopsis,
+                        page.episodes.items.first().unwrap().id.clone(),
                     ))
-                    .children(SeriesPage::render_series_episodes(page.episodes)),
+                    .children(SeriesPage::render_series_episodes(
+                        page.series.id,
+                        page.episodes,
+                    )),
             )
             .into()
     }

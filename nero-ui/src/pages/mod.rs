@@ -29,10 +29,13 @@ enum AppRoutes {
     Home,
     #[to("/search")]
     Search,
-    #[to("/series")]
-    Series,
-    #[to("/watch")]
-    Watch,
+    #[to("/series/<series_id>")]
+    Series { series_id: String },
+    #[to("/watch/<series_id>/<episode_id>")]
+    Watch {
+        series_id: String,
+        episode_id: String,
+    },
     #[not_found]
     NotFound,
 }
@@ -48,8 +51,11 @@ impl From<App> for View {
                     let q = use_search_query("q");
                     SearchPage::new(q.get_clone().unwrap_or_default()).into()
                 }
-                AppRoutes::Series => SeriesPage::new().into(),
-                AppRoutes::Watch => WatchPage::new().into(),
+                AppRoutes::Series { series_id } => SeriesPage::new(series_id).into(),
+                AppRoutes::Watch {
+                    series_id,
+                    episode_id,
+                } => WatchPage::new(series_id, episode_id).into(),
                 AppRoutes::NotFound => unreachable!(),
             })
             .into()
