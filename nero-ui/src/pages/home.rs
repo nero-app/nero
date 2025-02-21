@@ -2,7 +2,7 @@ use nero_extensions::types::Series;
 use rustwind::{
     backgrounds::BackgroundColor,
     borders::BorderRadius,
-    flexbox_grid::{AlignItems, FlexDirection, JustifyContent},
+    flexbox_grid::{AlignItems, FlexDirection, GridTemplateColumns, JustifyContent},
     layout::{Display, ObjectFit, Overflow},
     sizing::{Height, Width},
     spacing::Padding,
@@ -44,12 +44,7 @@ impl HomePage {
         let series = series.into_iter().next().unwrap();
 
         img()
-            .class(tw!(
-                Width::WFull,
-                Height::HFull,
-                ObjectFit::Cover,
-                BorderRadius::Xl
-            ))
+            .class(tw!(Width::SizeFull, BorderRadius::Xl, ObjectFit::Cover))
             // TODO: Default image
             .src(series.poster_url.unwrap().to_string())
             .alt(series.title.clone())
@@ -69,10 +64,9 @@ impl HomePage {
             .class(tw!(
                 Display::Flex,
                 FlexDirection::Col,
-                Width::WFraction(3, 5),
-                Overflow::Auto,
-                JustifyContent::Center,
                 AlignItems::Center,
+                JustifyContent::Center,
+                Overflow::Auto,
                 Padding::BNumber("8")
             ))
             .children(
@@ -81,7 +75,7 @@ impl HomePage {
                     .src("assets/images/shocked_cat.svg"),
             )
             .children(
-                p().class(tw!(TextAlign::Center, Padding::BNumber("2")))
+                p().class(tw!(Padding::BNumber("2"), TextAlign::Center))
                     .children("Whoops...")
                     .children(br())
                     .children("Apparently there's nothing around here."),
@@ -101,21 +95,21 @@ impl HomePage {
 impl From<HomePage> for View {
     fn from(page: HomePage) -> Self {
         div()
-            .class(tw!(Display::Flex, Height::HFull))
+            .class(tw!(
+                Display::Grid,
+                Height::HFull,
+                GridTemplateColumns::Value("2fr_auto_3fr")
+            ))
             .children(
                 figure()
-                    .class(tw!(
-                        Width::WFraction(2, 5),
-                        Padding::BNumber("8"),
-                        Overflow::Hidden
-                    ))
+                    .class(tw!(Overflow::Hidden, Padding::BNumber("8")))
                     .children(HomePage::render_dynamic_series(page.series)),
             )
             .children(
                 div()
                     .class(tw!(
-                        Width::WNumber("20"),
                         Display::Flex,
+                        Width::WNumber("20"),
                         AlignItems::Center,
                         Padding::BNumber("8")
                     ))

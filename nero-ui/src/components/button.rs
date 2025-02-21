@@ -4,6 +4,7 @@ use rustwind::{
     borders::BorderRadius,
     effects::BoxShadow,
     flexbox_grid::{AlignItems, Gap},
+    interactivity::Cursor,
     layout::Display,
     spacing::Padding,
     transforms::Scale,
@@ -63,7 +64,7 @@ where
     pub fn icon_label(icon: Icon, label: &'static str, on_click: T) -> Self {
         Self::new(
             div()
-                .class(tw!(Display::Flex, Gap::Number("2"), AlignItems::Center))
+                .class(tw!(Display::Flex, AlignItems::Center, Gap::Number("2")))
                 .children(icon)
                 .children(span().children(label)),
             on_click,
@@ -78,9 +79,10 @@ impl<T: FnMut(MouseEvent)> From<Button<T>> for View {
             .class(format!(
                 "{} {} {}",
                 tw!(
+                    Cursor::Pointer,
+                    BorderRadius::Lg,
                     Padding::XNumber("3"),
                     Padding::YNumber("1.5"),
-                    BorderRadius::Lg,
                     TransitionDuration::Number("300"),
                     active!(Scale::Number("95"))
                 ),

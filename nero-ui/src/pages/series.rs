@@ -5,7 +5,7 @@ use nero_extensions::{
 use rustwind::{
     backgrounds::BackgroundColor,
     borders::BorderRadius,
-    flexbox_grid::{FlexDirection, Gap},
+    flexbox_grid::{FlexDirection, Gap, GridTemplateColumns},
     layout::{Display, ObjectFit, Overflow},
     sizing::{Height, Width},
     spacing::Padding,
@@ -48,12 +48,7 @@ impl SeriesPage {
 impl SeriesPage {
     fn render_series_poster(src: Option<Url>, alt: String) -> View {
         img()
-            .class(tw!(
-                Width::WFull,
-                Height::HFull,
-                ObjectFit::Cover,
-                BorderRadius::Xl
-            ))
+            .class(tw!(Width::SizeFull, BorderRadius::Xl, ObjectFit::Cover))
             // TODO: Default image
             .src(src.unwrap().to_string())
             .alt(alt)
@@ -78,9 +73,9 @@ impl SeriesPage {
             .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("4")))
             .children(
                 h1().class(tw!(
+                    TextOverflow::Truncate,
                     FontSize::_3Xl,
-                    FontWeight::Bold,
-                    TextOverflow::Truncate
+                    FontWeight::Bold
                 ))
                 .children(title),
             )
@@ -132,14 +127,15 @@ impl SeriesPage {
 impl From<SeriesPage> for View {
     fn from(page: SeriesPage) -> Self {
         div()
-            .class(tw!(Display::Flex, Height::HFull, Gap::Number("20")))
+            .class(tw!(
+                Display::Grid,
+                Height::HFull,
+                GridTemplateColumns::Value("2fr_3fr"),
+                Gap::Number("20")
+            ))
             .children(
                 figure()
-                    .class(tw!(
-                        Width::WFraction(2, 5),
-                        Padding::BNumber("8"),
-                        Overflow::Hidden
-                    ))
+                    .class(tw!(Overflow::Hidden, Padding::BNumber("8")))
                     .children(SeriesPage::render_series_poster(
                         page.series.poster_url,
                         page.series.title.clone(),
@@ -150,9 +146,8 @@ impl From<SeriesPage> for View {
                     .class(tw!(
                         Display::Flex,
                         FlexDirection::Col,
-                        Width::WFraction(3, 5),
-                        Overflow::Auto,
-                        Gap::Number("4")
+                        Gap::Number("4"),
+                        Overflow::Auto
                     ))
                     .children(SeriesPage::render_series_details(
                         page.series.id.clone(),

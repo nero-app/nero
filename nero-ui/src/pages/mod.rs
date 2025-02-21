@@ -11,7 +11,7 @@ pub use watch::*;
 use sycamore_router::{use_search_query, HistoryIntegration, Route, Router, RouterProps};
 
 use rustwind::{
-    flexbox_grid::{Flex, FlexDirection, Gap},
+    flexbox_grid::{FlexDirection, Gap},
     layout::{Display, Overflow, Position},
     sizing::{Height, Width},
     spacing::Padding,
@@ -81,9 +81,9 @@ impl From<BaseLayout> for View {
             .class(tw!(
                 Position::Fixed,
                 Display::Flex,
-                FlexDirection::Col,
                 Height::HScreen,
                 Width::WFull,
+                FlexDirection::Col,
                 Gap::Number("4"),
                 Padding::XNumber("12"),
                 Padding::TNumber("4")
@@ -91,7 +91,7 @@ impl From<BaseLayout> for View {
             .children(Toolbar)
             .children(
                 main()
-                    .class(tw!(Height::HFull, Flex::Number("1"), Overflow::Auto))
+                    .class(tw!(Height::HFull, Overflow::Auto))
                     .children(layout.children),
             )
             .into()

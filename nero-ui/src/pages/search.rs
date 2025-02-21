@@ -2,7 +2,7 @@ use nero_extensions::types::{Filter, FilterCategory, Series};
 use rustwind::{
     flexbox_grid::{AlignItems, FlexDirection, Gap, GridTemplateColumns},
     layout::{Display, Overflow},
-    sizing::{Height, Width},
+    sizing::Height,
     spacing::Padding,
 };
 use sycamore::{
@@ -108,19 +108,20 @@ impl From<SearchPage> for View {
     fn from(page: SearchPage) -> Self {
         div()
             .class(tw!(
+                Display::Grid,
                 Height::HFull,
-                Display::Flex,
+                GridTemplateColumns::Value("4fr_2fr"),
                 Gap::Number("12"),
                 Overflow::Hidden
             ))
             .children(
                 div()
-                    .class(tw!(Width::WFraction(4, 6), Overflow::YAuto))
+                    .class(tw!(Overflow::YAuto))
                     .children(SearchPage::render_search_results(page.results)),
             )
             .children(
                 div()
-                    .class(tw!(Width::WFraction(2, 6), Overflow::YAuto))
+                    .class(tw!(Overflow::YAuto))
                     .children(SearchPage::render_search_filters(page.filters)),
             )
             .into()

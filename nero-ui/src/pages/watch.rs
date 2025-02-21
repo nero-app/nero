@@ -3,9 +3,9 @@ use nero_extensions::{
     url::Url,
 };
 use rustwind::{
-    flexbox_grid::{FlexDirection, Gap},
+    flexbox_grid::{FlexDirection, Gap, GridTemplateColumns},
     layout::{AspectRatio, Display, Overflow},
-    sizing::{Height, Width},
+    sizing::Height,
     typography::{FontSize, FontWeight, LineClamp},
 };
 use sycamore::{
@@ -49,7 +49,7 @@ impl WatchPage {
 impl WatchPage {
     fn render_video_player(src: Url) -> View {
         video()
-            .class(tw!(Width::WFull, AspectRatio::Video))
+            .class(tw!(AspectRatio::Video))
             .controls(true)
             .src(src.to_string())
             .into()
@@ -93,19 +93,15 @@ impl From<WatchPage> for View {
     fn from(page: WatchPage) -> Self {
         div()
             .class(tw!(
-                Display::Flex,
+                Display::Grid,
                 Height::HFull,
+                GridTemplateColumns::Value("4fr_2fr"),
                 Gap::Number("12"),
                 Overflow::Hidden
             ))
             .children(
                 article()
-                    .class(tw!(
-                        Display::Flex,
-                        FlexDirection::Col,
-                        Width::WFraction(4, 6),
-                        Gap::Number("4")
-                    ))
+                    .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("4")))
                     .children(WatchPage::render_video_player(page.video.video_url))
                     .children(WatchPage::render_episode_details(
                         page.episode
@@ -114,14 +110,9 @@ impl From<WatchPage> for View {
                         page.episode.description,
                     )),
             )
-            .children(
-                aside()
-                    .class(tw!(Width::WFraction(2, 6), Overflow::YAuto))
-                    .children(WatchPage::render_series_episodes(
-                        page.series.id,
-                        page.episodes,
-                    )),
-            )
+            .children(aside().class(tw!(Overflow::YAuto)).children(
+                WatchPage::render_series_episodes(page.series.id, page.episodes),
+            ))
             .into()
     }
 }

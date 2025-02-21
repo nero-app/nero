@@ -47,8 +47,8 @@ impl Toolbar {
                     .class(tw!(
                         Width::WFull,
                         BackgroundColor::Slate100,
-                        OutlineStyle::None,
-                        Color::Slate400
+                        Color::Slate400,
+                        OutlineStyle::None
                     ))
                     .id(Self::SEARCH_INPUT_ID)
                     .r#type("search")
@@ -70,8 +70,8 @@ impl From<Toolbar> for View {
     fn from(_: Toolbar) -> Self {
         nav()
             .class(tw!(
-                Width::WFull,
                 Display::Grid,
+                Width::WFull,
                 GridTemplateColumns::Number("3")
             ))
             .children(p().children("Nero app v1.0"))

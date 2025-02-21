@@ -1,10 +1,9 @@
 use rustwind::{
     backgrounds::BackgroundColor,
     borders::BorderColor,
-    flexbox_grid::{AlignItems, FlexDirection, JustifyContent},
+    flexbox_grid::{AlignItems, JustifyContent},
     layout::{Display, Position, TopRightBottomLeft},
     sizing::Width,
-    spacing::Padding,
     typography::{FontSize, FontWeight},
 };
 use sycamore::web::{
@@ -53,11 +52,10 @@ impl From<ListHeader> for View {
             .children(
                 div()
                     .class(tw!(
-                        Width::WFull,
                         Display::Flex,
-                        JustifyContent::Between,
+                        Width::WFull,
                         AlignItems::Center,
-                        Padding::Number("0.5")
+                        JustifyContent::Between
                     ))
                     .children(
                         h2().class(tw!(FontSize::_2Xl, FontWeight::Semibold))
@@ -99,11 +97,7 @@ impl From<List> for View {
         };
 
         match list.header {
-            Some(list_header) => section()
-                .class(tw!(Display::Flex, FlexDirection::Col))
-                .children(list_header)
-                .children(content)
-                .into(),
+            Some(list_header) => section().children(list_header).children(content).into(),
             None => content,
         }
     }
