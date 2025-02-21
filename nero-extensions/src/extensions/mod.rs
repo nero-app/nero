@@ -1,6 +1,7 @@
 mod since_v0_0_1;
 
 use anyhow::{Ok, Result, anyhow};
+use tokio::sync::Mutex;
 use wasmtime::{
     Engine, Store,
     component::{Component, Linker},
@@ -18,7 +19,7 @@ enum Extension {
 }
 
 pub struct WasmExtension {
-    store: Store<WasmState>,
+    store: Mutex<Store<WasmState>>,
     extension: Extension,
 }
 
@@ -40,17 +41,22 @@ impl WasmExtension {
             _ => Err(anyhow!("unsupported extension version")),
         }?;
 
-        Ok(Self { store, extension })
+        Ok(Self {
+            store: Mutex::new(store),
+            extension,
+        })
     }
 }
 
 impl ExtensionTrait for WasmExtension {
-    async fn filters(&mut self) -> Result<Vec<FilterCategory>> {
+    async fn filters(&self) -> Result<Vec<FilterCategory>> {
+        let mut store = self.store.lock().await;
+
         match &self.extension {
             Extension::V001(extension) => {
                 let res = extension
                     .nero_extension_extractor()
-                    .call_filters(&mut self.store)
+                    .call_filters(&mut *store)
                     .await?
                     .map_err(|err| anyhow!("{err}"))?;
 
@@ -60,18 +66,19 @@ impl ExtensionTrait for WasmExtension {
     }
 
     async fn search(
-        &mut self,
+        &self,
         query: &str,
         page: Option<u16>,
         filters: Vec<SearchFilter>,
     ) -> Result<SeriesPage> {
+        let mut store = self.store.lock().await;
+
         match &self.extension {
             Extension::V001(extension) => {
                 let filters = filters.into_iter().map(Into::into).collect::<Vec<_>>();
-
                 let res = extension
                     .nero_extension_extractor()
-                    .call_search(&mut self.store, query, page, &filters)
+                    .call_search(&mut *store, query, page, &filters)
                     .await?
                     .map_err(|err| anyhow!("{err}"))?;
 
@@ -80,12 +87,14 @@ impl ExtensionTrait for WasmExtension {
         }
     }
 
-    async fn get_series_episodes(&mut self, series_id: &str) -> Result<EpisodesPage> {
+    async fn get_series_episodes(&self, series_id: &str) -> Result<EpisodesPage> {
+        let mut store = self.store.lock().await;
+
         match &self.extension {
             Extension::V001(extension) => {
                 let res = extension
                     .nero_extension_extractor()
-                    .call_get_series_episodes(&mut self.store, series_id)
+                    .call_get_series_episodes(&mut *store, series_id)
                     .await?
                     .map_err(|err| anyhow!("{err}"))?;
 
@@ -95,21 +104,23 @@ impl ExtensionTrait for WasmExtension {
     }
 
     async fn get_series_videos(
-        &mut self,
+        &self,
         series_id: &str,
         episode_id: &str,
     ) -> Result<Vec<SeriesVideo>> {
+        let mut store = self.store.lock().await;
+
         match &self.extension {
             Extension::V001(extension) => {
                 let res = extension
                     .nero_extension_extractor()
-                    .call_get_series_videos(&mut self.store, series_id, episode_id)
+                    .call_get_series_videos(&mut *store, series_id, episode_id)
                     .await?
                     .map_err(|err| anyhow!("{err}"))?;
 
                 let videos = res
                     .into_iter()
-                    .map(|v| v.into_crate_video(&mut self.store))
+                    .map(|v| v.into_crate_video(&mut store))
                     .collect::<Result<_>>()?;
 
                 Ok(videos)

@@ -18,23 +18,20 @@ use anyhow::Result;
 use types::{EpisodesPage, FilterCategory, SearchFilter, SeriesPage, SeriesVideo};
 
 pub trait Extension {
-    fn filters(&mut self) -> impl Future<Output = Result<Vec<FilterCategory>>> + Send;
+    fn filters(&self) -> impl Future<Output = Result<Vec<FilterCategory>>>;
 
     fn search(
-        &mut self,
+        &self,
         query: &str,
         page: Option<u16>,
         filters: Vec<SearchFilter>,
-    ) -> impl Future<Output = Result<SeriesPage>> + Send;
+    ) -> impl Future<Output = Result<SeriesPage>>;
 
-    fn get_series_episodes(
-        &mut self,
-        series_id: &str,
-    ) -> impl Future<Output = Result<EpisodesPage>> + Send;
+    fn get_series_episodes(&self, series_id: &str) -> impl Future<Output = Result<EpisodesPage>>;
 
     fn get_series_videos(
-        &mut self,
+        &self,
         series_id: &str,
         episode_id: &str,
-    ) -> impl Future<Output = Result<Vec<SeriesVideo>>> + Send;
+    ) -> impl Future<Output = Result<Vec<SeriesVideo>>>;
 }
