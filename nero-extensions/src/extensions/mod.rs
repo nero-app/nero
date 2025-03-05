@@ -87,14 +87,18 @@ impl ExtensionTrait for WasmExtension {
         }
     }
 
-    async fn get_series_episodes(&self, series_id: &str) -> Result<EpisodesPage> {
+    async fn get_series_episodes(
+        &self,
+        series_id: &str,
+        page: Option<u16>,
+    ) -> Result<EpisodesPage> {
         let mut store = self.store.lock().await;
 
         match &self.extension {
             Extension::V001(extension) => {
                 let res = extension
                     .nero_extension_extractor()
-                    .call_get_series_episodes(&mut *store, series_id)
+                    .call_get_series_episodes(&mut *store, series_id, page)
                     .await?
                     .map_err(|err| anyhow!("{err}"))?;
 

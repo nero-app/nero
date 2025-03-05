@@ -129,9 +129,13 @@ interface extractor {
     /// Retrieves a paginated list of episodes for a given series, identified by its unique `series-id`.
     ///
     /// * `series-id`: The unique identifier for the series from which episodes are to be fetched.
+    /// * `page`: Optional page number for paginated results.
     ///
     /// Returns an `episodes-page` if successful, or an http error code as a `error-code`.
-    get-series-episodes: func(series-id: string) -> result<episodes-page, error-code>;
+    get-series-episodes: func(
+        series-id: string, 
+        page: option<u16>
+    ) -> result<episodes-page, error-code>;
 
     /// Represents the resolution of a video stream with height and width.
     /// 
