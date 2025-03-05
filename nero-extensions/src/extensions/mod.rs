@@ -11,7 +11,7 @@ use crate::{
     Extension as ExtensionTrait,
     host::WasmState,
     semver::SemanticVersion,
-    types::{EpisodesPage, FilterCategory, SearchFilter, SeriesPage, SeriesVideo},
+    types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, SeriesVideo},
 };
 
 enum Extension {
@@ -79,6 +79,22 @@ impl ExtensionTrait for WasmExtension {
                 let res = extension
                     .nero_extension_extractor()
                     .call_search(&mut *store, query, page, &filters)
+                    .await?
+                    .map_err(|err| anyhow!("{err}"))?;
+
+                Ok(res.into())
+            }
+        }
+    }
+
+    async fn get_series_info(&self, series_id: &str) -> Result<Series> {
+        let mut store = self.store.lock().await;
+
+        match &self.extension {
+            Extension::V001(extension) => {
+                let res = extension
+                    .nero_extension_extractor()
+                    .call_get_series_info(&mut *store, series_id)
                     .await?
                     .map_err(|err| anyhow!("{err}"))?;
 
