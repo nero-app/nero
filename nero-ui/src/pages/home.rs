@@ -1,4 +1,4 @@
-use nero_extensions::types::Series;
+use nero_extensions::{types::Series, Extension as ExtensionTrait};
 use rustwind::{
     backgrounds::BackgroundColor,
     borders::BorderRadius,
@@ -12,28 +12,34 @@ use rustwind::{
 use sycamore::{
     prelude::HtmlImgAttributes,
     web::{
-        document,
+        create_client_resource, document,
         tags::{article, br, div, figure, img, p},
-        GlobalProps, HtmlGlobalAttributes, View,
+        GlobalProps, HtmlGlobalAttributes, Resource, View,
     },
 };
-use wasm_bindgen::JsCast;
+use wasm_bindgen::{JsCast, UnwrapThrowExt};
 use web_sys::HtmlInputElement;
 
 use crate::{
     components::{Button, Icon, IconType, Toolbar},
+    extensions::Extension,
     tw,
-    types::sample_series,
 };
 
 pub struct HomePage {
-    series: Vec<Series>,
+    series: Resource<Vec<Series>>,
 }
 
 impl Default for HomePage {
     fn default() -> Self {
         Self {
-            series: (1..=5).map(|_| sample_series()).collect::<Vec<_>>(),
+            series: create_client_resource(|| async {
+                Extension
+                    .search("TODO", None, vec![])
+                    .await
+                    .unwrap_throw()
+                    .items
+            }),
         }
     }
 }
@@ -103,7 +109,10 @@ impl From<HomePage> for View {
             .children(
                 figure()
                     .class(tw!(Overflow::Hidden, Padding::BNumber("8")))
-                    .children(HomePage::render_dynamic_series(page.series)),
+                    .children(move || match page.series.get_clone() {
+                        Some(series) => HomePage::render_dynamic_series(series),
+                        None => "Loading series...".into(),
+                    }),
             )
             .children(
                 div()
@@ -117,7 +126,6 @@ impl From<HomePage> for View {
             )
             .children(
                 // TODO: Series categories if the filter search is available in the extension
-                // (series card is needed to display the category with its series)
                 HomePage::render_empty_feedback(),
             )
             .into()

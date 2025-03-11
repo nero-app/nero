@@ -3,11 +3,9 @@ mod search;
 mod series;
 mod watch;
 
-pub use home::*;
-pub use search::*;
-pub use series::*;
-pub use watch::*;
-
+use home::HomePage;
+use search::SearchPage;
+use series::SeriesPage;
 use sycamore_router::{use_search_query, HistoryIntegration, Route, Router, RouterProps};
 
 use rustwind::{
@@ -20,6 +18,7 @@ use sycamore::web::{
     tags::{div, main},
     GlobalProps, HtmlGlobalAttributes, View,
 };
+use watch::WatchPage;
 
 use crate::{components::Toolbar, tw};
 

@@ -1,5 +1,7 @@
+use std::rc::Rc;
+
 use nero_extensions::{
-    types::{Episode, EpisodesPage, Series, SeriesVideo},
+    types::{Episode, SeriesVideo},
     url::Url,
 };
 use rustwind::{
@@ -8,40 +10,41 @@ use rustwind::{
     sizing::Height,
     typography::{FontSize, FontWeight, LineClamp},
 };
+use serde_wasm_bindgen::{from_value, to_value};
 use sycamore::{
-    prelude::HtmlVideoAttributes,
+    prelude::{HtmlVideoAttributes, ReadSignal},
     web::{
         tags::{article, aside, div, h1, li, p, section, video},
-        GlobalProps, HtmlGlobalAttributes, View,
+        window, GlobalProps, HtmlGlobalAttributes, Resource, View,
     },
 };
-use sycamore_router::navigate;
+use wasm_bindgen::UnwrapThrowExt;
 
 use crate::{
-    components::{IntoSmallClickableCard, List, ListHeader},
+    components::{Button, Icon, IconType, IntoSmallClickableCard, List, ListHeader, OnReachBottom},
+    hooks::{use_episode_videos, use_infinite_episodes, InfinitePage},
     tw,
-    types::{sample_episode, sample_series, sample_series_video},
-    utils::ViewBuilder,
+    utils::{navigate_with_state, ViewBuilder},
 };
 
 pub struct WatchPage {
-    series: Series,
+    // TODO: Change to Resource<Series>?
+    series_id: String,
     episode: Episode,
-    episodes: EpisodesPage,
-    video: SeriesVideo,
+    videos: Resource<Vec<SeriesVideo>>,
+    episodes_page: Rc<InfinitePage<Episode>>,
 }
 
 impl WatchPage {
-    #[allow(unused_variables)]
     pub fn new(series_id: String, episode_id: String) -> Self {
         Self {
-            series: sample_series(),
-            episode: sample_episode(),
-            episodes: EpisodesPage {
-                items: (1..=12).map(|_| sample_episode()).collect::<Vec<_>>(),
-                has_next_page: false,
+            series_id: series_id.clone(),
+            episode: {
+                let state = window().history().unwrap_throw().state().unwrap_throw();
+                from_value::<Episode>(state).unwrap_throw()
             },
-            video: sample_series_video(),
+            videos: use_episode_videos(series_id.clone(), episode_id),
+            episodes_page: Rc::new(use_infinite_episodes(series_id)),
         }
     }
 }
@@ -72,19 +75,25 @@ impl WatchPage {
             .into()
     }
 
-    fn render_series_episodes(series_id: String, episodes: EpisodesPage) -> View {
-        List::new(
+    fn render_episodes(series_id: String, episodes: ReadSignal<Vec<Episode>>) -> View {
+        List::new(move || {
             episodes
-                .items
+                .get_clone()
                 .into_iter()
                 .map(|e| {
                     let nav_to = format!("/watch/{}/{}", series_id, e.id);
-                    li().children(e.into_small_clickable_card(move |_| navigate(&nav_to)))
-                        .into()
+                    let state = to_value(&e).unwrap_throw();
+                    li().children(
+                        e.into_small_clickable_card(move |_| navigate_with_state(&nav_to, &state)),
+                    )
+                    .into()
                 })
-                .collect::<Vec<_>>(),
+                .collect::<Vec<_>>()
+        })
+        .header(
+            ListHeader::new("Episodes")
+                .end_slot(Button::icon(Icon::new(IconType::Sort), |_| todo!())),
         )
-        .header(ListHeader::new("Episodes"))
         .into()
     }
 }
@@ -102,7 +111,10 @@ impl From<WatchPage> for View {
             .children(
                 article()
                     .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("4")))
-                    .children(WatchPage::render_video_player(page.video.video_url))
+                    .children(move || match page.videos.get_clone() {
+                        Some(videos) => WatchPage::render_video_player(videos[0].video_url.clone()),
+                        None => "Loading player...".into(),
+                    })
                     .children(WatchPage::render_episode_details(
                         page.episode
                             .title
@@ -110,9 +122,18 @@ impl From<WatchPage> for View {
                         page.episode.description,
                     )),
             )
-            .children(aside().class(tw!(Overflow::YAuto)).children(
-                WatchPage::render_series_episodes(page.series.id, page.episodes),
-            ))
+            .children(
+                aside()
+                    .on_reach_bottom({
+                        let episodes_page = page.episodes_page.clone();
+                        move || episodes_page.load_more()
+                    })
+                    .class(tw!(Overflow::YAuto))
+                    .children(WatchPage::render_episodes(
+                        page.series_id,
+                        page.episodes_page.items(),
+                    )),
+            )
             .into()
     }
 }

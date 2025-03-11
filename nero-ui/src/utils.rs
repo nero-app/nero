@@ -1,4 +1,6 @@
-use sycamore::web::View;
+use sycamore::web::{window, View};
+use sycamore_router::navigate_no_history;
+use wasm_bindgen::{JsValue, UnwrapThrowExt};
 
 pub trait ViewBuilder: Sized {
     fn map<U>(self, f: impl FnOnce(Self) -> U) -> U {
@@ -21,3 +23,11 @@ pub trait ViewBuilder: Sized {
 }
 
 impl<T: Into<View>> ViewBuilder for T {}
+
+pub fn navigate_with_state(url: &str, data: &JsValue) {
+    let history = window().history().unwrap_throw();
+    history
+        .push_state_with_url(data, "", Some(url))
+        .unwrap_throw();
+    navigate_no_history(url);
+}

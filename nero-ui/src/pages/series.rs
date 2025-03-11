@@ -1,5 +1,7 @@
+use std::rc::Rc;
+
 use nero_extensions::{
-    types::{EpisodesPage, Series},
+    types::{Episode, Series},
     url::Url,
 };
 use rustwind::{
@@ -11,42 +13,39 @@ use rustwind::{
     spacing::Padding,
     typography::{FontSize, FontWeight, LineClamp, TextOverflow},
 };
+use serde_wasm_bindgen::to_value;
 use sycamore::{
-    prelude::HtmlImgAttributes,
+    prelude::{create_memo, HtmlImgAttributes, ReadSignal},
     web::{
         tags::{article, div, figure, h1, header, img, li, p},
-        GlobalProps, HtmlGlobalAttributes, View,
+        GlobalProps, HtmlGlobalAttributes, Resource, View,
     },
 };
-use sycamore_router::navigate;
+use wasm_bindgen::UnwrapThrowExt;
 
 use crate::{
-    components::{Button, Icon, IconType, IntoClickableCard, List, ListHeader},
+    components::{Button, Icon, IconType, IntoClickableCard, List, ListHeader, OnReachBottom},
+    hooks::{use_infinite_episodes, use_series_details, InfinitePage},
     tw,
-    types::{sample_episode, sample_series},
-    utils::ViewBuilder,
+    utils::{navigate_with_state, ViewBuilder},
 };
 
 pub struct SeriesPage {
-    series: Series,
-    episodes: EpisodesPage,
+    series: Resource<Series>,
+    episodes_page: Rc<InfinitePage<Episode>>,
 }
 
 impl SeriesPage {
-    #[allow(unused_variables)]
     pub fn new(series_id: String) -> Self {
         Self {
-            series: sample_series(),
-            episodes: EpisodesPage {
-                items: (1..=12).map(|_| sample_episode()).collect::<Vec<_>>(),
-                has_next_page: false,
-            },
+            series: use_series_details(series_id.clone()),
+            episodes_page: Rc::new(use_infinite_episodes(series_id)),
         }
     }
 }
 
 impl SeriesPage {
-    fn render_series_poster(src: Option<Url>, alt: String) -> View {
+    fn render_poster(src: Option<Url>, alt: String) -> View {
         img()
             .class(tw!(Width::SizeFull, BorderRadius::Xl, ObjectFit::Cover))
             // TODO: Default image
@@ -55,67 +54,64 @@ impl SeriesPage {
             .into()
     }
 
-    /// Renders the series details, including the title, synopsis and a list of quick action buttons.
-    ///
-    /// # Arguments
-    ///
-    /// * `id` - The series ID.
-    /// * `title` - The series title.
-    /// * `synopsis` - The series synopsis.
-    /// * `first_episode_id` - The ID of the first episode in the series, used to render a "Watch now" button.
-    fn render_series_details(
-        id: String,
-        title: String,
-        synopsis: Option<String>,
-        first_episode_id: String,
-    ) -> View {
-        header()
-            .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("4")))
-            .children(
-                h1().class(tw!(
-                    TextOverflow::Truncate,
-                    FontSize::_3Xl,
-                    FontWeight::Bold
-                ))
-                .children(title),
-            )
-            .children(
-                div()
-                    .class(tw!(Display::Flex, Gap::Number("4")))
-                    .children(
+    fn render_title(title: String) -> View {
+        h1().class(tw!(
+            TextOverflow::Truncate,
+            FontSize::_3Xl,
+            FontWeight::Bold
+        ))
+        .children(title)
+        .into()
+    }
+
+    fn render_quick_actions(series_id: String, first_episode: ReadSignal<Option<Episode>>) -> View {
+        div()
+            .class(tw!(Display::Flex, Gap::Number("4")))
+            .children(move || match first_episode.get_clone() {
+                Some(episode) => {
+                    let series_id = series_id.clone();
+                    View::from(
                         Button::icon_label(Icon::new(IconType::Play), "Watch now", move |_| {
-                            let nav_to = format!("/watch/{}/{}", id, first_episode_id);
-                            navigate(&nav_to)
+                            let state = to_value(&episode).unwrap_throw();
+                            let nav_to = format!("/watch/{}/{}", series_id, episode.id);
+                            navigate_with_state(&nav_to, &state);
                         })
                         .color(BackgroundColor::Red300),
                     )
-                    .children(
-                        Button::icon_label(
-                            Icon::new(IconType::Share),
-                            "Share the series",
-                            |_| todo!(),
-                        )
-                        .color(BackgroundColor::Red300),
-                    ),
-            )
-            .when_some(synopsis, |this, synopsis| {
-                this.children(p().class(tw!(LineClamp::Number("5"))).children(synopsis))
+                }
+                // TODO: Add .disabled(), method to Button, to copy the
+                // original button but disable it until first episode is obtained
+                None => Button::label("Loading episodes...", |_| todo!()).into(),
             })
+            .children(
+                Button::icon_label(Icon::new(IconType::Share), "Share the series", |_| todo!())
+                    .color(BackgroundColor::Red300),
+            )
             .into()
     }
 
-    fn render_series_episodes(series_id: String, episodes: EpisodesPage) -> View {
-        List::new(
+    fn render_details(synopsis: String) -> View {
+        div()
+            .class(tw!(Display::Flex, Gap::Number("4")))
+            .children(p().class(tw!(LineClamp::Number("5"))).children(synopsis))
+            .into()
+    }
+
+    fn render_episodes(series_id: String, episodes: ReadSignal<Vec<Episode>>) -> View {
+        List::new(move || {
             episodes
-                .items
+                .get_clone()
                 .into_iter()
                 .map(|e| {
                     let nav_to = format!("/watch/{}/{}", series_id, e.id);
-                    li().children(e.into_clickable_card(move |_| navigate(&nav_to)))
-                        .into()
+                    let state = to_value(&e).unwrap_throw();
+                    li().children(
+                        e.into_clickable_card(move |_| navigate_with_state(&nav_to, &state)),
+                    )
+                    .into()
                 })
-                .collect::<Vec<_>>(),
-        )
+                .collect::<Vec<_>>()
+        })
         .header(
             ListHeader::new("Episodes")
                 .end_slot(Button::icon(Icon::new(IconType::Sort), |_| todo!())),
@@ -126,40 +122,55 @@ impl SeriesPage {
 
 impl From<SeriesPage> for View {
     fn from(page: SeriesPage) -> Self {
-        div()
-            .class(tw!(
-                Display::Grid,
-                Height::HFull,
-                GridTemplateColumns::Value("2fr_3fr"),
-                Gap::Number("20")
-            ))
-            .children(
-                figure()
-                    .class(tw!(Overflow::Hidden, Padding::BNumber("8")))
-                    .children(SeriesPage::render_series_poster(
-                        page.series.poster_url,
-                        page.series.title.clone(),
-                    )),
-            )
-            .children(
-                article()
-                    .class(tw!(
-                        Display::Flex,
-                        FlexDirection::Col,
-                        Gap::Number("4"),
-                        Overflow::Auto
-                    ))
-                    .children(SeriesPage::render_series_details(
-                        page.series.id.clone(),
-                        page.series.title,
-                        page.series.synopsis,
-                        page.episodes.items.first().unwrap().id.clone(),
-                    ))
-                    .children(SeriesPage::render_series_episodes(
-                        page.series.id,
-                        page.episodes,
-                    )),
-            )
-            .into()
+        View::from_dynamic(move || match page.series.get_clone() {
+            Some(series) => div()
+                .class(tw!(
+                    Display::Grid,
+                    Height::HFull,
+                    GridTemplateColumns::Value("2fr_3fr"),
+                    Gap::Number("20")
+                ))
+                .children(
+                    figure()
+                        .class(tw!(Overflow::Hidden, Padding::BNumber("8")))
+                        .children(SeriesPage::render_poster(
+                            series.poster_url,
+                            series.title.clone(),
+                        )),
+                )
+                .children(
+                    article()
+                        // TODO: Think some way to show a loading spinner while the new episodes are loading...
+                        .on_reach_bottom({
+                            let episodes_page = page.episodes_page.clone();
+                            move || episodes_page.load_more()
+                        })
+                        .class(tw!(
+                            Display::Flex,
+                            FlexDirection::Col,
+                            Gap::Number("4"),
+                            Overflow::Auto
+                        ))
+                        .children(
+                            header()
+                                .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("4")))
+                                .children(SeriesPage::render_title(series.title))
+                                .children(SeriesPage::render_quick_actions(series.id.clone(), {
+                                    let episodes_page = page.episodes_page.clone();
+                                    create_memo(move || {
+                                        episodes_page.items().get_clone().first().cloned()
+                                    })
+                                }))
+                                .when_some(series.synopsis, |this, synopsis| {
+                                    this.children(SeriesPage::render_details(synopsis))
+                                }),
+                        )
+                        .children(SeriesPage::render_episodes(
+                            series.id,
+                            page.episodes_page.items(),
+                        )),
+                ),
+            _ => div().children("Loading..."),
+        })
     }
 }

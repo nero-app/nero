@@ -1,7 +1,8 @@
 mod components;
+mod extensions;
+mod hooks;
 mod macros;
 mod pages;
-mod types;
 mod utils;
 
 use pages::App;
