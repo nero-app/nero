@@ -59,7 +59,8 @@ impl IntoClickableCard for Series {
                     ))
                     // TODO: use a default thumbnail if none is provided
                     .src(self.poster_url.unwrap().to_string())
-                    .alt(self.title.clone()),
+                    .alt(self.title.clone())
+                    .referrerpolicy("no-referrer"),
             )
             .children(
                 h3().class(tw!(
@@ -97,7 +98,8 @@ impl IntoSmallClickableCard for Episode {
                                 self.title
                                     .clone()
                                     .unwrap_or(format!("Episode {}", self.number)),
-                            ),
+                            )
+                            .referrerpolicy("no-referrer"),
                     ),
             )
             .children(
@@ -148,7 +150,8 @@ impl IntoClickableCard for Episode {
                             .class(tw!(Width::SizeFull, BorderRadius::Lg, ObjectFit::Cover))
                             // TODO: use a default thumbnail if none is provided
                             .src(self.thumbnail_url.unwrap().to_string())
-                            .alt(title.clone()),
+                            .alt(title.clone())
+                            .referrerpolicy("no-referrer"),
                     ),
             )
             .children(

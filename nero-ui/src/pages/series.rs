@@ -51,6 +51,7 @@ impl SeriesPage {
             // TODO: Default image
             .src(src.unwrap().to_string())
             .alt(alt)
+            .referrerpolicy("no-referrer")
             .into()
     }
 

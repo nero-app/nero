@@ -54,6 +54,7 @@ impl HomePage {
             // TODO: Default image
             .src(series.poster_url.unwrap().to_string())
             .alt(series.title.clone())
+            .referrerpolicy("no-referrer")
             .into()
     }
 
