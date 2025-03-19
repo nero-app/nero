@@ -50,11 +50,13 @@ impl WatchPage {
 }
 
 impl WatchPage {
-    fn render_video_player(src: Url) -> View {
+    fn render_video_player(poster_url: Option<Url>, src: Url) -> View {
         video()
             .class(tw!(AspectRatio::Video))
             .controls(true)
             .src(src.to_string())
+            // TODO: Default thumbnail
+            .poster(poster_url.unwrap().to_string())
             .into()
     }
 
@@ -112,7 +114,10 @@ impl From<WatchPage> for View {
                 article()
                     .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("4")))
                     .children(move || match page.videos.get_clone() {
-                        Some(videos) => WatchPage::render_video_player(videos[0].video_url.clone()),
+                        Some(videos) => WatchPage::render_video_player(
+                            page.episode.thumbnail_url.clone(),
+                            videos[0].video_url.clone(),
+                        ),
                         None => "Loading player...".into(),
                     })
                     .children(WatchPage::render_episode_details(
