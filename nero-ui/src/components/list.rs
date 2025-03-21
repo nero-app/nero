@@ -2,7 +2,7 @@ use rustwind::{
     backgrounds::BackgroundColor,
     borders::BorderColor,
     flexbox_grid::{AlignItems, JustifyContent},
-    layout::{Display, Position, TopRightBottomLeft},
+    layout::{Display, Position, TopRightBottomLeft, ZIndex},
     sizing::Width,
     typography::{FontSize, FontWeight},
 };
@@ -46,6 +46,7 @@ impl From<ListHeader> for View {
                 this.class(tw!(
                     Position::Sticky,
                     TopRightBottomLeft::TopNumber("0"),
+                    ZIndex::Number("10"),
                     BackgroundColor::White
                 ))
             })
