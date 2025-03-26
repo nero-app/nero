@@ -13,6 +13,7 @@ cfg_not_wasm32! {
 pub mod types;
 pub use anyhow;
 pub use url;
+pub use wasm_metadata::Metadata;
 
 use anyhow::Result;
 use types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, SeriesVideo};

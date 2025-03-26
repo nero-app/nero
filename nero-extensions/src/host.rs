@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use anyhow::{Ok, Result};
+use wasm_metadata::Payload;
 use wasmtime::{
     Engine, Store,
     component::{Component, ResourceTable},
@@ -36,9 +37,12 @@ impl WasmHost {
 
         let wasm_bytes = std::fs::read(path)?;
         let version = Self::get_extension_version(&wasm_bytes)?;
-
         let component = Component::from_file(&self.engine, path)?;
-
+        let metadata = match Payload::from_binary(&wasm_bytes)? {
+            Payload::Component { metadata, .. } => metadata,
+            Payload::Module(..) => unreachable!(),
+        };
+        
         let store = Store::new(&self.engine, WasmState {
             table: ResourceTable::new(),
             ctx: WasiCtxBuilder::new().build(),
@@ -46,7 +50,7 @@ impl WasmHost {
         });
 
         let extension =
-            WasmExtension::instantiate_async(&self.engine, store, version, &component).await?;
+            WasmExtension::instantiate_async(&self.engine, store, version, &component, metadata).await?;
 
         Ok(extension)
     }

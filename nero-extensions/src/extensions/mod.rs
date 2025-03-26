@@ -2,6 +2,7 @@ mod since_v0_0_1;
 
 use anyhow::{Ok, Result, anyhow};
 use tokio::sync::Mutex;
+use wasm_metadata::Metadata;
 use wasmtime::{
     Engine, Store,
     component::{Component, Linker},
@@ -21,6 +22,7 @@ enum Extension {
 pub struct WasmExtension {
     store: Mutex<Store<WasmState>>,
     extension: Extension,
+    metadata: Metadata,
 }
 
 impl WasmExtension {
@@ -29,6 +31,7 @@ impl WasmExtension {
         mut store: Store<WasmState>,
         version: SemanticVersion,
         component: &Component,
+        metadata: Metadata,
     ) -> Result<Self> {
         let mut linker = Linker::new(engine);
         wasmtime_wasi::add_to_linker_async(&mut linker).unwrap();
@@ -44,7 +47,12 @@ impl WasmExtension {
         Ok(Self {
             store: Mutex::new(store),
             extension,
+            metadata
         })
+    }
+
+    pub fn metadata(&self) -> &Metadata {
+        &self.metadata
     }
 }
 
