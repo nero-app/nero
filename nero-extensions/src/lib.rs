@@ -5,9 +5,11 @@ cfg_not_wasm32! {
     mod semver;
     mod extensions;
     mod host;
+    mod manager;
 
     pub use extensions::WasmExtension;
     pub use host::WasmHost;
+    pub use manager::ExtensionManager;
 }
 
 pub mod types;
