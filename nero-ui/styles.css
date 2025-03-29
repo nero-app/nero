@@ -1,2 +1,16 @@
 @import "tailwindcss";
 @source "../target/classes.txt";
+
+body {
+  user-select: none;
+  -webkit-user-select: none;
+  cursor: default;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+img, a {
+  -webkit-user-drag: none;
+}
