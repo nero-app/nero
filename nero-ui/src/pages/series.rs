@@ -11,6 +11,7 @@ use rustwind::{
     layout::{Display, ObjectFit, Overflow},
     sizing::{Height, Width},
     spacing::Padding,
+    tw,
     typography::{FontSize, FontWeight, LineClamp, TextOverflow},
 };
 use serde_wasm_bindgen::to_value;
@@ -26,7 +27,6 @@ use wasm_bindgen::UnwrapThrowExt;
 use crate::{
     components::{Button, Icon, IconType, IntoClickableCard, List, ListHeader, OnReachBottom},
     hooks::{use_infinite_episodes, use_series_details, InfinitePage},
-    tw,
     utils::{navigate_with_state, ViewBuilder},
 };
 

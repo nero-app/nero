@@ -5,6 +5,7 @@ use rustwind::{
     flexbox_grid::{Gap, GridTemplateColumns},
     layout::{Display, Overflow},
     sizing::Height,
+    tw,
 };
 use sycamore::{
     prelude::ReadSignal,
@@ -18,7 +19,6 @@ use sycamore_router::navigate;
 use crate::{
     components::{IntoClickableCard, List, ListHeader, OnReachBottom},
     hooks::{use_filters, use_infinite_search, InfinitePage},
-    tw,
 };
 
 // TODO: Selected filters

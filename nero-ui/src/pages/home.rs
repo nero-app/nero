@@ -7,6 +7,7 @@ use rustwind::{
     sizing::{Height, Width},
     spacing::Padding,
     transforms::Rotate,
+    tw,
     typography::TextAlign,
 };
 use sycamore::{
@@ -23,7 +24,6 @@ use web_sys::HtmlInputElement;
 use crate::{
     components::{Button, Icon, IconType, Toolbar},
     extensions::Extension,
-    tw,
 };
 
 pub struct HomePage {

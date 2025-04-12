@@ -4,6 +4,7 @@ use rustwind::{
     flexbox_grid::{AlignItems, JustifyContent},
     layout::{Display, Position, TopRightBottomLeft, ZIndex},
     sizing::Width,
+    tw,
     typography::{FontSize, FontWeight},
 };
 use sycamore::web::{
@@ -11,7 +12,7 @@ use sycamore::web::{
     GlobalProps, HtmlGlobalAttributes, View,
 };
 
-use crate::{tw, utils::ViewBuilder};
+use crate::utils::ViewBuilder;
 
 pub struct ListHeader {
     label: &'static str,

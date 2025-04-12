@@ -6,6 +6,7 @@ use rustwind::{
     sizing::Width,
     spacing::Padding,
     svg::Fill,
+    tw,
     typography::Color,
 };
 use sycamore::{
@@ -18,8 +19,6 @@ use sycamore::{
     },
 };
 use sycamore_router::navigate;
-
-use crate::tw;
 
 use super::{Icon, IconType};
 

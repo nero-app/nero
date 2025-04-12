@@ -13,6 +13,7 @@ use rustwind::{
     layout::{Display, Overflow, Position},
     sizing::{Height, Width},
     spacing::Padding,
+    tw,
 };
 use sycamore::web::{
     tags::{div, main},
@@ -20,7 +21,7 @@ use sycamore::web::{
 };
 use watch::WatchPage;
 
-use crate::{components::Toolbar, tw};
+use crate::components::Toolbar;
 
 #[derive(Clone, Route)]
 enum AppRoutes {

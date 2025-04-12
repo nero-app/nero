@@ -8,6 +8,7 @@ use rustwind::{
     flexbox_grid::{FlexDirection, Gap, GridTemplateColumns},
     layout::{AspectRatio, Display, Overflow},
     sizing::Height,
+    tw,
     typography::{FontSize, FontWeight, LineClamp},
 };
 use serde_wasm_bindgen::{from_value, to_value};
@@ -23,7 +24,6 @@ use wasm_bindgen::UnwrapThrowExt;
 use crate::{
     components::{Button, Icon, IconType, IntoSmallClickableCard, List, ListHeader, OnReachBottom},
     hooks::{use_episode_videos, use_infinite_episodes, InfinitePage},
-    tw,
     utils::{navigate_with_state, ViewBuilder},
 };
 

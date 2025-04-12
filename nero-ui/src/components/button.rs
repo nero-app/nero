@@ -9,14 +9,13 @@ use rustwind::{
     spacing::Padding,
     transforms::Scale,
     transitions_animation::TransitionDuration,
+    tw,
 };
 use sycamore::web::{
     events::{click, MouseEvent},
     tags::{button as button_tag, div, span},
     GlobalAttributes, GlobalProps, HtmlGlobalAttributes, View,
 };
-
-use crate::tw;
 
 use super::Icon;
 

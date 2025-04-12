@@ -11,6 +11,7 @@ use rustwind::{
     spacing::Padding,
     transforms::Scale,
     transitions_animation::TransitionDuration,
+    tw,
     typography::{Color, FontSize, FontWeight, LineClamp, TextAlign, TextOverflow},
 };
 use sycamore::{
@@ -22,7 +23,7 @@ use sycamore::{
     },
 };
 
-use crate::{tw, utils::ViewBuilder};
+use crate::utils::ViewBuilder;
 
 const BASE_CARD_CLASSES: &str = tw!(
     Cursor::Pointer,
