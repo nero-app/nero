@@ -68,22 +68,20 @@ impl SeriesPage {
     fn render_quick_actions(series_id: String, first_episode: ReadSignal<Option<Episode>>) -> View {
         div()
             .class(tw!(Display::Flex, Gap::Number("4")))
-            .children(move || match first_episode.get_clone() {
-                Some(episode) => {
-                    let series_id = series_id.clone();
-                    View::from(
-                        Button::icon_label(Icon::new(IconType::Play), "Watch now", move |_| {
+            .children(
+                Button::icon_label(Icon::new(IconType::Play), "Watch now", move |_| {
+                    match first_episode.get_clone() {
+                        Some(episode) => {
                             let state = to_value(&episode).unwrap_throw();
                             let nav_to = format!("/watch/{}/{}", series_id, episode.id);
                             navigate_with_state(&nav_to, &state);
-                        })
-                        .color(BackgroundColor::Red300),
-                    )
-                }
-                // TODO: Add .disabled(), method to Button, to copy the
-                // original button but disable it until first episode is obtained
-                None => Button::label("Loading episodes...", |_| todo!()).into(),
-            })
+                        }
+                        None => unreachable!("Button should be disabled"),
+                    }
+                })
+                .color(BackgroundColor::Red300)
+                .disabled(move || first_episode.with(|e| e.is_none())),
+            )
             .children(
                 Button::icon_label(Icon::new(IconType::Share), "Share the series", |_| todo!())
                     .color(BackgroundColor::Red300),
