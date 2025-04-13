@@ -3,12 +3,14 @@ mod card;
 mod icon;
 mod list;
 mod toolbar;
+mod video;
 
 pub use button::*;
 pub use card::*;
 pub use icon::*;
 pub use list::*;
 pub use toolbar::*;
+pub use video::*;
 
 use sycamore::web::{create_node_ref, events, GlobalProps};
 use wasm_bindgen::JsCast;

@@ -1,28 +1,28 @@
 use std::rc::Rc;
 
-use nero_extensions::{
-    types::{Episode, SeriesVideo},
-    url::Url,
-};
+use nero_extensions::types::{Episode, SeriesVideo};
 use rustwind::{
     flexbox_grid::{FlexDirection, Gap, GridTemplateColumns},
-    layout::{AspectRatio, Display, Overflow},
+    layout::{Display, Overflow},
     sizing::Height,
     tw,
     typography::{FontSize, FontWeight, LineClamp},
 };
 use serde_wasm_bindgen::{from_value, to_value};
 use sycamore::{
-    prelude::{HtmlVideoAttributes, ReadSignal},
+    prelude::ReadSignal,
     web::{
-        tags::{article, aside, div, h1, li, p, section, video},
+        tags::{article, aside, div, h1, li, p, section},
         window, GlobalProps, HtmlGlobalAttributes, Resource, View,
     },
 };
 use wasm_bindgen::UnwrapThrowExt;
 
 use crate::{
-    components::{Button, Icon, IconType, IntoSmallClickableCard, List, ListHeader, OnReachBottom},
+    components::{
+        Button, Icon, IconType, IntoSmallClickableCard, List, ListHeader, OnReachBottom,
+        VideoPlayer,
+    },
     hooks::{use_episode_videos, use_infinite_episodes, InfinitePage},
     utils::{navigate_with_state, ViewBuilder},
 };
@@ -50,16 +50,6 @@ impl WatchPage {
 }
 
 impl WatchPage {
-    fn render_video_player(poster_url: Option<Url>, src: Url) -> View {
-        video()
-            .class(tw!(AspectRatio::Video))
-            .controls(true)
-            .src(src.to_string())
-            // TODO: Default thumbnail
-            .poster(poster_url.unwrap().to_string())
-            .into()
-    }
-
     fn render_episode_details(title: String, synopsis: Option<String>) -> View {
         section()
             .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("2")))
@@ -114,10 +104,12 @@ impl From<WatchPage> for View {
                 article()
                     .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("4")))
                     .children(move || match page.videos.get_clone() {
-                        Some(videos) => WatchPage::render_video_player(
-                            page.episode.thumbnail_url.clone(),
-                            videos[0].video_url.clone(),
-                        ),
+                        Some(videos) => {
+                            View::from(VideoPlayer::new(videos[0].video_url.clone()).when_some(
+                                page.episode.thumbnail_url.clone(),
+                                |this, thumbnail_url| this.poster_url(thumbnail_url),
+                            ))
+                        }
                         None => "Loading player...".into(),
                     })
                     .children(WatchPage::render_episode_details(
