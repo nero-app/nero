@@ -69,7 +69,7 @@ impl SeriesPage {
         div()
             .class(tw!(Display::Flex, Gap::Number("4")))
             .children(
-                Button::icon_label(Icon::new(IconType::Play), "Watch now", move |_| {
+                Button::new_with_icon_label(Icon::new(IconType::Play), "Watch now", move |_| {
                     match first_episode.get_clone() {
                         Some(episode) => {
                             let state = to_value(&episode).unwrap_throw();
@@ -83,8 +83,12 @@ impl SeriesPage {
                 .disabled(move || first_episode.with(|e| e.is_none())),
             )
             .children(
-                Button::icon_label(Icon::new(IconType::Share), "Share the series", |_| todo!())
-                    .color(BackgroundColor::Red300),
+                Button::new_with_icon_label(
+                    Icon::new(IconType::Share),
+                    "Share the series",
+                    |_| todo!(),
+                )
+                .color(BackgroundColor::Red300),
             )
             .into()
     }
@@ -111,10 +115,10 @@ impl SeriesPage {
                 })
                 .collect::<Vec<_>>()
         })
-        .header(
-            ListHeader::new("Episodes")
-                .end_slot(Button::icon(Icon::new(IconType::Sort), |_| todo!())),
-        )
+        .header(ListHeader::new("Episodes").end_slot(Button::new_with_icon(
+            Icon::new(IconType::Sort),
+            |_| todo!(),
+        )))
         .into()
     }
 }

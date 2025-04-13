@@ -78,10 +78,10 @@ impl WatchPage {
                 })
                 .collect::<Vec<_>>()
         })
-        .header(
-            ListHeader::new("Episodes")
-                .end_slot(Button::icon(Icon::new(IconType::Sort), |_| todo!())),
-        )
+        .header(ListHeader::new("Episodes").end_slot(Button::new_with_icon(
+            Icon::new(IconType::Sort),
+            |_| todo!(),
+        )))
         .into()
     }
 }

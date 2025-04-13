@@ -71,15 +71,15 @@ impl<T: FnMut(MouseEvent)> Button<T> {
 }
 
 impl<T: FnMut(MouseEvent)> Button<T> {
-    pub fn label(label: &'static str, on_click: T) -> Self {
+    pub fn new_with_label(label: &'static str, on_click: T) -> Self {
         Self::new(span().children(label), on_click)
     }
 
-    pub fn icon(icon: Icon, on_click: T) -> Self {
+    pub fn new_with_icon(icon: Icon, on_click: T) -> Self {
         Self::new(icon, on_click)
     }
 
-    pub fn icon_label(icon: Icon, label: &'static str, on_click: T) -> Self {
+    pub fn new_with_icon_label(icon: Icon, label: &'static str, on_click: T) -> Self {
         Self::new(
             div()
                 .class(tw!(Display::Flex, AlignItems::Center, Gap::Number("2")))

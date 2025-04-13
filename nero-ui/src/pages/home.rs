@@ -88,7 +88,7 @@ impl HomePage {
                     .children("Apparently there's nothing around here."),
             )
             .children(
-                Button::icon_label(Icon::new(IconType::Search), "Search series", |_| {
+                Button::new_with_icon_label(Icon::new(IconType::Search), "Search series", |_| {
                     if let Some(el) = document().get_element_by_id(Toolbar::SEARCH_INPUT_ID) {
                         el.unchecked_into::<HtmlInputElement>().focus().unwrap();
                     }
