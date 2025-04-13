@@ -11,33 +11,45 @@ use rustwind::{
     transitions_animation::TransitionDuration,
     tw,
 };
-use sycamore::web::{
-    events::{click, MouseEvent},
-    tags::{button as button_tag, div, span},
-    GlobalAttributes, GlobalProps, HtmlGlobalAttributes, View,
+use sycamore::{
+    prelude::{HtmlButtonAttributes, MaybeDyn},
+    web::{
+        events::{click, MouseEvent},
+        tags::{button as button_tag, div, span},
+        BoolAttribute, GlobalAttributes, GlobalProps, HtmlGlobalAttributes, View,
+    },
 };
+
+use crate::utils::ViewBuilder;
 
 use super::Icon;
 
-pub struct Button<T>
-where
-    T: FnMut(MouseEvent) + 'static,
-{
+const BASE_BUTTON_CLASSES: &str = tw!(
+    BorderRadius::Lg,
+    Padding::XNumber("3"),
+    Padding::YNumber("1.5")
+);
+const ACTIVE_BUTTON_CLASSES: &str = tw!(
+    Cursor::Pointer,
+    TransitionDuration::Number("300"),
+    active!(Scale::Number("95"))
+);
+
+pub struct Button<T: FnMut(MouseEvent) + 'static> {
     children: View,
     color: Option<BackgroundColor>,
     box_shadow: Option<BoxShadow>,
+    disabled: BoolAttribute,
     on_click: T,
 }
 
-impl<T> Button<T>
-where
-    T: FnMut(MouseEvent),
-{
+impl<T: FnMut(MouseEvent)> Button<T> {
     pub fn new(children: impl Into<View>, on_click: T) -> Self {
         Self {
             children: children.into(),
             color: None,
             box_shadow: None,
+            disabled: MaybeDyn::Static(false),
             on_click,
         }
     }
@@ -52,6 +64,13 @@ where
         self
     }
 
+    pub fn disabled(mut self, disabled: impl Into<BoolAttribute>) -> Self {
+        self.disabled = disabled.into();
+        self
+    }
+}
+
+impl<T: FnMut(MouseEvent)> Button<T> {
     pub fn label(label: &'static str, on_click: T) -> Self {
         Self::new(span().children(label), on_click)
     }
@@ -74,20 +93,24 @@ where
 
 impl<T: FnMut(MouseEvent)> From<Button<T>> for View {
     fn from(button: Button<T>) -> Self {
+        let classes = format!(
+            "{} {} {}",
+            BASE_BUTTON_CLASSES,
+            button.color.unwrap_or(BackgroundColor::Transparent),
+            button.box_shadow.unwrap_or(BoxShadow::ShadowNone)
+        );
         button_tag()
-            .class(format!(
-                "{} {} {}",
-                tw!(
-                    Cursor::Pointer,
-                    BorderRadius::Lg,
-                    Padding::XNumber("3"),
-                    Padding::YNumber("1.5"),
-                    TransitionDuration::Number("300"),
-                    active!(Scale::Number("95"))
-                ),
-                button.color.unwrap_or(BackgroundColor::Transparent),
-                button.box_shadow.unwrap_or(BoxShadow::ShadowNone)
-            ))
+            .disabled(button.disabled.get())
+            .map(|this| match button.disabled.as_static() {
+                Some(value) => this.class(match value {
+                    true => format!("{} {}", classes, tw!(Cursor::NotAllowed)),
+                    false => format!("{} {}", classes, ACTIVE_BUTTON_CLASSES),
+                }),
+                None => this.class(move || match button.disabled.get() {
+                    true => format!("{} {}", classes, tw!(Cursor::NotAllowed)),
+                    false => format!("{} {}", classes, ACTIVE_BUTTON_CLASSES),
+                }),
+            })
             .children(button.children)
             .on(click, button.on_click)
             .into()
