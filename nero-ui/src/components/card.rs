@@ -82,7 +82,7 @@ impl IntoSmallClickableCard for Episode {
         div()
             .class(tw!(
                 Display::Grid,
-                GridTemplateColumns::Number("2"),
+                GridTemplateColumns::Value("1fr_1fr"),
                 AlignItems::Center,
                 Gap::Number("4"),
                 BASE_CARD_CLASSES

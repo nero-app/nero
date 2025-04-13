@@ -6,7 +6,7 @@ use rustwind::{
     layout::{Display, Overflow},
     sizing::Height,
     tw,
-    typography::{FontSize, FontWeight, LineClamp},
+    typography::{FontSize, FontWeight},
 };
 use serde_wasm_bindgen::{from_value, to_value};
 use sycamore::{
@@ -54,15 +54,11 @@ impl WatchPage {
         section()
             .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("2")))
             .children(
-                h1().class(tw!(
-                    LineClamp::Number("2"),
-                    FontSize::_2Xl,
-                    FontWeight::Semibold
-                ))
-                .children(title),
+                h1().class(tw!(FontSize::_2Xl, FontWeight::Semibold))
+                    .children(title),
             )
             .when_some(synopsis, |this, synopsis| {
-                this.children(p().class(tw!(LineClamp::Number("3"))).children(synopsis))
+                this.children(p().children(synopsis))
             })
             .into()
     }
@@ -102,7 +98,12 @@ impl From<WatchPage> for View {
             ))
             .children(
                 article()
-                    .class(tw!(Display::Flex, FlexDirection::Col, Gap::Number("4")))
+                    .class(tw!(
+                        Display::Flex,
+                        FlexDirection::Col,
+                        Gap::Number("4"),
+                        Overflow::YAuto
+                    ))
                     .children(move || match page.videos.get_clone() {
                         Some(videos) => {
                             View::from(VideoPlayer::new(videos[0].video_url.clone()).when_some(
