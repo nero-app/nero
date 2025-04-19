@@ -12,17 +12,14 @@ use serde_wasm_bindgen::{from_value, to_value};
 use sycamore::{
     prelude::ReadSignal,
     web::{
-        tags::{article, aside, div, h1, li, p, section},
+        tags::{article, aside, div, h1, p, section},
         window, GlobalProps, HtmlGlobalAttributes, Resource, View,
     },
 };
 use wasm_bindgen::UnwrapThrowExt;
 
 use crate::{
-    components::{
-        Button, Icon, IconType, IntoSmallClickableCard, List, ListHeader, OnReachBottom,
-        VideoPlayer,
-    },
+    components::{EpisodesList, IntoSmallClickableCard, OnReachBottom, VideoPlayer},
     hooks::{use_episode_videos, use_infinite_episodes, InfinitePage},
     utils::{navigate_with_state, ViewBuilder},
 };
@@ -64,24 +61,11 @@ impl WatchPage {
     }
 
     fn render_episodes(series_id: String, episodes: ReadSignal<Vec<Episode>>) -> View {
-        List::new(move || {
-            episodes
-                .get_clone()
-                .into_iter()
-                .map(|e| {
-                    let nav_to = format!("/watch/{}/{}", series_id, e.id);
-                    let state = to_value(&e).unwrap_throw();
-                    li().children(
-                        e.into_small_clickable_card(move |_| navigate_with_state(&nav_to, &state)),
-                    )
-                    .into()
-                })
-                .collect::<Vec<_>>()
+        EpisodesList::new(episodes, move |e| {
+            let nav_to = format!("/watch/{}/{}", series_id, e.id);
+            let state = to_value(&e).unwrap_throw();
+            e.into_small_clickable_card(move |_| navigate_with_state(&nav_to, &state))
         })
-        .header(ListHeader::new("Episodes").end_slot(Button::new_with_icon(
-            Icon::new(IconType::Sort),
-            |_| todo!(),
-        )))
         .into()
     }
 }

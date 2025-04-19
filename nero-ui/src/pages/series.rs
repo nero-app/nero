@@ -18,14 +18,14 @@ use serde_wasm_bindgen::to_value;
 use sycamore::{
     prelude::{create_memo, HtmlImgAttributes, ReadSignal},
     web::{
-        tags::{article, div, figure, h1, header, img, li, p},
+        tags::{article, div, figure, h1, header, img, p},
         GlobalProps, HtmlGlobalAttributes, Resource, View,
     },
 };
 use wasm_bindgen::UnwrapThrowExt;
 
 use crate::{
-    components::{Button, Icon, IconType, IntoClickableCard, List, ListHeader, OnReachBottom},
+    components::{Button, EpisodesList, Icon, IconType, IntoClickableCard, OnReachBottom},
     hooks::{use_infinite_episodes, use_series_details, InfinitePage},
     utils::{navigate_with_state, ViewBuilder},
 };
@@ -101,24 +101,11 @@ impl SeriesPage {
     }
 
     fn render_episodes(series_id: String, episodes: ReadSignal<Vec<Episode>>) -> View {
-        List::new(move || {
-            episodes
-                .get_clone()
-                .into_iter()
-                .map(|e| {
-                    let nav_to = format!("/watch/{}/{}", series_id, e.id);
-                    let state = to_value(&e).unwrap_throw();
-                    li().children(
-                        e.into_clickable_card(move |_| navigate_with_state(&nav_to, &state)),
-                    )
-                    .into()
-                })
-                .collect::<Vec<_>>()
+        EpisodesList::new(episodes, move |e| {
+            let nav_to = format!("/watch/{}/{}", series_id, e.id);
+            let state = to_value(&e).unwrap_throw();
+            e.into_clickable_card(move |_| navigate_with_state(&nav_to, &state))
         })
-        .header(ListHeader::new("Episodes").end_slot(Button::new_with_icon(
-            Icon::new(IconType::Sort),
-            |_| todo!(),
-        )))
         .into()
     }
 }

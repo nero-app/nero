@@ -1,3 +1,4 @@
+use nero_extensions::types::Episode;
 use rustwind::{
     backgrounds::BackgroundColor,
     borders::BorderColor,
@@ -7,12 +8,17 @@ use rustwind::{
     tw,
     typography::{FontSize, FontWeight},
 };
-use sycamore::web::{
-    tags::{div, h2, header, hr, p, section, ul},
-    GlobalProps, HtmlGlobalAttributes, View,
+use sycamore::{
+    prelude::ReadSignal,
+    web::{
+        tags::{div, h2, header, hr, li, p, section, ul},
+        GlobalProps, HtmlGlobalAttributes, View,
+    },
 };
 
 use crate::utils::ViewBuilder;
+
+use super::{Button, Icon, IconType};
 
 pub struct ListHeader {
     label: &'static str,
@@ -102,5 +108,45 @@ impl From<List> for View {
             Some(list_header) => section().children(list_header).children(content).into(),
             None => content,
         }
+    }
+}
+
+pub struct EpisodesList<T>
+where
+    T: Fn(Episode) -> View + 'static,
+{
+    episodes: ReadSignal<Vec<Episode>>,
+    card_renderer: T,
+}
+
+impl<T> EpisodesList<T>
+where
+    T: Fn(Episode) -> View,
+{
+    pub fn new(episodes: ReadSignal<Vec<Episode>>, card_renderer: T) -> Self {
+        Self {
+            episodes,
+            card_renderer,
+        }
+    }
+}
+
+impl<T> From<EpisodesList<T>> for View
+where
+    T: Fn(Episode) -> View,
+{
+    fn from(list: EpisodesList<T>) -> Self {
+        List::new(move || {
+            list.episodes
+                .get_clone()
+                .into_iter()
+                .map(|e| li().children((list.card_renderer)(e)).into())
+                .collect::<Vec<_>>()
+        })
+        .header(ListHeader::new("Episodes").end_slot(Button::new_with_icon(
+            Icon::new(IconType::Sort),
+            |_| unimplemented!(),
+        )))
+        .into()
     }
 }
