@@ -12,7 +12,7 @@ use crate::{
     Extension as ExtensionTrait,
     host::WasmState,
     semver::SemanticVersion,
-    types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, SeriesVideo},
+    types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video},
 };
 
 enum Extension {
@@ -47,7 +47,7 @@ impl WasmExtension {
         Ok(Self {
             store: Mutex::new(store),
             extension,
-            metadata
+            metadata,
         })
     }
 
@@ -131,11 +131,7 @@ impl ExtensionTrait for WasmExtension {
         }
     }
 
-    async fn get_series_videos(
-        &self,
-        series_id: &str,
-        episode_id: &str,
-    ) -> Result<Vec<SeriesVideo>> {
+    async fn get_series_videos(&self, series_id: &str, episode_id: &str) -> Result<Vec<Video>> {
         let mut store = self.store.lock().await;
 
         match &self.extension {

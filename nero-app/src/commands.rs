@@ -1,5 +1,5 @@
 use nero_extensions::{
-    types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, SeriesVideo},
+    types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video},
     Extension,
 };
 use tauri::{Result, State};
@@ -40,7 +40,7 @@ pub async fn get_series_videos(
     state: State<'_, AppState>,
     series_id: &str,
     episode_id: &str,
-) -> Result<Vec<SeriesVideo>> {
+) -> Result<Vec<Video>> {
     Ok(state
         .extension
         .get_series_videos(series_id, episode_id)

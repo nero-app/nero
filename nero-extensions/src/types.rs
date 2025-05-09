@@ -32,9 +32,9 @@ type Resolution = (u16, u16);
 type Header = (String, String);
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct SeriesVideo {
-    pub video_url: Url,
-    pub video_headers: Vec<Header>,
+pub struct Video {
+    pub url: Url,
+    pub headers: Vec<Header>,
     pub server: String,
     pub resolution: Resolution,
 }

@@ -1,7 +1,6 @@
 use anyhow::{Ok, Result};
 use exports::nero::extension::extractor::{
-    Episode, EpisodesPage, Filter, FilterCategory, SearchFilter, Series, SeriesPage, SeriesVideo,
-    Url,
+    Episode, EpisodesPage, Filter, FilterCategory, SearchFilter, Series, SeriesPage, Url, Video,
 };
 use wasmtime::{Store, component::bindgen};
 use wasmtime_wasi::WasiView;
@@ -93,13 +92,10 @@ impl From<Episode> for crate::types::Episode {
     }
 }
 
-impl SeriesVideo {
+impl Video {
     /// Convert a [`SeriesVideo`] into a [`crate::types::SeriesVideo`].
-    pub fn into_crate_video(
-        self,
-        store: &mut Store<WasmState>,
-    ) -> Result<crate::types::SeriesVideo> {
-        let resource = self.video_headers;
+    pub fn into_crate_video(self, store: &mut Store<WasmState>) -> Result<crate::types::Video> {
+        let resource = self.headers;
         let table = store.data_mut().table();
 
         let fields = table.get(&resource)?;
@@ -114,9 +110,9 @@ impl SeriesVideo {
             _ => unreachable!(),
         };
 
-        Ok(crate::types::SeriesVideo {
-            video_url: self.video_url.into(),
-            video_headers: headers,
+        Ok(crate::types::Video {
+            url: self.url.into(),
+            headers,
             server: self.server,
             resolution: self.resolution,
         })

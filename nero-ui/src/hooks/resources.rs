@@ -1,5 +1,5 @@
 use nero_extensions::{
-    types::{FilterCategory, Series, SeriesVideo},
+    types::{FilterCategory, Series, Video},
     Extension as ExtensionTrait,
 };
 use sycamore::web::{create_client_resource, Resource};
@@ -20,7 +20,7 @@ pub fn use_series_details(series_id: String) -> Resource<Series> {
     })
 }
 
-pub fn use_episode_videos(series_id: String, episode_id: String) -> Resource<Vec<SeriesVideo>> {
+pub fn use_episode_videos(series_id: String, episode_id: String) -> Resource<Vec<Video>> {
     create_client_resource(move || {
         let series_id = series_id.clone();
         let episode_id = episode_id.clone();

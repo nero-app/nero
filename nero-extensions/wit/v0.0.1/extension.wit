@@ -150,14 +150,14 @@ interface extractor {
     type resolution = tuple<u16, u16>;
 
     /// Represents a video stream for a specific episode.
-    record series-video {
+    record video {
         /// URL to the video stream.
-        video-url: url,
+        url: url,
         /// HTTP headers required to access the video stream, if necessary.
         ///
         /// These headers are essential for loading the video stream in case the video requires it.
         /// Ensure that all necessary headers are included (e.g. Referer or Content-Type headers).
-        video-headers: headers,
+        headers: headers,
         /// The server hosting the video stream.
         server: string,
         /// The resolution of the video stream.
@@ -169,11 +169,11 @@ interface extractor {
     /// * `series-id`: The unique identifier for the series to which the episode belongs.
     /// * `episode-id`: The unique identifier of the episode for which video streams are requested.
     ///
-    /// Returns a list of `series-video` records if successful, or an http error code as a `error-code`.
+    /// Returns a list of `video` records if successful, or an http error code as a `error-code`.
     get-series-videos: func(
         series-id: string,
         episode-id: string
-    ) -> result<list<series-video>, error-code>;
+    ) -> result<list<video>, error-code>;
 }
 
 world extension {

@@ -1,6 +1,6 @@
 use nero_extensions::{
     anyhow::Result,
-    types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, SeriesVideo},
+    types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video},
     Extension as ExtensionTrait,
 };
 
@@ -37,11 +37,7 @@ impl ExtensionTrait for Extension {
         invoke_and_parse("get_series_episodes", Some(args)).await
     }
 
-    async fn get_series_videos(
-        &self,
-        series_id: &str,
-        episode_id: &str,
-    ) -> Result<Vec<SeriesVideo>> {
+    async fn get_series_videos(&self, series_id: &str, episode_id: &str) -> Result<Vec<Video>> {
         let args = serde_json::json!({ "series_id": series_id, "episode_id": episode_id });
         invoke_and_parse("get_series_videos", Some(args)).await
     }

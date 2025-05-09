@@ -1,6 +1,6 @@
 use std::rc::Rc;
 
-use nero_extensions::types::{Episode, SeriesVideo};
+use nero_extensions::types::{Episode, Video};
 use rustwind::{
     flexbox_grid::{FlexDirection, Gap, GridTemplateColumns},
     layout::{Display, Overflow},
@@ -28,7 +28,7 @@ pub struct WatchPage {
     // TODO: Change to Resource<Series>?
     series_id: String,
     episode: Episode,
-    videos: Resource<Vec<SeriesVideo>>,
+    videos: Resource<Vec<Video>>,
     episodes_page: Rc<InfinitePage<Episode>>,
 }
 
@@ -90,7 +90,7 @@ impl From<WatchPage> for View {
                     ))
                     .children(move || match page.videos.get_clone() {
                         Some(videos) => {
-                            View::from(VideoPlayer::new(videos[0].video_url.clone()).when_some(
+                            View::from(VideoPlayer::new(videos[0].url.clone()).when_some(
                                 page.episode.thumbnail_url.clone(),
                                 |this, thumbnail_url| this.poster_url(thumbnail_url),
                             ))

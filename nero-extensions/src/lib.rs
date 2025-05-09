@@ -18,7 +18,7 @@ pub use url;
 pub use wasm_metadata::Metadata;
 
 use anyhow::Result;
-use types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, SeriesVideo};
+use types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video};
 
 pub trait Extension {
     fn filters(&self) -> impl Future<Output = Result<Vec<FilterCategory>>>;
@@ -42,5 +42,5 @@ pub trait Extension {
         &self,
         series_id: &str,
         episode_id: &str,
-    ) -> impl Future<Output = Result<Vec<SeriesVideo>>>;
+    ) -> impl Future<Output = Result<Vec<Video>>>;
 }
