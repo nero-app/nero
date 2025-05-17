@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@source "../target/classes.txt";
 
 body {
   user-select: none;
@@ -7,10 +6,7 @@ body {
   cursor: default;
 }
 
-::-webkit-scrollbar {
-  display: none;
-}
-
-img, a {
+img,
+a {
   -webkit-user-drag: none;
 }

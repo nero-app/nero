@@ -1,0 +1,32 @@
+{
+  "name": "nero-ui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check && tsc",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@tanstack/svelte-query": "5.75.4",
+    "@tauri-apps/api": "2.5.0",
+    "regexparam": "3.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "5.0.3",
+    "@tailwindcss/vite": "4.1.5",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "prettier": "3.5.3",
+    "prettier-plugin-classnames": "0.7.8",
+    "prettier-plugin-merge": "0.7.3",
+    "prettier-plugin-svelte": "3.3.3",
+    "prettier-plugin-tailwindcss": "0.6.11",
+    "svelte": "5.23.1",
+    "svelte-check": "4.1.5",
+    "tailwindcss": "4.1.5",
+    "typescript": "5.7.2",
+    "vite": "6.3.1"
+  }
+}

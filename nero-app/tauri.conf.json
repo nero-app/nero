@@ -1,7 +1,7 @@
 {
   "build": {
-    "beforeDevCommand": "cd ./nero-ui && trunk serve",
-    "beforeBuildCommand": "cd ./nero-ui && trunk build",
+    "beforeDevCommand": "cd ../nero-ui && bun run dev",
+    "beforeBuildCommand": "cd ../nero-ui && bun run build",
     "frontendDist": "../nero-ui/dist",
     "devUrl": "http://localhost:1420"
   },
