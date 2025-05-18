@@ -1,5 +1,5 @@
 <script lang="ts">
-  import EpisodeCard from "../components/EpisodeCard.svelte";
+  import SmallEpisodeCard from "../components/SmallEpisodeCard.svelte";
   import SortIcon from "../components/SortIcon.svelte";
   import { infiniteEpisodesQuery } from "../state/queries.svelte";
 
@@ -46,7 +46,7 @@
           {#each $episodesQuery.data.pages as page, pageIndex (pageIndex)}
             {#each page.items as episode (episode.id)}
               <li>
-                <EpisodeCard seriesId={params.seriesId} {episode} small />
+                <SmallEpisodeCard seriesId={params.seriesId} {episode} />
               </li>
             {/each}
           {/each}
