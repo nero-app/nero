@@ -31,6 +31,8 @@ fn main() {
             Ok(())
         })
         .plugin(tauri_plugin_shell::init())
+        // TODO: use portpicker to find an unused port
+        .plugin(tauri_plugin_video_proxy::Builder.build())
         .invoke_handler(tauri::generate_handler![
             get_filters,
             search,

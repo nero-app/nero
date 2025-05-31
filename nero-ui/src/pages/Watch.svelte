@@ -16,7 +16,7 @@
     <!-- svelte-ignore a11y_media_has_caption -->
     <video controls>
       <source
-        src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+        src="http://localhost:8080/?target=http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
         type="video/mp4"
       />
     </video>
