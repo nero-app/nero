@@ -1,6 +1,7 @@
 import type { EpisodesPage, SeriesPage } from "../types/page";
 import type { SearchFilter } from "../types/searchFilter";
 import type { Series } from "../types/series";
+import type { Video } from "../types/video";
 import { createInfiniteQuery, createQuery } from "@tanstack/svelte-query";
 import { invoke } from "@tauri-apps/api/core";
 
@@ -45,5 +46,13 @@ export function infiniteEpisodesQuery(seriesId: string, initialPage = 1) {
       }
       return undefined;
     },
+  });
+}
+
+export function getSeriesVideos(seriesId: string, episodeId: string) {
+  return createQuery({
+    queryKey: ["videos", seriesId, episodeId],
+    queryFn: () =>
+      invoke<Video[]>("get_series_videos", { seriesId, episodeId }),
   });
 }

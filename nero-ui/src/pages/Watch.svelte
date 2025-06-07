@@ -1,25 +1,41 @@
 <script lang="ts">
   import SmallEpisodeCard from "../components/SmallEpisodeCard.svelte";
   import SortIcon from "../components/SortIcon.svelte";
-  import { infiniteEpisodesQuery } from "../state/queries.svelte";
+  import {
+    getSeriesVideos,
+    infiniteEpisodesQuery,
+  } from "../state/queries.svelte";
 
   let { params }: { params: { seriesId: string; episodeId: string } } =
     $props();
   $inspect(params.episodeId);
 
+  let videosQuery = getSeriesVideos(params.seriesId, params.episodeId);
   let episodesQuery = infiniteEpisodesQuery(params.seriesId);
 </script>
 
 <div class="grid h-full grid-cols-[4fr_2fr] gap-12 overflow-hidden">
   <article class="flex flex-col gap-4 overflow-y-auto">
-    <!-- TODO: Set a fixed width/height for the video player -->
-    <!-- svelte-ignore a11y_media_has_caption -->
-    <video controls>
-      <source
-        src="http://localhost:8080/?target=http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-        type="video/mp4"
-      />
-    </video>
+    {#if $videosQuery.isLoading}
+      <p>Loading...</p>
+    {:else if $videosQuery.isError}
+      <p>Error: {$videosQuery.error.message}</p>
+    {:else if $videosQuery.isSuccess}
+      <!-- For the moment, use the first video -->
+      {#if $videosQuery.data.length > 0}
+        <!-- TODO: Set a fixed width/height for the video player -->
+        <!-- svelte-ignore a11y_media_has_caption -->
+        <video controls>
+          <!-- TODO: &headers={} ? -->
+          <source
+            src={`http://localhost:8080/?target=${$videosQuery.data[0].url}`}
+            type="video/mp4"
+          />
+        </video>
+      {:else}
+        <p>No videos found.</p>
+      {/if}
+    {/if}
     <section class="flex flex-col gap-2">
       <h1 class="text-2xl font-semibold">Episode title goes here!</h1>
       <p>Episode description...</p>
