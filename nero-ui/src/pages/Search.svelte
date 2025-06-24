@@ -13,12 +13,12 @@
 
 <div class="grid h-full grid-cols-[4fr_2fr] gap-12 overflow-hidden">
   <div class="overflow-y-auto">
-    <ul class="grid grid-cols-4">
-      {#if $seriesQuery.isLoading}
-        <p>Loading...</p>
-      {:else if $seriesQuery.isError}
-        <p>Error: {$seriesQuery.error.message}</p>
-      {:else if $seriesQuery.isSuccess}
+    {#if $seriesQuery.isLoading}
+      <p>Loading...</p>
+    {:else if $seriesQuery.isError}
+      <p>Error: {$seriesQuery.error.message}</p>
+    {:else if $seriesQuery.isSuccess}
+      <ul class="grid grid-cols-4">
         {#each $seriesQuery.data.pages as page, pageIndex (pageIndex)}
           {#each page.items as series (series.id)}
             <li>
@@ -26,8 +26,8 @@
             </li>
           {/each}
         {/each}
-      {/if}
-    </ul>
+      </ul>
+    {/if}
   </div>
   <aside class="overflow-y-auto">Filters go here!</aside>
 </div>

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import SmallEpisodeCard from "../components/SmallEpisodeCard.svelte";
-  import SortIcon from "../components/SortIcon.svelte";
+  import EpisodesList from "../components/EpisodesList.svelte";
   import {
     getSeriesVideos,
     infiniteEpisodesQuery,
@@ -42,32 +41,6 @@
     </section>
   </article>
   <aside class="overflow-y-auto">
-    <section>
-      <header class="sticky top-0 z-10 bg-white">
-        <div class="flex w-full items-center justify-between">
-          <h2 class="text-2xl font-semibold">Episodes</h2>
-          <!-- TODO: onclick -->
-          <button class="cursor-pointer">
-            <SortIcon />
-          </button>
-        </div>
-        <hr class="border-gray-300" />
-      </header>
-      {#if $episodesQuery.isLoading}
-        <p>Loading...</p>
-      {:else if $episodesQuery.isError}
-        <p>Error: {$episodesQuery.error.message}</p>
-      {:else if $episodesQuery.isSuccess}
-        <ul>
-          {#each $episodesQuery.data.pages as page, pageIndex (pageIndex)}
-            {#each page.items as episode (episode.id)}
-              <li>
-                <SmallEpisodeCard seriesId={params.seriesId} {episode} />
-              </li>
-            {/each}
-          {/each}
-        </ul>
-      {/if}
-    </section>
+    <EpisodesList {episodesQuery} seriesId={params.seriesId} smallCard />
   </aside>
 </div>

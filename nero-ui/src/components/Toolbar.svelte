@@ -1,6 +1,6 @@
 <script lang="ts">
+  import searchIcon from "../assets/icons/search_icon.svg";
   import { link, push } from "../pages/Router.svelte";
-  import SearchIcon from "./SearchIcon.svelte";
 
   let searchQuery = $state("");
   function handleSearch(event: Event) {
@@ -28,7 +28,7 @@
     class="flex items-center gap-2 rounded-lg bg-slate-100 px-3 py-1"
     onsubmit={handleSearch}
   >
-    <SearchIcon />
+    <img src={searchIcon} alt="Search icon" />
     <input
       class="w-full bg-slate-100 text-slate-400 outline-none"
       id="search-input"
