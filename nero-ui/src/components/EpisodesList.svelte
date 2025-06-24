@@ -1,6 +1,5 @@
 <script lang="ts">
   import sortIcon from "../assets/icons/sort_icon.svg";
-  import shockedCat from "../assets/images/shocked_cat.svg";
   import type { EpisodesPage } from "../types/page";
   import EpisodeCard from "./EpisodeCard.svelte";
   import SmallEpisodeCard from "./SmallEpisodeCard.svelte";
