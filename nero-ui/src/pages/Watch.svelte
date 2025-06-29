@@ -40,7 +40,7 @@
       <p>Episode description...</p>
     </section>
   </article>
-  <aside class="overflow-y-auto">
+  <aside class="flex flex-col overflow-y-auto">
     <EpisodesList {episodesQuery} seriesId={params.seriesId} smallCard />
   </aside>
 </div>

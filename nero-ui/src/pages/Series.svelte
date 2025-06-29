@@ -39,6 +39,18 @@
   </header>
 {/snippet}
 
+{#snippet seriesErrorState(error: Error)}
+  <header class="flex flex-col gap-4">
+    <h1 class="text-3xl font-bold">Whoops...</h1>
+    <p>
+      Apparently an error has occurred while loading the series information.
+    </p>
+    <pre
+      class="rounded-md border border-gray-300 bg-gray-100 p-4 text-sm break-words
+        whitespace-pre-wrap text-gray-800">{error.message}</pre>
+  </header>
+{/snippet}
+
 {#snippet seriesHeader(series: Series)}
   <header class="flex flex-col gap-4">
     <h1 class="truncate text-3xl font-bold">{series.title}</h1>
@@ -86,7 +98,7 @@
     {#if $seriesQuery.isLoading}
       {@render seriesHeaderSkeleton()}
     {:else if $seriesQuery.isError}
-      <p>Error: {$seriesQuery.error.message}</p>
+      {@render seriesErrorState($seriesQuery.error)}
     {:else if $seriesQuery.isSuccess}
       {@render seriesHeader($seriesQuery.data)}
     {/if}

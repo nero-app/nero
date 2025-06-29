@@ -20,6 +20,19 @@
   }: EpisodesListProps = $props();
 </script>
 
+{#snippet errorState(error: Error)}
+  <article class="flex size-full flex-col items-center justify-center gap-2">
+    <p class="text-center">
+      Whoops...
+      <br />
+      Apparently an error has occurred while loading the episodes.
+    </p>
+    <pre
+      class="rounded-md border border-gray-300 bg-gray-100 p-4 text-sm break-words
+        whitespace-pre-wrap text-gray-800">{error.message}</pre>
+  </article>
+{/snippet}
+
 <section>
   <header class="sticky top-0 z-10 bg-white">
     <div class="flex w-full items-center justify-between">
@@ -35,7 +48,7 @@
   {#if $episodesQuery.isLoading}
     <p>Loading...</p>
   {:else if $episodesQuery.isError}
-    <p>Error: {$episodesQuery.error.message}</p>
+    {@render errorState($episodesQuery.error)}
   {:else if $episodesQuery.isSuccess}
     <ul>
       {#each $episodesQuery.data.pages as page, pageIndex (pageIndex)}
