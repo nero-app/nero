@@ -20,21 +20,18 @@
 
 {#snippet seriesHeaderSkeleton()}
   <header class="flex flex-col gap-4">
-    <!-- Title Skeleton -->
-    <div class="shimmer h-9 w-3/4 rounded bg-gray-200"></div>
+    <div class="h-9 w-3/4 animate-pulse rounded bg-gray-200"></div>
 
-    <!-- Quick Actions Skeleton -->
     <div class="flex gap-4">
-      <div class="shimmer h-10 w-32 rounded-lg bg-gray-200"></div>
-      <div class="shimmer h-10 w-40 rounded-lg bg-gray-200"></div>
+      <div class="h-10 w-32 animate-pulse rounded-lg bg-gray-200"></div>
+      <div class="h-10 w-40 animate-pulse rounded-lg bg-gray-200"></div>
     </div>
 
-    <!-- Synopsis Skeleton -->
     <div class="flex flex-col gap-2">
-      <div class="shimmer h-4 w-full rounded bg-gray-200"></div>
-      <div class="shimmer h-4 w-full rounded bg-gray-200"></div>
-      <div class="shimmer h-4 w-4/5 rounded bg-gray-200"></div>
-      <div class="shimmer h-4 w-3/5 rounded bg-gray-200"></div>
+      <div class="h-4 w-full animate-pulse rounded bg-gray-200"></div>
+      <div class="h-4 w-full animate-pulse rounded bg-gray-200"></div>
+      <div class="h-4 w-4/5 animate-pulse rounded bg-gray-200"></div>
+      <div class="h-4 w-3/5 animate-pulse rounded bg-gray-200"></div>
     </div>
   </header>
 {/snippet}
@@ -46,8 +43,8 @@
       Apparently an error has occurred while loading the series information.
     </p>
     <pre
-      class="rounded-md border border-gray-300 bg-gray-100 p-4 text-sm break-words
-        whitespace-pre-wrap text-gray-800">{error.message}</pre>
+      class="whitespace-pre-wrap break-words rounded-md border border-gray-300 bg-gray-100
+        p-4 text-sm text-gray-800">{error.message}</pre>
   </header>
 {/snippet}
 
@@ -83,7 +80,7 @@
 <div class="grid h-full grid-cols-[2fr_3fr] gap-20">
   <figure class="overflow-hidden pb-8">
     {#if $seriesQuery.isLoading}
-      <div class="shimmer size-full rounded-xl bg-gray-200"></div>
+      <div class="size-full animate-pulse rounded-xl bg-gray-200"></div>
     {:else if $seriesQuery.isError}
       <div class="size-full rounded-xl bg-gray-700"></div>
     {:else if $seriesQuery.isSuccess}
