@@ -1,7 +1,7 @@
 mod m3u8;
 mod utils;
 
-use std::io::Cursor;
+use std::{collections::HashMap, io::Cursor};
 
 use tauri::{
     Runtime,
@@ -13,7 +13,7 @@ use urlencoding::decode;
 
 use crate::{
     m3u8::{is_m3u8_content, rewrite_m3u8},
-    utils::extract_target_url,
+    utils::{extract_headers, extract_target_url},
 };
 
 pub struct ProxyServer {
@@ -43,7 +43,8 @@ impl ProxyServer {
         let url = Url::parse(&decoded_url).unwrap();
 
         if let Some(target_url) = extract_target_url(&url) {
-            match self.proxy_request(&target_url, &request) {
+            let headers = extract_headers(&url);
+            match self.proxy_request(&target_url, headers, &request) {
                 Ok(response) => {
                     let _ = request.respond(response);
                 }
@@ -63,11 +64,15 @@ impl ProxyServer {
     fn proxy_request(
         &self,
         target_url: &str,
+        headers: HashMap<String, String>,
         req: &tiny_http::Request,
     ) -> Result<tiny_http::Response<Cursor<Vec<u8>>>, Box<dyn std::error::Error>> {
         let url = Url::parse(target_url).unwrap();
 
         let mut request = minreq::get(target_url);
+        for (key, value) in headers {
+            request = request.with_header(key, value);
+        }
         for header in req.headers() {
             // TODO: Remove this when compressed responses are supported
             if header.field.equiv("accept-encoding") {
@@ -120,6 +125,8 @@ impl ProxyServer {
         Ok(proxy_response)
     }
 }
+
+// TODO: Add tauri command to get the proxy URL from the frontend
 
 pub struct Builder {
     host: String,
