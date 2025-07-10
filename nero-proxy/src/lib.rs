@@ -9,7 +9,6 @@ use tauri::{
 };
 use tiny_http::{Response, StatusCode};
 use url::Url;
-use urlencoding::decode;
 
 use crate::{
     m3u8::{is_m3u8_content, rewrite_m3u8},
@@ -39,8 +38,7 @@ impl ProxyServer {
 
     fn handle_request(&self, request: tiny_http::Request) {
         let full_url = format!("http://{}:{}{}", self.host, self.port, request.url());
-        let decoded_url = decode(&full_url).unwrap();
-        let url = Url::parse(&decoded_url).unwrap();
+        let url = Url::parse(&full_url).unwrap();
 
         if let Some(target_url) = extract_target_url(&url) {
             let headers = extract_headers(&url);
