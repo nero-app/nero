@@ -1,27 +1,24 @@
+use axum::http::HeaderMap;
 use m3u8_rs::Playlist;
-use tiny_http::Header;
 use url::Url;
 
 use crate::utils::create_proxy_url;
 
 /// Checks if the given URL and headers indicate that the content is a M3U8 file.
-pub fn is_m3u8_content(url: &Url, headers: &[Header]) -> bool {
-    let has_m3u8_extension = url
-        .path_segments()
-        .and_then(|segments| segments.last())
-        .is_some_and(|segment| segment.ends_with(".m3u8"));
+pub fn is_m3u8_content(url: &Url, headers: &HeaderMap) -> bool {
+    let has_m3u8_extension = url.path().ends_with(".m3u8");
 
     let has_m3u8_content_type = headers
-        .iter()
-        .find(|header| header.field.equiv("content-type"))
-        .is_some_and(|header| {
+        .get("content-type")
+        .and_then(|header_value| header_value.to_str().ok())
+        .is_some_and(|content_type| {
             [
                 "application/vnd.apple.mpegurl",
                 "application/x-mpegURL",
                 "audio/mpegurl",
             ]
             .iter()
-            .any(|mime_type| header.value.as_str().contains(mime_type))
+            .any(|mime_type| content_type.contains(mime_type))
         });
 
     has_m3u8_extension || has_m3u8_content_type

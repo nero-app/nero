@@ -1,13 +1,22 @@
 mod m3u8;
 mod utils;
 
-use std::{collections::HashMap, io::Cursor};
+use std::{collections::HashMap, str::FromStr, sync::Arc};
 
+use axum::{
+    Router,
+    body::Body,
+    extract::{Request, State},
+    http::{HeaderMap, HeaderName, HeaderValue, Response},
+    response::IntoResponse,
+    routing::get,
+};
+use reqwest::{Client, StatusCode};
 use tauri::{
     Runtime,
     plugin::{Builder as PluginBuilder, TauriPlugin},
 };
-use tiny_http::{Response, StatusCode};
+use tokio::net::TcpListener;
 use url::Url;
 
 use crate::{
@@ -15,113 +24,108 @@ use crate::{
     utils::{extract_headers, extract_target_url},
 };
 
-pub struct ProxyServer {
+#[derive(Clone)]
+pub struct ProxyState {
     host: String,
     port: u16,
+    http_client: Arc<Client>,
 }
 
 // TODO: Improve error handling
-impl ProxyServer {
-    pub fn new(host: String, port: u16) -> Self {
-        Self { host, port }
+
+async fn proxy_handler(state: State<ProxyState>, req: Request<Body>) -> impl IntoResponse {
+    let full_url = format!("http://{}:{}{}", state.host, state.port, req.uri());
+    let Ok(url) = Url::parse(&full_url) else {
+        return (StatusCode::BAD_REQUEST, "Invalid URL").into_response();
+    };
+    let Some(target_url) = extract_target_url(&url) else {
+        return (StatusCode::BAD_REQUEST, "Missing target parameter").into_response();
+    };
+    let headers = extract_headers(&url);
+    match proxy_request(&state, &target_url, headers, req).await {
+        Ok(resp) => resp.into_response(),
+        Err(e) => (StatusCode::INTERNAL_SERVER_ERROR, e.to_string()).into_response(),
+    }
+}
+
+async fn proxy_request(
+    state: &ProxyState,
+    target_url: &str,
+    custom_headers: HashMap<String, String>,
+    req: Request<Body>,
+) -> Result<Response<Body>, Box<dyn std::error::Error>> {
+    let url = Url::parse(target_url)?;
+
+    let mut req_headers = HeaderMap::new();
+    for (k, v) in req.headers() {
+        if k == "host" || k == "accept-encoding" {
+            continue;
+        }
+        req_headers.insert(k.clone(), v.clone());
+    }
+    for (k, v) in custom_headers {
+        req_headers.insert(HeaderName::from_str(&k)?, HeaderValue::from_str(&v)?);
+    }
+    let res = state
+        .http_client
+        .get(target_url)
+        .headers(req_headers)
+        .send()
+        .await?;
+
+    let mut headers = HeaderMap::new();
+    for (k, v) in res.headers() {
+        if k == "content-length" {
+            continue;
+        }
+        // Ignore forbidden headers
+        if k == "connection" || k == "trailer" || k == "transfer-encoding" || k == "upgrade" {
+            continue;
+        }
+        headers.insert(k, v.clone());
     }
 
-    fn run(self) {
-        let server_addr = format!("{}:{}", self.host, self.port);
-        let server = tiny_http::Server::http(&server_addr).unwrap();
-        println!("Proxy server running on: {}", server_addr);
+    let status_code = res.status();
 
-        for req in server.incoming_requests() {
-            self.handle_request(req);
+    let has_range_header = req.headers().get("range").is_some();
+    let should_rewrite_m3u8 = is_m3u8_content(&url, &headers) && !has_range_header;
+    let body = match should_rewrite_m3u8 {
+        true => {
+            let proxy_url = Url::parse(&format!("http://{}:{}", state.host, state.port))?;
+            let bytes = res.bytes().await?;
+            let rewritten = rewrite_m3u8(&proxy_url, &url.join("./")?, &bytes);
+
+            headers.insert("content-length", HeaderValue::from(rewritten.len()));
+            Body::from(rewritten)
         }
+        false => Body::from_stream(res.bytes_stream()),
+    };
+
+    let mut builder = Response::builder().status(status_code);
+    for (k, v) in headers.iter() {
+        builder = builder.header(k, v);
     }
+    let response = builder.body(body)?;
+    Ok(response)
+}
 
-    fn handle_request(&self, request: tiny_http::Request) {
-        let full_url = format!("http://{}:{}{}", self.host, self.port, request.url());
-        let url = Url::parse(&full_url).unwrap();
+pub async fn init(host: String, port: u16) {
+    let http_client = Client::new();
+    let state = ProxyState {
+        host: host.clone(),
+        port,
+        http_client: Arc::new(http_client),
+    };
 
-        if let Some(target_url) = extract_target_url(&url) {
-            let headers = extract_headers(&url);
-            match self.proxy_request(&target_url, headers, &request) {
-                Ok(response) => {
-                    let _ = request.respond(response);
-                }
-                Err(error) => {
-                    let error_response =
-                        tiny_http::Response::from_string(error.to_string()).with_status_code(500);
-                    let _ = request.respond(error_response);
-                }
-            }
-        } else {
-            let error_response =
-                tiny_http::Response::from_string("Missing target parameter").with_status_code(400);
-            let _ = request.respond(error_response);
-        }
-    }
+    let app = Router::new()
+        .route("/", get(proxy_handler))
+        .with_state(state);
 
-    fn proxy_request(
-        &self,
-        target_url: &str,
-        headers: HashMap<String, String>,
-        req: &tiny_http::Request,
-    ) -> Result<tiny_http::Response<Cursor<Vec<u8>>>, Box<dyn std::error::Error>> {
-        let url = Url::parse(target_url).unwrap();
-
-        let mut request = minreq::get(target_url);
-        for (key, value) in headers {
-            request = request.with_header(key, value);
-        }
-        for header in req.headers() {
-            // TODO: Remove this when compressed responses are supported
-            if header.field.equiv("accept-encoding") {
-                continue;
-            }
-            // minreq sets the "host" header automatically
-            if header.field.equiv("host") {
-                continue;
-            }
-            request = request.with_header(header.field.to_string(), header.value.as_str());
-        }
-        let response = request.with_timeout(30).send()?;
-
-        // TODO: Add flate2 to handle compressed responses
-
-        let mut headers = Vec::with_capacity(response.headers.len());
-        for (key, value) in &response.headers {
-            // Other headers such as connection, trailer, transfer-encoding and upgrade,
-            // are ignored when creating the proxy response with tiny_http::Response::new.
-            if key == "content-length" {
-                continue;
-            }
-            headers.push(tiny_http::Header::from_bytes(key.as_str(), value.as_bytes()).unwrap());
-        }
-
-        let status_code = response.status_code as u16;
-
-        let has_range_header = req.headers().iter().any(|h| h.field.equiv("range"));
-        let should_rewrite_m3u8 = is_m3u8_content(&url, &headers) && !has_range_header;
-        let body_bytes = match should_rewrite_m3u8 {
-            true => {
-                let proxy_url = Url::parse(&format!("http://{}:{}", self.host, self.port)).unwrap();
-                rewrite_m3u8(&proxy_url, &url.join("./")?, response.as_bytes())
-            }
-            // For other resources, read the bytes and send the response.
-            // This assumes that <video> when making a request to a resource such as an mp4,
-            // will make the request with "range" headers, because otherwise,
-            // the server will take a long time to download all the bytes of the video...
-            false => response.into_bytes(),
-        };
-        let body_len = body_bytes.len();
-
-        let proxy_response = Response::new(
-            StatusCode(status_code),
-            headers,
-            Cursor::new(body_bytes),
-            Some(body_len),
-            None,
-        );
-        Ok(proxy_response)
-    }
+    let listener = TcpListener::bind(format!("{}:{}", host, port))
+        .await
+        .unwrap();
+    println!("listening on {}", listener.local_addr().unwrap());
+    axum::serve(listener, app).await.unwrap()
 }
 
 // TODO: Add tauri command to get the proxy URL from the frontend
@@ -140,12 +144,9 @@ impl Builder {
     }
 
     pub fn build<R: Runtime>(self) -> TauriPlugin<R> {
-        let proxy_server = ProxyServer::new(self.host, self.port);
         PluginBuilder::new("tauri-plugin-video-proxy")
             .setup(move |_app, _api| {
-                std::thread::spawn(move || {
-                    proxy_server.run();
-                });
+                tauri::async_runtime::spawn(init(self.host, self.port));
                 Ok(())
             })
             .build()
