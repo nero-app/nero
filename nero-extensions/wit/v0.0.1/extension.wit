@@ -6,7 +6,7 @@ package nero:extension;
 /// This interface is specifically designed for fetching data over the network and does not support
 /// local or file system data extraction.
 interface extractor {
-    use wasi:http/types@0.2.1.{error-code, scheme, headers};
+    use wasi:http/types@0.2.3.{error-code, scheme, headers};
     /// Represents a URL with its components, used for referencing network resources.
     record url {
         /// The scheme component of the URL, such as "http" or "https".
@@ -177,6 +177,6 @@ interface extractor {
 }
 
 world extension {
-    import wasi:http/outgoing-handler@0.2.1;
+    import wasi:http/outgoing-handler@0.2.3;
     export extractor;
 }
