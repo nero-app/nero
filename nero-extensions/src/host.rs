@@ -6,7 +6,7 @@ use wasmtime::{
     Engine, Store,
     component::{Component, ResourceTable},
 };
-use wasmtime_wasi::{WasiCtx, WasiCtxBuilder, WasiView};
+use wasmtime_wasi::p2::{IoView, WasiCtx, WasiCtxBuilder, WasiView};
 use wasmtime_wasi_http::{WasiHttpCtx, WasiHttpView};
 
 use crate::{extensions::WasmExtension, semver::SemanticVersion};
@@ -42,15 +42,19 @@ impl WasmHost {
             Payload::Component { metadata, .. } => metadata,
             Payload::Module(..) => unreachable!(),
         };
-        
-        let store = Store::new(&self.engine, WasmState {
-            table: ResourceTable::new(),
-            ctx: WasiCtxBuilder::new().build(),
-            http_ctx: WasiHttpCtx::new(),
-        });
+
+        let store = Store::new(
+            &self.engine,
+            WasmState {
+                table: ResourceTable::new(),
+                ctx: WasiCtxBuilder::new().build(),
+                http_ctx: WasiHttpCtx::new(),
+            },
+        );
 
         let extension =
-            WasmExtension::instantiate_async(&self.engine, store, version, &component, metadata).await?;
+            WasmExtension::instantiate_async(&self.engine, store, version, &component, metadata)
+                .await?;
 
         Ok(extension)
     }
@@ -68,12 +72,14 @@ pub(crate) struct WasmState {
     http_ctx: WasiHttpCtx,
 }
 
-impl WasiView for WasmState {
-    fn table(&mut self) -> &mut wasmtime_wasi::ResourceTable {
+impl IoView for WasmState {
+    fn table(&mut self) -> &mut ResourceTable {
         &mut self.table
     }
+}
 
-    fn ctx(&mut self) -> &mut wasmtime_wasi::WasiCtx {
+impl WasiView for WasmState {
+    fn ctx(&mut self) -> &mut wasmtime_wasi::p2::WasiCtx {
         &mut self.ctx
     }
 }
@@ -81,9 +87,5 @@ impl WasiView for WasmState {
 impl WasiHttpView for WasmState {
     fn ctx(&mut self) -> &mut wasmtime_wasi_http::WasiHttpCtx {
         &mut self.http_ctx
-    }
-
-    fn table(&mut self) -> &mut ResourceTable {
-        &mut self.table
     }
 }

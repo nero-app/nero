@@ -11,6 +11,6 @@ wasm-metadata = "0.227.1"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 tokio = { version = "1.43.0", features = ["sync", "fs"] }
-wasmtime = "29.0.1"
-wasmtime-wasi = "29.0.1"
-wasmtime-wasi-http = "29.0.1"
+wasmtime = "34.0.1"
+wasmtime-wasi = "34.0.1"
+wasmtime-wasi-http = "34.0.1"

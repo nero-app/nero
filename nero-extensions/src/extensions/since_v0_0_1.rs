@@ -3,7 +3,7 @@ use exports::nero::extension::extractor::{
     Episode, EpisodesPage, Filter, FilterCategory, SearchFilter, Series, SeriesPage, Url, Video,
 };
 use wasmtime::{Store, component::bindgen};
-use wasmtime_wasi::WasiView;
+use wasmtime_wasi::p2::IoView;
 use wasmtime_wasi_http::{bindings::http::types::Scheme, types::HostFields};
 
 use crate::{host::WasmState, semver::SemanticVersion};
