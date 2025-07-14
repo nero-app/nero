@@ -1,5 +1,6 @@
 mod extensions;
 mod host;
+mod logging;
 mod manager;
 mod semver;
 pub use extensions::WasmExtension;

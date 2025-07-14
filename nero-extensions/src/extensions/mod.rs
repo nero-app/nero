@@ -7,10 +7,12 @@ use wasmtime::{
     Engine, Store,
     component::{Component, Linker},
 };
+use wasmtime_wasi::p2::IoImpl;
 
 use crate::{
     Extension as ExtensionTrait,
     host::WasmState,
+    logging::{self, WasiLogging, WasiLoggingImpl},
     semver::SemanticVersion,
     types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video},
 };
@@ -36,6 +38,10 @@ impl WasmExtension {
         let mut linker = Linker::new(engine);
         wasmtime_wasi::p2::add_to_linker_async(&mut linker).unwrap();
         wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker).unwrap();
+        logging::add_to_linker::<_, WasiLogging<WasmState>>(&mut linker, |s| {
+            WasiLoggingImpl(IoImpl(s))
+        })
+        .unwrap();
 
         let extension = match version {
             v if v >= since_v0_0_1::MIN_VER => Ok(Extension::V001(
