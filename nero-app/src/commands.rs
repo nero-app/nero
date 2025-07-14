@@ -7,11 +7,13 @@ use tauri::{Result, State};
 use crate::AppState;
 
 #[tauri::command]
+#[tracing::instrument(skip(state))]
 pub async fn get_filters(state: State<'_, AppState>) -> Result<Vec<FilterCategory>> {
     Ok(state.extension.filters().await?)
 }
 
 #[tauri::command]
+#[tracing::instrument(skip(state))]
 pub async fn search(
     state: State<'_, AppState>,
     query: &str,
@@ -22,11 +24,13 @@ pub async fn search(
 }
 
 #[tauri::command]
+#[tracing::instrument(skip(state))]
 pub async fn get_series_info(state: State<'_, AppState>, series_id: &str) -> Result<Series> {
     Ok(state.extension.get_series_info(series_id).await?)
 }
 
 #[tauri::command]
+#[tracing::instrument(skip(state))]
 pub async fn get_series_episodes(
     state: State<'_, AppState>,
     series_id: &str,
@@ -36,6 +40,7 @@ pub async fn get_series_episodes(
 }
 
 #[tauri::command]
+#[tracing::instrument(skip(state))]
 pub async fn get_series_videos(
     state: State<'_, AppState>,
     series_id: &str,

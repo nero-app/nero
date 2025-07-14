@@ -13,6 +13,8 @@ pub struct AppState {
 }
 
 fn main() {
+    tracing_subscriber::fmt().init();
+
     tauri::Builder::default()
         .setup(|app| {
             let extensions_dir = app.path().document_dir().unwrap().join(EXTENSIONS_DIR);
