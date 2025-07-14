@@ -14,7 +14,9 @@ bindgen!({
     path: "./wit/v0.0.1",
     async: true,
     with: {
+        "wasi": wasmtime_wasi::p2::bindings,
         "wasi:http": wasmtime_wasi_http::bindings::http,
+        "wasi:logging/logging": crate::logging::logging,
     },
 });
 
