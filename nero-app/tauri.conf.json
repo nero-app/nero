@@ -26,8 +26,12 @@
     "windows": [
       {
         "title": "Nero",
-        "width": 1160,
-        "height": 680
+        "width": 1024,
+        "height": 640,
+        "minWidth": 768,
+        "minHeight": 480,
+        "maxWidth": 1280,
+        "maxHeight": 800
       }
     ],
     "security": {
