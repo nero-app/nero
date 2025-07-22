@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tanstack/svelte-query": "5.75.4",
+    "@tanstack/svelte-query-devtools": "5.75.4",
     "@tauri-apps/api": "2.5.0",
     "regexparam": "3.0.0"
   },

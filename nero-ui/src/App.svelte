@@ -6,6 +6,7 @@
   import Series from "./pages/Series.svelte";
   import Watch from "./pages/Watch.svelte";
   import { QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
+  import { SvelteQueryDevtools } from "@tanstack/svelte-query-devtools";
 
   const queryClient = new QueryClient();
   const routes = {
@@ -20,4 +21,5 @@
   <Layout>
     <Router {routes} />
   </Layout>
+  <SvelteQueryDevtools />
 </QueryClientProvider>
