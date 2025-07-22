@@ -2,6 +2,7 @@
   import shockedCat from "../assets/images/shocked_cat.svg";
   import ErrorMessage from "../components/ErrorMessage.svelte";
   import SeriesCard from "../components/SeriesCard.svelte";
+  import { createInfiniteScroll } from "../state/createInfiniteScroll.svelte";
   import { infiniteSearchQuery } from "../state/queries.svelte";
 
   let { querystring }: { querystring: string } = $props();
@@ -11,6 +12,7 @@
     decodeURIComponent(querystring.substring(querystring.indexOf("q=") + 2)),
   );
   let seriesQuery = $derived(infiniteSearchQuery(searchQuery));
+  let infiniteScroll = createInfiniteScroll(() => $seriesQuery.fetchNextPage());
   let series = $derived(
     $seriesQuery.data?.pages.flatMap((page) => page.items) ?? [],
   );
@@ -27,6 +29,10 @@
         <SeriesCard {series} />
       </li>
     {/each}
+    <div bind:this={infiniteScroll.element}></div>
+    {#if $seriesQuery.isFetchingNextPage}
+      <p class="p-2 text-center text-sm text-gray-500">Loading more...</p>
+    {/if}
   </ul>
 {/snippet}
 

@@ -1,5 +1,6 @@
 <script lang="ts">
   import sortIcon from "../assets/icons/sort_icon.svg";
+  import { createInfiniteScroll } from "../state/createInfiniteScroll.svelte";
   import type { EpisodesPage } from "../types/page";
   import EpisodeCard from "./EpisodeCard.svelte";
   import ErrorMessage from "./ErrorMessage.svelte";
@@ -19,6 +20,9 @@
     smallCards = false,
   }: EpisodesListProps = $props();
 
+  let infiniteScroll = createInfiniteScroll(() =>
+    $episodesQuery.fetchNextPage(),
+  );
   let episodes = $derived(
     $episodesQuery.data?.pages.flatMap((page) => page.items) ?? [],
   );
@@ -32,6 +36,10 @@
       </li>
     {/each}
   </ul>
+  <div bind:this={infiniteScroll.element}></div>
+  {#if $episodesQuery.isFetchingNextPage}
+    <p class="p-2 text-center text-sm text-gray-500">Loading more...</p>
+  {/if}
 {/snippet}
 
 <section>
