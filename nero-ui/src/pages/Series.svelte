@@ -2,6 +2,7 @@
   import playIcon from "../assets/icons/play_icon.svg";
   import shareIcon from "../assets/icons/share_icon.svg";
   import EpisodesList from "../components/EpisodesList.svelte";
+  import ErrorMessage from "../components/ErrorMessage.svelte";
   import {
     infiniteEpisodesQuery,
     seriesInfoQuery,
@@ -21,12 +22,10 @@
 {#snippet seriesHeaderSkeleton()}
   <header class="flex flex-col gap-4">
     <div class="h-9 w-3/4 animate-pulse rounded bg-gray-200"></div>
-
     <div class="flex gap-4">
       <div class="h-10 w-32 animate-pulse rounded-lg bg-gray-200"></div>
       <div class="h-10 w-40 animate-pulse rounded-lg bg-gray-200"></div>
     </div>
-
     <div class="flex flex-col gap-2">
       <div class="h-4 w-full animate-pulse rounded bg-gray-200"></div>
       <div class="h-4 w-full animate-pulse rounded bg-gray-200"></div>
@@ -36,45 +35,37 @@
   </header>
 {/snippet}
 
-{#snippet seriesErrorState(error: Error)}
-  <header class="flex flex-col gap-4">
-    <h1 class="text-3xl font-bold">Whoops...</h1>
-    <p>
-      Apparently an error has occurred while loading the series information.
-    </p>
-    <pre
-      class="whitespace-pre-wrap break-words rounded-md border border-gray-300 bg-gray-100
-        p-4 text-sm text-gray-800">{error.message}</pre>
-  </header>
-{/snippet}
-
 {#snippet seriesHeader(series: Series)}
   <header class="flex flex-col gap-4">
     <h1 class="truncate text-3xl font-bold">{series.title}</h1>
-    <div class="flex gap-4">
-      <!-- TODO: Disable if episodes are not available or if the page does not contain any episodes -->
-      <a
-        class="rounded-lg bg-red-300 px-3 py-1.5 duration-300 active:scale-95"
-        href="/watch/{series.id}/{firstEpisodeId}"
-        use:link
-      >
-        <div class="flex items-center gap-2">
-          <img src={playIcon} alt="Play icon" />
-          <span>Watch now</span>
-        </div>
-      </a>
-      <!-- TODO: onclick -->
-      <button
-        class="cursor-pointer rounded-lg bg-red-300 px-3 py-1.5 duration-300 active:scale-95"
-      >
-        <div class="flex items-center gap-2">
-          <img src={shareIcon} alt="Share icon" />
-          <span>Share the series</span>
-        </div>
-      </button>
-    </div>
+    {@render quickActions()}
     <p class="line-clamp-5">{series.synopsis}</p>
   </header>
+{/snippet}
+
+{#snippet quickActions()}
+  <div class="flex gap-4">
+    <!-- TODO: Disable if episodes are not available or if the page does not contain any episodes -->
+    <a
+      class="rounded-lg bg-red-300 px-3 py-1.5 duration-300 active:scale-95"
+      href="/watch/{params.seriesId}/{firstEpisodeId}"
+      use:link
+    >
+      <div class="flex items-center gap-2">
+        <img src={playIcon} alt="Play icon" />
+        <span>Watch now</span>
+      </div>
+    </a>
+    <!-- TODO: onclick -->
+    <button
+      class="cursor-pointer rounded-lg bg-red-300 px-3 py-1.5 duration-300 active:scale-95"
+    >
+      <div class="flex items-center gap-2">
+        <img src={shareIcon} alt="Share icon" />
+        <span>Share the series</span>
+      </div>
+    </button>
+  </div>
 {/snippet}
 
 <div class="grid h-full grid-cols-[2fr_3fr] gap-20">
@@ -91,11 +82,14 @@
       />
     {/if}
   </figure>
-  <article class="flex flex-col gap-4 overflow-auto">
+  <article class="flex flex-col gap-4 overflow-y-auto">
     {#if $seriesQuery.isLoading}
       {@render seriesHeaderSkeleton()}
     {:else if $seriesQuery.isError}
-      {@render seriesErrorState($seriesQuery.error)}
+      <ErrorMessage
+        message="Apparently an error has occurred"
+        error={$seriesQuery.error}
+      />
     {:else if $seriesQuery.isSuccess}
       {@render seriesHeader($seriesQuery.data)}
     {/if}

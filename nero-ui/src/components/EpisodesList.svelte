@@ -2,7 +2,7 @@
   import sortIcon from "../assets/icons/sort_icon.svg";
   import type { EpisodesPage } from "../types/page";
   import EpisodeCard from "./EpisodeCard.svelte";
-  import SmallEpisodeCard from "./SmallEpisodeCard.svelte";
+  import ErrorMessage from "./ErrorMessage.svelte";
   import type {
     CreateInfiniteQueryResult,
     InfiniteData,
@@ -11,26 +11,27 @@
   interface EpisodesListProps {
     episodesQuery: CreateInfiniteQueryResult<InfiniteData<EpisodesPage>>;
     seriesId: string;
-    smallCard?: boolean;
+    smallCards?: boolean;
   }
   let {
     episodesQuery,
     seriesId,
-    smallCard = false,
+    smallCards = false,
   }: EpisodesListProps = $props();
+
+  let episodes = $derived(
+    $episodesQuery.data?.pages.flatMap((page) => page.items) ?? [],
+  );
 </script>
 
-{#snippet errorState(error: Error)}
-  <article class="flex size-full flex-col items-center justify-center gap-2">
-    <p class="text-center">
-      Whoops...
-      <br />
-      Apparently an error has occurred while loading the episodes.
-    </p>
-    <pre
-      class="rounded-md border border-gray-300 bg-gray-100 p-4 text-sm break-words
-        whitespace-pre-wrap text-gray-800">{error.message}</pre>
-  </article>
+{#snippet episodesList()}
+  <ul>
+    {#each episodes as episode (episode.id)}
+      <li>
+        <EpisodeCard {seriesId} {episode} small={smallCards} />
+      </li>
+    {/each}
+  </ul>
 {/snippet}
 
 <section>
@@ -44,24 +45,15 @@
     </div>
     <hr class="border-gray-300" />
   </header>
-
   {#if $episodesQuery.isLoading}
     <p>Loading...</p>
   {:else if $episodesQuery.isError}
-    {@render errorState($episodesQuery.error)}
+    <ErrorMessage
+      message="Apparently an error has occurred"
+      error={$episodesQuery.error}
+      centered
+    />
   {:else if $episodesQuery.isSuccess}
-    <ul>
-      {#each $episodesQuery.data.pages as page, pageIndex (pageIndex)}
-        {#each page.items as episode (episode.id)}
-          <li>
-            {#if smallCard}
-              <SmallEpisodeCard {seriesId} {episode} />
-            {:else}
-              <EpisodeCard {seriesId} {episode} />
-            {/if}
-          </li>
-        {/each}
-      {/each}
-    </ul>
+    {@render episodesList()}
   {/if}
 </section>

@@ -16,5 +16,5 @@
     src={series.posterUrl}
     alt={series.title}
   />
-  <h3 class="truncate text-center text-sm font-semibold">{series.title}</h3>
+  <h3 class="truncate text-center text-sm font-medium">{series.title}</h3>
 </a>
