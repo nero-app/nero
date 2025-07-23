@@ -1,9 +1,16 @@
+import type { FilterCategory, SearchFilter } from "../types/filters";
 import type { EpisodesPage, SeriesPage } from "../types/page";
-import type { SearchFilter } from "../types/searchFilter";
 import type { Series } from "../types/series";
 import type { Video } from "../types/video";
 import { createInfiniteQuery, createQuery } from "@tanstack/svelte-query";
 import { invoke } from "@tauri-apps/api/core";
+
+export function createFiltersQuery() {
+  return createQuery({
+    queryKey: ["filters"],
+    queryFn: () => invoke<FilterCategory[]>("get_filters"),
+  });
+}
 
 export function createInfiniteSearchQuery(
   query: string,
