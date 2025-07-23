@@ -5,7 +5,7 @@ import type { Video } from "../types/video";
 import { createInfiniteQuery, createQuery } from "@tanstack/svelte-query";
 import { invoke } from "@tauri-apps/api/core";
 
-export function infiniteSearchQuery(
+export function createInfiniteSearchQuery(
   query: string,
   initialPage = 1,
   filters: SearchFilter[] = [],
@@ -24,14 +24,14 @@ export function infiniteSearchQuery(
   });
 }
 
-export function seriesInfoQuery(seriesId: string) {
+export function createSeriesInfoQuery(seriesId: string) {
   return createQuery({
     queryKey: ["series", seriesId],
     queryFn: () => invoke<Series>("get_series_info", { seriesId }),
   });
 }
 
-export function infiniteEpisodesQuery(seriesId: string, initialPage = 1) {
+export function createInfiniteEpisodesQuery(seriesId: string, initialPage = 1) {
   return createInfiniteQuery({
     queryKey: ["episodes", seriesId],
     queryFn: ({ pageParam = initialPage }) =>
@@ -49,7 +49,7 @@ export function infiniteEpisodesQuery(seriesId: string, initialPage = 1) {
   });
 }
 
-export function getSeriesVideos(seriesId: string, episodeId: string) {
+export function createSeriesVideosQuery(seriesId: string, episodeId: string) {
   return createQuery({
     queryKey: ["videos", seriesId, episodeId],
     queryFn: () =>

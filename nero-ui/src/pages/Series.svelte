@@ -4,16 +4,16 @@
   import EpisodesList from "../components/EpisodesList.svelte";
   import ErrorMessage from "../components/ErrorMessage.svelte";
   import {
-    infiniteEpisodesQuery,
-    seriesInfoQuery,
+    createInfiniteEpisodesQuery,
+    createSeriesInfoQuery,
   } from "../state/queries.svelte";
   import type { Series } from "../types/series";
   import { link } from "./Router.svelte";
 
   let { params }: { params: { seriesId: string } } = $props();
 
-  let seriesQuery = seriesInfoQuery(params.seriesId);
-  let episodesQuery = infiniteEpisodesQuery(params.seriesId);
+  let seriesQuery = createSeriesInfoQuery(params.seriesId);
+  let episodesQuery = createInfiniteEpisodesQuery(params.seriesId);
 
   // TODO:
   const firstEpisodeId = 0;

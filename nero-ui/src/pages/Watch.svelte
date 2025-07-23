@@ -3,8 +3,8 @@
   import EpisodesList from "../components/EpisodesList.svelte";
   import ErrorMessage from "../components/ErrorMessage.svelte";
   import {
-    getSeriesVideos,
-    infiniteEpisodesQuery,
+    createSeriesVideosQuery,
+    createInfiniteEpisodesQuery,
   } from "../state/queries.svelte";
   import type { Video } from "../types/video";
 
@@ -12,8 +12,8 @@
     $props();
   $inspect(params.episodeId);
 
-  let videosQuery = getSeriesVideos(params.seriesId, params.episodeId);
-  let episodesQuery = infiniteEpisodesQuery(params.seriesId);
+  let videosQuery = createSeriesVideosQuery(params.seriesId, params.episodeId);
+  let episodesQuery = createInfiniteEpisodesQuery(params.seriesId);
 
   let selectedVideoIndex = $state(0);
   let proxyVideoUrl = $derived.by(() => {

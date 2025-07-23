@@ -3,7 +3,7 @@
   import ErrorMessage from "../components/ErrorMessage.svelte";
   import SeriesCard from "../components/SeriesCard.svelte";
   import { createInfiniteScroll } from "../state/createInfiniteScroll.svelte";
-  import { infiniteSearchQuery } from "../state/queries.svelte";
+  import { createInfiniteSearchQuery } from "../state/queries.svelte";
 
   let { querystring }: { querystring: string } = $props();
   $inspect(querystring);
@@ -11,7 +11,7 @@
   let searchQuery = $derived(
     decodeURIComponent(querystring.substring(querystring.indexOf("q=") + 2)),
   );
-  let seriesQuery = $derived(infiniteSearchQuery(searchQuery));
+  let seriesQuery = $derived(createInfiniteSearchQuery(searchQuery));
   let infiniteScroll = createInfiniteScroll(() => $seriesQuery.fetchNextPage());
   let series = $derived(
     $seriesQuery.data?.pages.flatMap((page) => page.items) ?? [],
