@@ -42,7 +42,7 @@
   {/if}
 {/snippet}
 
-<section>
+<section class="flex size-full flex-col">
   <header class="sticky top-0 z-10 bg-white">
     <div class="flex w-full items-center justify-between">
       <h2 class="text-2xl font-semibold">Episodes</h2>
@@ -59,7 +59,6 @@
     <ErrorMessage
       message="Apparently an error has occurred"
       error={$episodesQuery.error}
-      centered
     />
   {:else if $episodesQuery.isSuccess}
     {@render episodesList()}

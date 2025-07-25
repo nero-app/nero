@@ -5,28 +5,24 @@
     message: string;
     imageSrc?: string;
     error: Error;
-    centered?: boolean;
     children?: Snippet;
   }
-  let { message, imageSrc, error, centered, children }: ErrorStateProps =
-    $props();
+  let { message, imageSrc, error, children }: ErrorStateProps = $props();
 </script>
 
-<article
-  class={`flex flex-col gap-2 ${centered ? "size-full items-center justify-center" : ""}`}
->
+<article class="flex size-full flex-col items-center justify-center gap-2">
   <p class="text-center">
     Whoops...
     <br />
     {message}
   </p>
-  <div class="flex items-center">
+  <div class="flex w-full items-center justify-center">
     {#if imageSrc}
       <img class="w-56" src={imageSrc} alt="Error illustration" />
     {/if}
     <pre
-      class="max-h-56 overflow-auto whitespace-pre-wrap break-words rounded-md border
-        border-gray-300 bg-gray-100 p-4 text-sm text-gray-800">{error.message}</pre>
+      class="max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-md border
+        border-gray-300 bg-gray-100 p-4 text-sm text-gray-800">{error}</pre>
   </div>
   {@render children?.()}
 </article>

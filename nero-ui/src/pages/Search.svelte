@@ -118,7 +118,6 @@
         message="Apparently an error has occurred"
         imageSrc={shockedCat}
         error={$searchQuery.error}
-        centered
       />
     {:else if $searchQuery.isSuccess}
       {@render seriesList()}
@@ -131,7 +130,6 @@
       <ErrorMessage
         message="Apparently an error has occurred"
         error={$filtersQuery.error}
-        centered
       />
     {:else if $filtersQuery.isSuccess}
       {@render filtersList($filtersQuery.data)}

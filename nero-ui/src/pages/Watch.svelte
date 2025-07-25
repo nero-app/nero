@@ -87,7 +87,6 @@
         message="Apparently an error has occurred"
         error={$videosQuery.error}
         imageSrc={shockedCat}
-        centered
       />
     {:else if $videosQuery.isSuccess}
       {@render videoSection($videosQuery.data)}
