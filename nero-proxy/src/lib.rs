@@ -121,9 +121,7 @@ pub async fn init(host: String, port: u16) {
         .route("/", get(proxy_handler))
         .with_state(state);
 
-    let listener = TcpListener::bind(format!("{}:{}", host, port))
-        .await
-        .unwrap();
+    let listener = TcpListener::bind(format!("{host}:{port}")).await.unwrap();
     println!("listening on {}", listener.local_addr().unwrap());
     axum::serve(listener, app).await.unwrap()
 }

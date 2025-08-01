@@ -54,7 +54,7 @@ impl ExtensionManager {
             .wasm_host
             .load_extension_async(
                 self.extensions_dir
-                    .join(format!("{}.{}", file_name, WASM_EXTENSION)),
+                    .join(format!("{file_name}.{WASM_EXTENSION}")),
             )
             .await?;
         Ok(res)
@@ -63,7 +63,7 @@ impl ExtensionManager {
     pub async fn delete_extension_async(&self, file_name: &str) -> Result<()> {
         let path = self
             .extensions_dir
-            .join(format!("{}.{}", file_name, WASM_EXTENSION));
+            .join(format!("{file_name}.{WASM_EXTENSION}"));
         if path.exists() {
             std::fs::remove_file(path)?;
         }
