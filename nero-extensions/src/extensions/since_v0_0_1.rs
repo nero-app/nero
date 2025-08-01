@@ -1,7 +1,7 @@
-use anyhow::{Ok, Result};
-use exports::nero::extension::extractor::{
+use self::nero::extension::types::{
     Episode, EpisodesPage, Filter, FilterCategory, SearchFilter, Series, SeriesPage, Url, Video,
 };
+use anyhow::{Ok, Result};
 use wasmtime::{Store, component::bindgen};
 use wasmtime_wasi::p2::IoView;
 use wasmtime_wasi_http::{bindings::http::types::Scheme, types::HostFields};
