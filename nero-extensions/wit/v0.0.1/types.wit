@@ -1,27 +1,24 @@
 interface types {
-    use wasi:http/types@0.2.3.{scheme, headers};
+    use wasi:http/types@0.2.3.{outgoing-request};
 
-    /// Represents a URL with its components, used for referencing network resources.
-    record url {
-        /// The scheme component of the URL, such as "http" or "https".
-        /// This defines the protocol to be used.
-        scheme: scheme,
-        /// The authority component of the URL, typically consisting of the domain name
-        /// and optionally the port number (e.g., "example.com" or "example.com:8080").
-        authority: string,
-        /// The optional path and query component of the URL, specifying the path
-        /// on the server and any query parameters (e.g., "/path?query=1").
-        path-with-query: option<string>
-    }
-
+    /// Represents a remotely accessible HTTP resource to be retrieved by the host environment.
+    ///
+    /// This is an alias for `wasi:http/types.outgoing-request`, and contains all the necessary information
+    /// for issuing an HTTP request to retrieve a remote asset (such as a video, image, or metadata file).
+    ///
+    /// It includes the full URL (via scheme, authority, and path), headers, method, and optional body content.
+    /// This abstraction allows implementors to simply describe how to access a resource, while leaving
+    /// the actual fetching to a downstream HTTP-capable host.
+    type http-resource = outgoing-request;
+    
     /// Represents a series with its basic details.
     record series {
         /// Unique identifier for the series.
         id: string,
         /// Title of the series.
         title: string,
-        /// URL to the poster image of the series, if available.
-        poster-url: option<url>,
+        /// The HTTP resource from which the series poster image can be retrieved.
+        poster-resource: option<http-resource>, 
         /// Synopsis or description of the series, if available.
         synopsis: option<string>,
         /// Type of the series (e.g., TV show, movie), if available.
@@ -86,8 +83,8 @@ interface types {
         number: u16,
         /// Title of the episode, if available.
         title: option<string>,
-        /// URL to the thumbnail image of the episode, if available.
-        thumbnail-url: option<url>,
+        /// The HTTP resource from which the episode thumbnail image can be retrieved.
+        thumbnail-resource: option<http-resource>, 
         /// Description of the episode, if available.
         description: option<string>,
     }
@@ -111,13 +108,8 @@ interface types {
 
     /// Represents a video stream for a specific episode.
     record video {
-        /// URL to the video stream.
-        url: url,
-        /// HTTP headers required to access the video stream, if necessary.
-        ///
-        /// These headers are essential for loading the video stream in case the video requires it.
-        /// Ensure that all necessary headers are included (e.g. Referer or Content-Type headers).
-        headers: headers,
+        /// The HTTP resource from which the video stream can be retrieved.
+        http-resource: http-resource,
         /// The server hosting the video stream.
         server: string,
         /// The resolution of the video stream.

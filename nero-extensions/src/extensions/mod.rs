@@ -96,7 +96,7 @@ impl ExtensionTrait for WasmExtension {
                     .await?
                     .map_err(|err| anyhow!("{err}"))?;
 
-                Ok(res.into())
+                res.try_into_with_store(&mut store).await
             }
         }
     }
@@ -112,7 +112,7 @@ impl ExtensionTrait for WasmExtension {
                     .await?
                     .map_err(|err| anyhow!("{err}"))?;
 
-                Ok(res.into())
+                res.try_into_with_store(&mut store).await
             }
         }
     }
@@ -132,7 +132,7 @@ impl ExtensionTrait for WasmExtension {
                     .await?
                     .map_err(|err| anyhow!("{err}"))?;
 
-                Ok(res.into())
+                res.try_into_with_store(&mut store).await
             }
         }
     }
@@ -148,13 +148,29 @@ impl ExtensionTrait for WasmExtension {
                     .await?
                     .map_err(|err| anyhow!("{err}"))?;
 
-                let videos = res
-                    .into_iter()
-                    .map(|v| v.into_crate_video(&mut store))
-                    .collect::<Result<_>>()?;
-
-                Ok(videos)
+                let mut items = Vec::new();
+                for video in res {
+                    items.push(video.try_into_with_store(&mut store).await?);
+                }
+                Ok(items)
             }
         }
+    }
+}
+
+pub(super) trait AsyncTryFromWithStore<T>: Sized {
+    async fn try_from_with_store(value: T, store: &mut Store<WasmState>) -> Result<Self>;
+}
+
+pub(super) trait AsyncTryIntoWithStore<T> {
+    async fn try_into_with_store(self, store: &mut Store<WasmState>) -> Result<T>;
+}
+
+impl<T, U> AsyncTryIntoWithStore<U> for T
+where
+    U: AsyncTryFromWithStore<T>,
+{
+    async fn try_into_with_store(self, store: &mut Store<WasmState>) -> Result<U> {
+        U::try_from_with_store(self, store).await
     }
 }

@@ -1,5 +1,6 @@
 <script lang="ts">
   import { link } from "../pages/Router.svelte";
+  import { httpResource } from "../types/httpResource";
   import type { Series } from "../types/series";
 
   let { series }: { series: Series } = $props();
@@ -11,9 +12,10 @@
   href="/series/{series.id}"
   use:link
 >
+  <!-- TODO: Handle missing poster -->
   <img
     class="aspect-[2/3] rounded-lg object-cover"
-    src={series.posterUrl}
+    use:httpResource={series.posterResource!}
     alt={series.title}
   />
   <h3 class="truncate text-center text-sm font-medium">{series.title}</h3>

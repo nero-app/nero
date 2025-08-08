@@ -1,6 +1,7 @@
 <script lang="ts">
   import { link } from "../pages/Router.svelte";
   import type { Episode } from "../types/episode";
+  import { httpResource } from "../types/httpResource";
 
   let {
     seriesId,
@@ -11,7 +12,7 @@
 
 <a
   class={`grid items-center gap-4 rounded-md p-1 duration-300 hover:bg-gray-100
-active:scale-95 ${small ? "grid-cols-[1fr_1fr]" : "grid-cols-[1fr_4fr_7fr]"}`}
+  active:scale-95 ${small ? "grid-cols-[1fr_1fr]" : "grid-cols-[1fr_4fr_7fr]"}`}
   href="/watch/{seriesId}/{episode.id}"
   use:link
 >
@@ -19,9 +20,10 @@ active:scale-95 ${small ? "grid-cols-[1fr_1fr]" : "grid-cols-[1fr_4fr_7fr]"}`}
     <span class="truncate text-center font-medium">{episode.number}</span>
   {/if}
   <picture class={`${small ? "min-w-[115px]" : "min-w-[150px]"} aspect-video`}>
+    <!-- TODO: Handle missing poster -->
     <img
       class="size-full rounded-lg object-cover"
-      src={episode.thumbnailUrl}
+      use:httpResource={episode.thumbnailResource!}
       alt="Episode thumbnail"
     />
   </picture>

@@ -7,6 +7,7 @@
     createInfiniteEpisodesQuery,
     createSeriesInfoQuery,
   } from "../state/queries.svelte";
+  import { httpResource } from "../types/httpResource";
   import type { Series } from "../types/series";
   import { link } from "./Router.svelte";
 
@@ -75,9 +76,10 @@
     {:else if $seriesQuery.isError}
       <div class="size-full rounded-xl bg-gray-700"></div>
     {:else if $seriesQuery.isSuccess}
+      <!-- TODO: Handle missing poster -->
       <img
         class="size-full rounded-xl object-cover"
-        src={$seriesQuery.data.posterUrl}
+        use:httpResource={$seriesQuery.data.posterResource!}
         alt="{$seriesQuery.data.title} poster"
       />
     {/if}
