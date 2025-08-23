@@ -34,7 +34,7 @@ where
 
 #[cfg(test)]
 mod tests {
-    use crate::request::TargetHttpResource;
+    use crate::proxy::TargetHttpResource;
 
     use base64::{Engine, engine::general_purpose::STANDARD};
     use url::Url;

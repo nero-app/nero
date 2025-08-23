@@ -34,7 +34,7 @@ fn main() {
         })
         .plugin(tauri_plugin_shell::init())
         // TODO: use portpicker to find an unused port
-        .plugin(tauri_plugin_video_proxy::Builder::new("localhost".to_owned(), 8080).build())
+        .plugin(tauri_plugin_http_resources::Builder::new("localhost".to_owned(), 8080).build())
         .invoke_handler(tauri::generate_handler![
             get_filters,
             search,
