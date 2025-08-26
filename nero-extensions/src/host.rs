@@ -62,7 +62,7 @@ impl WasmHost {
     // TODO
     #[allow(unused_variables)]
     fn get_extension_version(wasm_bytes: &[u8]) -> Result<SemanticVersion> {
-        Ok(SemanticVersion::new(0, 0, 1))
+        Ok(SemanticVersion::new(0, 1, 0))
     }
 }
 

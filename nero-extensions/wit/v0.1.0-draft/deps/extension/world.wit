@@ -1,4 +1,4 @@
-package nero:extension;
+package nero:extension@0.1.0-draft;
 
 world extension {
     import wasi:http/outgoing-handler@0.2.3;

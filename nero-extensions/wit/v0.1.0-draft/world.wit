@@ -1,5 +1,5 @@
 package nero:nero-extensions;
 
 world bindings {
-    include nero:extension/extension;
+    include nero:extension/extension@0.1.0-draft;
 }

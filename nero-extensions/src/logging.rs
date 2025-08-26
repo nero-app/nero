@@ -2,7 +2,7 @@ use wasmtime::component::HasData;
 use wasmtime_wasi::{ResourceTable, p2::IoView};
 
 wasmtime::component::bindgen!({
-    path: "./wit/v0.0.1/deps/logging",
+    path: "./wit/v0.1.0-draft/deps/logging",
 });
 
 pub use wasi::logging::logging::{self, add_to_linker};

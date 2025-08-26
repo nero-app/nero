@@ -16,10 +16,10 @@ use crate::{
     semver::SemanticVersion,
 };
 
-pub const MIN_VER: SemanticVersion = SemanticVersion::new(0, 0, 1);
+pub const MIN_VER: SemanticVersion = SemanticVersion::new(0, 1, 0);
 
 bindgen!({
-    path: "./wit/v0.0.1",
+    path: "./wit/v0.1.0-draft",
     world: "nero:extension/extension",
     async: true,
     with: {

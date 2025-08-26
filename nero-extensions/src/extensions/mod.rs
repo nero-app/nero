@@ -1,4 +1,4 @@
-mod since_v0_0_1;
+mod since_v0_1_0_draft;
 
 use anyhow::{Ok, Result, anyhow};
 use tokio::sync::Mutex;
@@ -18,7 +18,7 @@ use crate::{
 };
 
 enum Extension {
-    V001(since_v0_0_1::Extension),
+    V001(since_v0_1_0_draft::Extension),
 }
 
 pub struct WasmExtension {
@@ -44,8 +44,9 @@ impl WasmExtension {
         .unwrap();
 
         let extension = match version {
-            v if v >= since_v0_0_1::MIN_VER => Ok(Extension::V001(
-                since_v0_0_1::Extension::instantiate_async(&mut store, component, &linker).await?,
+            v if v >= since_v0_1_0_draft::MIN_VER => Ok(Extension::V001(
+                since_v0_1_0_draft::Extension::instantiate_async(&mut store, component, &linker)
+                    .await?,
             )),
             _ => Err(anyhow!("unsupported extension version")),
         }?;
