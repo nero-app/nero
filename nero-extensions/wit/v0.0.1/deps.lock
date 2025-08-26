@@ -6,22 +6,25 @@ sha512 = "898dcc4e8c15d18acc6b88dbe232336fa4d19019430a910dbc9e7aeaace3077a164af3
 sha256 = "93a701968a7dd3c5d69031bc0601681c468972fdf7e28a93bb6150a67d6ebe8b"
 sha512 = "98fca567c7a01887b0fb38981f1772169b6ea8de475b546508f8b86738d84e44ba95cae81def40ac34e8809f5f60e85224077ab8cb6d6d5d6296acc1df73c159"
 
+[extension]
+url = "https://github.com/dacchidocchi/nero-extension/archive/main.tar.gz"
+sha256 = "0e594ce37f4c9846ee112370a313ef21ea9944bbf7d2d3b4fd4f4bb02ce1eed3"
+sha512 = "b0749d77942f419a9285ea21d685347ba44b6844daddc1eb6aea62c72f45d872eca7222e272f08e6d600794fce1b21825b9671b8e88cfc954efbf88aa9437f6c"
+deps = ["cli", "clocks", "filesystem", "http", "io", "logging", "random", "sockets"]
+
 [filesystem]
 sha256 = "69d42fb10a04a33545b17e055f13db9b1e10e82ba0ed5bdb52334e40dc07c679"
 sha512 = "612effbac6f4804fe0c29dae20b78bbba59e52cb754c15402f5fe229c3153a221e0fbdff1d9d00ceaa3fe049c6a95523a5b99f772f1c16d972eade2c88326a30"
 
 [http]
-url = "https://github.com/WebAssembly/wasi-http/archive/v0.2.3.tar.gz"
 sha256 = "72d3a00dbf39eed40a134e8b1dee85834961153f9d205ee4dd56657270c084ce"
 sha512 = "636150c464c0eb3d60bd212fc5d4012638c8cd4f89b583b87a38154ef99de828aac4296ac13c5cface10ee61e164fcfc43a5c104f916229dfdf49c0d11047677"
-deps = ["cli", "clocks", "filesystem", "io", "random", "sockets"]
 
 [io]
 sha256 = "1cccbfe4122686ea57a25cd368e8cdfc408cbcad089f47fb6685b6f92e96f050"
 sha512 = "7a95f964c13da52611141acd89bc8876226497f128e99dd176a4270c5b5efbd8cc847b5fbd1a91258d028c646db99e0424d72590cf1caf20f9f3a3343fad5017"
 
 [logging]
-url = "https://github.com/WebAssembly/wasi-logging/archive/d31c41d0d9eed81aabe02333d0025d42acf3fb75.tar.gz"
 sha256 = "ad81d8b7f7a8ceb729cf551f1d24586f0de9560a43eea57a9bb031d2175804e1"
 sha512 = "1687ad9a02ab3e689443e67d1a0605f58fc5dea828d2e4d2c7825c6002714fac9bd4289b1a68b61a37dcca6c3b421f4c8ed4b1e6cc29f6460e0913cf1bf11c04"
 

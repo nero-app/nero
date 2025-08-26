@@ -20,6 +20,7 @@ pub const MIN_VER: SemanticVersion = SemanticVersion::new(0, 0, 1);
 
 bindgen!({
     path: "./wit/v0.0.1",
+    world: "nero:extension/extension",
     async: true,
     with: {
         "wasi": wasmtime_wasi::p2::bindings,
