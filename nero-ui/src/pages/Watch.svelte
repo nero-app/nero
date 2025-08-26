@@ -2,11 +2,12 @@
   import shockedCat from "../assets/images/shocked_cat.svg";
   import EpisodesList from "../components/EpisodesList.svelte";
   import ErrorMessage from "../components/ErrorMessage.svelte";
+  import { httpResource } from "../state/actions.svelte";
   import {
     createSeriesVideosQuery,
     createInfiniteEpisodesQuery,
   } from "../state/queries.svelte";
-  import { httpResource, type HttpResource } from "../types/httpResource";
+  import type { HttpResource } from "../types/httpResource";
   import type { Video } from "../types/video";
 
   let { params }: { params: { seriesId: string; episodeId: string } } =

@@ -1,6 +1,6 @@
 <script lang="ts">
   import { link } from "../pages/Router.svelte";
-  import { httpResource } from "../types/httpResource";
+  import { httpResource } from "../state/actions.svelte";
   import type { Series } from "../types/series";
 
   let { series }: { series: Series } = $props();

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { link } from "../pages/Router.svelte";
+  import { httpResource } from "../state/actions.svelte";
   import type { Episode } from "../types/episode";
-  import { httpResource } from "../types/httpResource";
 
   let {
     seriesId,

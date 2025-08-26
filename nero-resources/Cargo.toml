@@ -2,6 +2,10 @@
 name = "tauri-plugin-http-resources"
 version = "0.1.0"
 edition = "2024"
+links = "tauri-plugin-http-resources"
+
+[build-dependencies]
+tauri-plugin = "2.4.0"
 
 [dependencies]
 axum = "0.8.4"
@@ -14,7 +18,3 @@ tauri = { version = "2", default-features = false }
 tauri-plugin-shell = { workspace = true }
 tokio = { workspace = true, features = ["net"] }
 url = { workspace = true }
-
-[dev-dependencies]
-serde_qs = "0.15.0"
-urlencoding = "2.1.3"

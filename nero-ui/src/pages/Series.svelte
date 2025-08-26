@@ -3,11 +3,11 @@
   import shareIcon from "../assets/icons/share_icon.svg";
   import EpisodesList from "../components/EpisodesList.svelte";
   import ErrorMessage from "../components/ErrorMessage.svelte";
+  import { httpResource } from "../state/actions.svelte";
   import {
     createInfiniteEpisodesQuery,
     createSeriesInfoQuery,
   } from "../state/queries.svelte";
-  import { httpResource } from "../types/httpResource";
   import type { Series } from "../types/series";
   import { link } from "./Router.svelte";
 
