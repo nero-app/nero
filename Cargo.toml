@@ -1,3 +1,3 @@
 [workspace]
 resolver = "2"
-members = ["nero-app", "nero-extensions", "nero-resources"]
+members = ["nero-app", "nero-extensions", "nero-resources", "nero-types"]
