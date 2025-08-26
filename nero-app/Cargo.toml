@@ -11,11 +11,10 @@ tauri-build = { version = "2", default-features = false, features = [
 [dependencies]
 tauri = { version = "2", features = ["config-toml"] }
 tauri-plugin-http-resources = { path = "../nero-resources" }
-serde = { version = "1.0.210", features = ["derive"] }
-serde_json = "1.0.128"
-tauri-plugin-shell = "2"
+tauri-plugin-shell = { workspace = true }
+serde = { workspace = true }
 nero-extensions = { path = "../nero-extensions" }
-tracing = "0.1.41"
+tracing = { workspace = true }
 tracing-subscriber = "0.3.19"
 
 [features]

@@ -4,6 +4,6 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-anyhow = "1.0.95"
-serde = { version = "1.0.218", features = ["derive"] }
-url = { version = "2.5.4", features = ["serde"] }
+anyhow = { workspace = true }
+serde = { workspace = true }
+url = { workspace = true }
