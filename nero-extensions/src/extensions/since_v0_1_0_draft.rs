@@ -4,6 +4,7 @@ use self::nero::extension::types::{
 
 use anyhow::Ok;
 use http_body_util::BodyExt;
+use nero_runtime::semver::SemanticVersion;
 use wasmtime::component::{Resource, bindgen};
 use wasmtime_wasi::p2::IoView;
 use wasmtime_wasi_http::{
@@ -11,10 +12,7 @@ use wasmtime_wasi_http::{
     types::HostOutgoingRequest,
 };
 
-use crate::{
-    extensions::{AsyncTryFromWithStore, AsyncTryIntoWithStore},
-    semver::SemanticVersion,
-};
+use crate::{AsyncTryIntoWithStore, WasmState, extensions::AsyncTryFromWithStore};
 
 pub const MIN_VER: SemanticVersion = SemanticVersion::new(0, 1, 0);
 
@@ -64,7 +62,7 @@ impl From<crate::types::SearchFilter> for SearchFilter {
 impl AsyncTryFromWithStore<SeriesPage> for crate::types::SeriesPage {
     async fn try_from_with_store(
         page: SeriesPage,
-        store: &mut wasmtime::Store<crate::host::WasmState>,
+        store: &mut wasmtime::Store<WasmState>,
     ) -> anyhow::Result<Self> {
         let mut items = Vec::new();
         for series in page.series {
@@ -80,7 +78,7 @@ impl AsyncTryFromWithStore<SeriesPage> for crate::types::SeriesPage {
 impl AsyncTryFromWithStore<Series> for crate::types::Series {
     async fn try_from_with_store(
         series: Series,
-        store: &mut wasmtime::Store<crate::host::WasmState>,
+        store: &mut wasmtime::Store<WasmState>,
     ) -> anyhow::Result<Self> {
         Ok(crate::types::Series {
             id: series.id,
@@ -98,7 +96,7 @@ impl AsyncTryFromWithStore<Series> for crate::types::Series {
 impl AsyncTryFromWithStore<EpisodesPage> for crate::types::EpisodesPage {
     async fn try_from_with_store(
         page: EpisodesPage,
-        store: &mut wasmtime::Store<crate::host::WasmState>,
+        store: &mut wasmtime::Store<WasmState>,
     ) -> anyhow::Result<Self> {
         let mut items = Vec::new();
         for episode in page.episodes {
@@ -114,7 +112,7 @@ impl AsyncTryFromWithStore<EpisodesPage> for crate::types::EpisodesPage {
 impl AsyncTryFromWithStore<Episode> for crate::types::Episode {
     async fn try_from_with_store(
         episode: Episode,
-        store: &mut wasmtime::Store<crate::host::WasmState>,
+        store: &mut wasmtime::Store<WasmState>,
     ) -> anyhow::Result<Self> {
         Ok(crate::types::Episode {
             id: episode.id,
@@ -132,7 +130,7 @@ impl AsyncTryFromWithStore<Episode> for crate::types::Episode {
 impl AsyncTryFromWithStore<Video> for crate::types::Video {
     async fn try_from_with_store(
         video: Video,
-        store: &mut wasmtime::Store<crate::host::WasmState>,
+        store: &mut wasmtime::Store<WasmState>,
     ) -> anyhow::Result<Self> {
         Ok(crate::types::Video {
             http_resource: video.http_resource.try_into_with_store(store).await?,
@@ -145,7 +143,7 @@ impl AsyncTryFromWithStore<Video> for crate::types::Video {
 impl AsyncTryFromWithStore<Resource<HostOutgoingRequest>> for crate::types::HttpResource {
     async fn try_from_with_store(
         resource: Resource<HostOutgoingRequest>,
-        store: &mut wasmtime::Store<crate::host::WasmState>,
+        store: &mut wasmtime::Store<WasmState>,
     ) -> anyhow::Result<Self> {
         let table = store.data_mut().table();
         let outgoing_request = table.delete(resource)?;

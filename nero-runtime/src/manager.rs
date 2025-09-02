@@ -49,7 +49,7 @@ impl ExtensionManager {
         Ok(extensions)
     }
 
-    pub async fn load_extension_async(&self, file_name: &str) -> Result<WasmExtension> {
+    pub async fn load_extension_async<T: WasmExtension>(&self, file_name: &str) -> Result<T> {
         let res = self
             .wasm_host
             .load_extension_async(

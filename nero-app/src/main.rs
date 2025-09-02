@@ -3,7 +3,8 @@
 mod commands;
 
 use commands::*;
-use nero_extensions::{ExtensionManager, WasmExtension};
+use nero_extensions::WasmExtension;
+use nero_runtime::manager::ExtensionManager;
 use tauri::{async_runtime::block_on, Manager};
 
 const EXTENSIONS_DIR: &str = "Nero";

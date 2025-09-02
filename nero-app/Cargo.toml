@@ -16,6 +16,7 @@ serde = { workspace = true }
 nero-extensions = { path = "../nero-extensions" }
 tracing = { workspace = true }
 tracing-subscriber = "0.3.19"
+nero-runtime = { version = "0.1.0", path = "../nero-runtime" }
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]
