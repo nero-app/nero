@@ -1,6 +1,5 @@
-use nero_extensions::{
-    types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video},
-    ExtensionTrait,
+use nero_extensions::types::{
+    EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video,
 };
 use tauri::{Result, State};
 

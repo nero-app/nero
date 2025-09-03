@@ -1,30 +1,85 @@
-pub mod types;
+use serde::{Deserialize, Serialize};
+use url::Url;
 
-use anyhow::Result;
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub enum Method {
+    Get,
+    Head,
+    Post,
+    Put,
+    Delete,
+    Connect,
+    Options,
+    Trace,
+    Patch,
+    Other(String),
+}
 
-use crate::types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video};
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct HttpResource {
+    pub method: Method,
+    pub url: Url,
+    pub headers: Vec<(String, String)>,
+    pub body: Option<Vec<u8>>,
+}
 
-pub trait Extension {
-    fn filters(&self) -> impl Future<Output = Result<Vec<FilterCategory>>>;
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Page<T> {
+    pub items: Vec<T>,
+    pub has_next_page: bool,
+}
 
-    fn search(
-        &self,
-        query: &str,
-        page: Option<u16>,
-        filters: Vec<SearchFilter>,
-    ) -> impl Future<Output = Result<SeriesPage>>;
+pub type SeriesPage = Page<Series>;
+pub type EpisodesPage = Page<Episode>;
 
-    fn get_series_info(&self, series_id: &str) -> impl Future<Output = Result<Series>>;
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Series {
+    pub id: String,
+    pub title: String,
+    pub poster_resource: Option<HttpResource>,
+    pub synopsis: Option<String>,
+    pub r#type: Option<String>,
+}
 
-    fn get_series_episodes(
-        &self,
-        series_id: &str,
-        page: Option<u16>,
-    ) -> impl Future<Output = Result<EpisodesPage>>;
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Episode {
+    pub id: String,
+    pub number: u16,
+    pub title: Option<String>,
+    pub thumbnail_resource: Option<HttpResource>,
+    pub description: Option<String>,
+}
 
-    fn get_series_videos(
-        &self,
-        series_id: &str,
-        episode_id: &str,
-    ) -> impl Future<Output = Result<Vec<Video>>>;
+type Resolution = (u16, u16);
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Video {
+    pub http_resource: HttpResource,
+    pub server: String,
+    pub resolution: Resolution,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Filter {
+    pub id: String,
+    pub display_name: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct FilterCategory {
+    pub id: String,
+    pub display_name: String,
+    pub filters: Vec<Filter>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SearchFilter {
+    pub id: String,
+    pub values: Vec<String>,
 }

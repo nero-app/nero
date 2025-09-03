@@ -1,14 +1,13 @@
 mod extensions;
 mod logging;
 
-pub use nero_types::Extension as ExtensionTrait;
 pub mod types {
-    pub use nero_types::types::*;
+    pub use nero_types::*;
 }
 
 use anyhow::{Ok, Result, anyhow};
 use nero_runtime::{Metadata, semver::SemanticVersion};
-use nero_types::types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video};
+use nero_types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video};
 use tokio::sync::Mutex;
 use wasmtime::{
     Engine, Store,
@@ -103,8 +102,8 @@ impl nero_runtime::WasmExtension for WasmExtension {
     }
 }
 
-impl ExtensionTrait for WasmExtension {
-    async fn filters(&self) -> Result<Vec<FilterCategory>> {
+impl WasmExtension {
+    pub async fn filters(&self) -> Result<Vec<FilterCategory>> {
         let mut store = self.store.lock().await;
 
         match &self.extension {
@@ -120,7 +119,7 @@ impl ExtensionTrait for WasmExtension {
         }
     }
 
-    async fn search(
+    pub async fn search(
         &self,
         query: &str,
         page: Option<u16>,
@@ -142,7 +141,7 @@ impl ExtensionTrait for WasmExtension {
         }
     }
 
-    async fn get_series_info(&self, series_id: &str) -> Result<Series> {
+    pub async fn get_series_info(&self, series_id: &str) -> Result<Series> {
         let mut store = self.store.lock().await;
 
         match &self.extension {
@@ -158,7 +157,7 @@ impl ExtensionTrait for WasmExtension {
         }
     }
 
-    async fn get_series_episodes(
+    pub async fn get_series_episodes(
         &self,
         series_id: &str,
         page: Option<u16>,
@@ -178,7 +177,7 @@ impl ExtensionTrait for WasmExtension {
         }
     }
 
-    async fn get_series_videos(&self, series_id: &str, episode_id: &str) -> Result<Vec<Video>> {
+    pub async fn get_series_videos(&self, series_id: &str, episode_id: &str) -> Result<Vec<Video>> {
         let mut store = self.store.lock().await;
 
         match &self.extension {
