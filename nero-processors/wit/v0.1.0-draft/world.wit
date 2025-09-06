@@ -1,0 +1,5 @@
+package nero:nero-processors;
+
+world bindings {
+    include nero:processor/processor@0.1.0-draft;
+}

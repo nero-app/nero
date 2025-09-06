@@ -10,7 +10,7 @@ export function createResourceUrlQuery(resource: HttpResource) {
   return createQuery({
     queryKey: ["httpResource", resource.url.toString()],
     queryFn: () =>
-      invoke<string>("plugin:http-resources|resolve_resource", {
+      invoke<string>("resolve_resource", {
         resource,
       }),
   });

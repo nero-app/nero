@@ -1,0 +1,10 @@
+package nero:processor@0.1.0-draft;
+
+world processor {
+    use wasi:http/types@0.2.3.{incoming-request};
+    export wasi:http/incoming-handler@0.2.3;
+    import wasi:http/outgoing-handler@0.2.3;
+
+    type http-resource = incoming-request;
+    export resolve-resource: func(http-resource: http-resource) -> string;
+}

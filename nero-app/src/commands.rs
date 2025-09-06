@@ -1,9 +1,15 @@
 use nero_extensions::types::{
-    EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video,
+    EpisodesPage, FilterCategory, HttpResource, SearchFilter, Series, SeriesPage, Video,
 };
-use tauri::{Result, State};
+use tauri::{Result, State, Url};
 
 use crate::AppState;
+
+#[tauri::command]
+#[tracing::instrument(skip(state))]
+pub async fn resolve_resource(state: State<'_, AppState>, resource: HttpResource) -> Result<Url> {
+    Ok(state.processor.resolve_resource(resource).await?)
+}
 
 #[tauri::command]
 #[tracing::instrument(skip(state))]

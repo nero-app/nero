@@ -2,9 +2,4 @@
 identifier = "main-capability"
 description = "Capability for the main window"
 windows = ["main"]
-permissions = [
-    "core:default",
-    "shell:allow-open",
-    "shell:default",
-    "http-resources:allow-resolve-resource",
-]
+permissions = ["core:default"]

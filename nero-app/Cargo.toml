@@ -10,13 +10,12 @@ tauri-build = { version = "2", default-features = false, features = [
 
 [dependencies]
 tauri = { version = "2", features = ["config-toml"] }
-tauri-plugin-http-resources = { path = "../nero-resources" }
-tauri-plugin-shell = { workspace = true }
 serde = { workspace = true }
-nero-extensions = { path = "../nero-extensions" }
 tracing = { workspace = true }
 tracing-subscriber = "0.3.19"
-nero-runtime = { version = "0.1.0", path = "../nero-runtime" }
+nero-runtime = { path = "../nero-runtime" }
+nero-processors = { path = "../nero-processors" }
+nero-extensions = { path = "../nero-extensions" }
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]
