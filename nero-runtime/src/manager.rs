@@ -4,7 +4,7 @@ use anyhow::Result;
 use tokio::fs::{read, read_dir};
 use wasm_metadata::{Metadata, Payload};
 
-use crate::{WasmExtension, WasmHost};
+use crate::{WasmComponent, WasmHost};
 
 const WASM_EXTENSION: &str = "wasm";
 
@@ -49,7 +49,7 @@ impl ExtensionManager {
         Ok(extensions)
     }
 
-    pub async fn load_extension_async<T: WasmExtension>(&self, file_name: &str) -> Result<T> {
+    pub async fn load_extension_async<T: WasmComponent>(&self, file_name: &str) -> Result<T> {
         let res = self
             .wasm_host
             .load_extension_async(

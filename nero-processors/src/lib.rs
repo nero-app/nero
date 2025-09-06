@@ -92,7 +92,7 @@ pub struct WasmProcessor {
     metadata: Metadata,
 }
 
-impl nero_runtime::WasmExtension for WasmProcessor {
+impl nero_runtime::WasmComponent for WasmProcessor {
     async fn instantiate_async(
         engine: &Engine,
         version: SemanticVersion,

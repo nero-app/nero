@@ -4,7 +4,7 @@ use anyhow::Result;
 use wasm_metadata::Payload;
 use wasmtime::{Engine, component::Component};
 
-use crate::{WasmExtension, semver::SemanticVersion};
+use crate::{WasmComponent, semver::SemanticVersion};
 
 pub struct WasmHost {
     engine: Engine,
@@ -24,7 +24,7 @@ impl Default for WasmHost {
 }
 
 impl WasmHost {
-    pub async fn load_extension_async<T: WasmExtension, P: AsRef<Path>>(
+    pub async fn load_extension_async<T: WasmComponent, P: AsRef<Path>>(
         &self,
         path: P,
     ) -> wasmtime::Result<T> {

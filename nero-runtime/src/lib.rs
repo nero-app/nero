@@ -10,7 +10,7 @@ use wasmtime::{Engine, component::Component};
 
 use crate::semver::SemanticVersion;
 
-pub trait WasmExtension: Sized {
+pub trait WasmComponent: Sized {
     fn instantiate_async(
         engine: &Engine,
         version: SemanticVersion,

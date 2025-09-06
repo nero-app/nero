@@ -58,7 +58,7 @@ pub struct WasmExtension {
     metadata: Metadata,
 }
 
-impl nero_runtime::WasmExtension for WasmExtension {
+impl nero_runtime::WasmComponent for WasmExtension {
     async fn instantiate_async(
         engine: &Engine,
         version: SemanticVersion,
