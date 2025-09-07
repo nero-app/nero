@@ -167,7 +167,7 @@ impl AsyncTryFromWithStore<Resource<HostOutgoingRequest>> for crate::types::Http
             Scheme::Other(other) => other,
         };
         let authority = outgoing_request.authority.unwrap_or_else(String::new);
-        let mut uri = format!("{scheme}://{authority}/");
+        let mut uri = format!("{scheme}://{authority}");
         if let Some(path) = &outgoing_request.path_with_query {
             uri.push_str(path);
         }
