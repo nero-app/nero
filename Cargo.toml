@@ -14,6 +14,7 @@ serde = { version = "1.0.219", features = ["derive"] }
 tokio = "1.46.1"
 tracing = "0.1.41"
 url = { version = "2.5.4", features = ["serde"] }
+wasi-logging-impl = { git = "https://github.com/dacchidocchi/wasi-logging-impl.git", rev = "11e1b50" }
 wasmtime = "34.0.1"
 wasmtime-wasi = "34.0.1"
 wasmtime-wasi-http = "34.0.1"

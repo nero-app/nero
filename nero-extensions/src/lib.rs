@@ -1,5 +1,4 @@
 mod extensions;
-mod logging;
 
 pub mod types {
     pub use nero_types::*;
@@ -14,14 +13,11 @@ use wasmtime::{
 };
 use wasmtime_wasi::{
     ResourceTable,
-    p2::{IoImpl, IoView, WasiCtx, WasiView},
+    p2::{IoView, WasiCtx, WasiView},
 };
 use wasmtime_wasi_http::{WasiHttpCtx, WasiHttpView};
 
-use crate::{
-    extensions::{AsyncTryIntoWithStore, since_v0_1_0_draft},
-    logging::{WasiLogging, WasiLoggingImpl},
-};
+use crate::extensions::{AsyncTryIntoWithStore, since_v0_1_0_draft};
 
 #[allow(non_camel_case_types)]
 enum ExtensionPre {
@@ -65,10 +61,7 @@ impl nero_runtime::WasmComponent for WasmExtension {
         let mut linker = Linker::new(engine);
         wasmtime_wasi::p2::add_to_linker_async(&mut linker).unwrap();
         wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker).unwrap();
-        logging::add_to_linker::<_, WasiLogging<WasmState>>(&mut linker, |s| {
-            WasiLoggingImpl(IoImpl(s))
-        })
-        .unwrap();
+        wasi_logging_impl::add_to_linker(&mut linker).unwrap();
 
         let extension_pre = match version {
             v if v >= since_v0_1_0_draft::MIN_VER => Ok(ExtensionPre::V0_1_0_DRAFT(
