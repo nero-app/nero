@@ -12,6 +12,7 @@ nero-runtime = { path = "../nero-runtime" }
 nero-types = { path = "../nero-types" }
 tokio = { workspace = true, features = ["net"] }
 url = { workspace = true }
+wasi-logging-impl = { workspace = true }
 wasmtime = { workspace = true }
 wasmtime-wasi = { workspace = true }
 wasmtime-wasi-http = { workspace = true }

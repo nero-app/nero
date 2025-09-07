@@ -102,6 +102,7 @@ impl nero_runtime::WasmComponent for WasmProcessor {
         let mut linker = Linker::new(engine);
         wasmtime_wasi::p2::add_to_linker_async(&mut linker).unwrap();
         wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker).unwrap();
+        wasi_logging_impl::add_to_linker(&mut linker).unwrap();
 
         let processor_pre = match version {
             v if v >= since_v0_1_0_draft::MIN_VER => Ok(ProcessorPre::V0_1_0_DRAFT(
