@@ -1,14 +1,21 @@
+mod keyvalue;
 mod processors;
 pub mod server;
 
-use std::str::FromStr;
+use std::{
+    collections::HashMap,
+    str::FromStr,
+    sync::{Arc, LazyLock},
+};
 
 use anyhow::{Result, anyhow};
 use bytes::Bytes;
 use http_body_util::{BodyExt, Full};
 use hyper::header::{HeaderName, HeaderValue};
+use keyvalue::{WasiKeyValue, WasiKeyValueCtx};
 use nero_runtime::{Metadata, semver::SemanticVersion};
 use nero_types::HttpResource;
+use tokio::sync::RwLock;
 use url::Url;
 use wasmtime::{
     Engine, Store,
@@ -28,6 +35,9 @@ use wasmtime_wasi_http::{
 };
 
 use crate::{processors::since_v0_1_0_draft, server::SERVER_ADDR};
+
+pub static KEYVALUE_STORE: LazyLock<Arc<RwLock<HashMap<String, Vec<u8>>>>> =
+    LazyLock::new(|| Arc::new(RwLock::new(HashMap::new())));
 
 #[allow(non_camel_case_types)]
 #[derive(Clone)]
@@ -103,6 +113,10 @@ impl nero_runtime::WasmComponent for WasmProcessor {
         wasmtime_wasi::p2::add_to_linker_async(&mut linker).unwrap();
         wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker).unwrap();
         wasi_logging_impl::add_to_linker(&mut linker).unwrap();
+        keyvalue::add_to_linker(&mut linker, |h: &mut WasmState| {
+            WasiKeyValue::new(&h.wasi_keyvalue_ctx, &mut h.table)
+        })
+        .unwrap();
 
         let processor_pre = match version {
             v if v >= since_v0_1_0_draft::MIN_VER => Ok(ProcessorPre::V0_1_0_DRAFT(
@@ -169,6 +183,7 @@ pub(crate) struct WasmState {
     table: ResourceTable,
     ctx: WasiCtx,
     http_ctx: WasiHttpCtx,
+    wasi_keyvalue_ctx: WasiKeyValueCtx,
 }
 
 impl Default for WasmState {
@@ -177,6 +192,7 @@ impl Default for WasmState {
             table: ResourceTable::new(),
             ctx: WasiCtx::builder().build(),
             http_ctx: WasiHttpCtx::new(),
+            wasi_keyvalue_ctx: WasiKeyValueCtx::new(KEYVALUE_STORE.clone()),
         }
     }
 }

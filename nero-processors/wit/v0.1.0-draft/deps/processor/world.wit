@@ -5,6 +5,7 @@ world processor {
     export wasi:http/incoming-handler@0.2.3;
     import wasi:http/outgoing-handler@0.2.3;
     import wasi:logging/logging@0.1.0-draft;
+    import wasi:keyvalue/store@0.2.0-draft;
 
     type http-resource = incoming-request;
     export resolve-resource: func(http-resource: http-resource) -> string;
