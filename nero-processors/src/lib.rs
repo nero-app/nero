@@ -12,14 +12,14 @@ use anyhow::{Result, anyhow};
 use bytes::Bytes;
 use http_body_util::{BodyExt, Full};
 use hyper::header::{HeaderName, HeaderValue};
-use keyvalue::{WasiKeyValue, WasiKeyValueCtx};
+use keyvalue::WasiKeyValueCtx;
 use nero_runtime::{Metadata, semver::SemanticVersion};
 use nero_types::HttpResource;
 use tokio::sync::RwLock;
 use url::Url;
 use wasmtime::{
     Engine, Store,
-    component::{Component, Linker, Resource},
+    component::{Component, HasSelf, Linker, Resource},
 };
 use wasmtime_wasi::{
     ResourceTable,
@@ -113,10 +113,7 @@ impl nero_runtime::WasmComponent for WasmProcessor {
         wasmtime_wasi::p2::add_to_linker_async(&mut linker).unwrap();
         wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker).unwrap();
         wasi_logging_impl::add_to_linker(&mut linker).unwrap();
-        keyvalue::add_to_linker(&mut linker, |h: &mut WasmState| {
-            WasiKeyValue::new(&h.wasi_keyvalue_ctx, &mut h.table)
-        })
-        .unwrap();
+        keyvalue::keyvalue::store::add_to_linker::<_, HasSelf<_>>(&mut linker, |s| s).unwrap();
 
         let processor_pre = match version {
             v if v >= since_v0_1_0_draft::MIN_VER => Ok(ProcessorPre::V0_1_0_DRAFT(
@@ -179,7 +176,7 @@ impl WasmProcessor {
     }
 }
 
-pub(crate) struct WasmState {
+struct WasmState {
     table: ResourceTable,
     ctx: WasiCtx,
     http_ctx: WasiHttpCtx,
