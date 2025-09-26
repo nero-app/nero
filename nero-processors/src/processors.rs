@@ -13,6 +13,7 @@ pub mod since_v0_1_0_draft {
             "wasi:io": wasmtime_wasi::p2::bindings::io,
             "wasi:http": wasmtime_wasi_http::bindings::http,
             "wasi:keyvalue": crate::keyvalue::keyvalue,
+            "wasi:logging": nero_logging::logging,
         },
     });
 }

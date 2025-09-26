@@ -24,6 +24,7 @@ bindgen!({
         "wasi:clocks": wasmtime_wasi::p2::bindings::clocks,
         "wasi:io": wasmtime_wasi::p2::bindings::io,
         "wasi:http": wasmtime_wasi_http::bindings::http,
+        "wasi:logging": nero_logging::logging,
     },
 });
 

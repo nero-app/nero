@@ -1,0 +1,5 @@
+package nero:wasi-logging;
+
+world imports {
+    include wasi:logging/imports@0.1.0-draft;
+}
