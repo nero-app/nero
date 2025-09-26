@@ -1,7 +1,7 @@
 package nero:extension@0.1.0-draft;
 
 world extension {
-    import wasi:http/outgoing-handler@0.2.3;
+    import wasi:http/outgoing-handler@0.2.7;
     import wasi:logging/logging@0.1.0-draft;
     export extractor;
 }

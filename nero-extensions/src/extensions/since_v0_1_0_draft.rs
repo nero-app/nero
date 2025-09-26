@@ -6,8 +6,8 @@ use anyhow::Ok;
 use http_body_util::BodyExt;
 use nero_runtime::semver::SemanticVersion;
 use wasmtime::component::{Resource, bindgen};
-use wasmtime_wasi::p2::IoView;
 use wasmtime_wasi_http::{
+    WasiHttpView,
     bindings::http::types::{Method, Scheme},
     types::HostOutgoingRequest,
 };
@@ -19,10 +19,9 @@ pub const MIN_VER: SemanticVersion = SemanticVersion::new(0, 1, 0);
 bindgen!({
     path: "./wit/v0.1.0-draft",
     world: "nero:extension/extension",
-    async: true,
+    imports: { default: async },
+    exports: { default: async },
     with: {
-        "wasi:clocks": wasmtime_wasi::p2::bindings::clocks,
-        "wasi:io": wasmtime_wasi::p2::bindings::io,
         "wasi:http": wasmtime_wasi_http::bindings::http,
         "wasi:logging": nero_logging::logging,
     },

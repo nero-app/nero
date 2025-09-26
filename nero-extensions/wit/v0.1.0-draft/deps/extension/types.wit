@@ -1,5 +1,5 @@
 interface types {
-    use wasi:http/types@0.2.3.{outgoing-request};
+    use wasi:http/types@0.2.7.{outgoing-request};
 
     /// Represents a remotely accessible HTTP resource to be retrieved by the host environment.
     ///
@@ -10,7 +10,7 @@ interface types {
     /// This abstraction allows implementors to simply describe how to access a resource, while leaving
     /// the actual fetching to a downstream HTTP-capable host.
     type http-resource = outgoing-request;
-    
+
     /// Represents a series with its basic details.
     record series {
         /// Unique identifier for the series.
@@ -18,7 +18,7 @@ interface types {
         /// Title of the series.
         title: string,
         /// The HTTP resource from which the series poster image can be retrieved.
-        poster-resource: option<http-resource>, 
+        poster-resource: option<http-resource>,
         /// Synopsis or description of the series, if available.
         synopsis: option<string>,
         /// Type of the series (e.g., TV show, movie), if available.
@@ -84,7 +84,7 @@ interface types {
         /// Title of the episode, if available.
         title: option<string>,
         /// The HTTP resource from which the episode thumbnail image can be retrieved.
-        thumbnail-resource: option<http-resource>, 
+        thumbnail-resource: option<http-resource>,
         /// Description of the episode, if available.
         description: option<string>,
     }
@@ -102,7 +102,7 @@ interface types {
     }
 
     /// Represents the resolution of a video stream with height and width.
-    /// 
+    ///
     /// For example, a resolution of `1920x1080` would be represented as `(1080, 1920)`.
     type resolution = tuple<u16, u16>;
 

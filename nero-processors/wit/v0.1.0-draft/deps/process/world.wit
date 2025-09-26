@@ -1,0 +1,5 @@
+package wit:process@0.1.0-draft;
+
+world imports {
+    import process;
+}

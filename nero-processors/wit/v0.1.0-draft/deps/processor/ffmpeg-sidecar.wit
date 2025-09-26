@@ -1,0 +1,4 @@
+interface ffmpeg-sidecar {
+    ffmpeg-path: func() -> option<string>;
+    ffprobe-path: func() -> option<string>;
+}

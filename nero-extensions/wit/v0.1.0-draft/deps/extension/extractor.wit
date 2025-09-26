@@ -7,8 +7,8 @@ interface extractor {
     use types.{
         filter-category, search-filter, series-page, series, episodes-page, video,
     };
-    use wasi:http/types@0.2.3.{error-code};
-    
+    use wasi:http/types@0.2.7.{error-code};
+
     /// Returns a list of available filters to use in the `search` method.
     filters: func() -> result<list<filter-category>, error-code>;
 
@@ -39,7 +39,7 @@ interface extractor {
     ///
     /// Returns an `episodes-page` if successful, or an http error code as a `error-code`.
     get-series-episodes: func(
-        series-id: string, 
+        series-id: string,
         page: option<u16>
     ) -> result<episodes-page, error-code>;
 

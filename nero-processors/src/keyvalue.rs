@@ -12,8 +12,7 @@ mod generated {
     wasmtime::component::bindgen!({
         path: "./wit/v0.1.0-draft",
         world: "wasi:keyvalue/imports",
-        async: true,
-        trappable_imports: true,
+        imports: { default: async | trappable },
         with: {
             "wasi:keyvalue/store/bucket": crate::keyvalue::Bucket
         },
