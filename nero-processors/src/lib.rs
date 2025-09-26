@@ -1,4 +1,5 @@
 mod keyvalue;
+mod process;
 mod processors;
 pub mod server;
 
@@ -111,6 +112,7 @@ impl nero_runtime::WasmComponent for WasmProcessor {
         wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker).unwrap();
         nero_logging::add_to_linker(&mut linker).unwrap();
         keyvalue::keyvalue::store::add_to_linker::<_, HasSelf<_>>(&mut linker, |s| s).unwrap();
+        process::process::process::add_to_linker::<_, HasSelf<_>>(&mut linker, |s| s).unwrap();
 
         let processor_pre = match version {
             v if v >= since_v0_1_0_draft::MIN_VER => Ok(ProcessorPre::V0_1_0_DRAFT(

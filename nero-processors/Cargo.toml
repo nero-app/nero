@@ -11,7 +11,7 @@ hyper = "1.7.0"
 nero-logging = { path = "../nero-logging" }
 nero-runtime = { path = "../nero-runtime" }
 nero-types = { path = "../nero-types" }
-tokio = { workspace = true, features = ["net"] }
+tokio = { workspace = true, features = ["net", "process"] }
 url = { workspace = true }
 wasmtime = { workspace = true }
 wasmtime-wasi = { workspace = true }
