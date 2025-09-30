@@ -15,7 +15,7 @@ pub mod since_v0_1_0_draft {
         with: {
             "wasi:http": wasmtime_wasi_http::bindings::http,
             "wasi:keyvalue": crate::keyvalue::keyvalue,
-            "wasi:logging": nero_logging::logging,
+            "wasi:logging": nero_wasi_logging::logging,
         },
     });
 

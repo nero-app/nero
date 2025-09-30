@@ -23,7 +23,7 @@ bindgen!({
     exports: { default: async },
     with: {
         "wasi:http": wasmtime_wasi_http::bindings::http,
-        "wasi:logging": nero_logging::logging,
+        "wasi:logging": nero_wasi_logging::logging,
     },
 });
 
