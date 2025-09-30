@@ -1,4 +1,3 @@
-mod process;
 mod processors;
 pub mod server;
 
@@ -15,11 +14,12 @@ use hyper::header::{HeaderName, HeaderValue};
 use nero_types::HttpResource;
 use nero_wasi_keyvalue::{WasiKeyValue, WasiKeyValueCtx};
 use nero_wasm_host::{Metadata, semver::SemanticVersion};
+use nero_wit_process::{WitProcess, WitProcessCtx};
 use tokio::sync::RwLock;
 use url::Url;
 use wasmtime::{
     Engine, Store,
-    component::{Component, HasSelf, Linker, Resource},
+    component::{Component, Linker, Resource},
 };
 use wasmtime_wasi::{ResourceTable, WasiCtx, WasiCtxView, WasiView};
 use wasmtime_wasi_http::{
@@ -114,7 +114,10 @@ impl nero_wasm_host::WasmComponent for WasmProcessor {
             WasiKeyValue::new(&s.wasi_keyvalue_ctx, &mut s.table)
         })
         .unwrap();
-        process::process::process::add_to_linker::<_, HasSelf<_>>(&mut linker, |s| s).unwrap();
+        nero_wit_process::add_to_linker(&mut linker, |s: &mut WasmState| {
+            WitProcess::new(&s.wit_process_ctx, &mut s.table)
+        })
+        .unwrap();
 
         let processor_pre = match version {
             v if v >= since_v0_1_0_draft::MIN_VER => Ok(ProcessorPre::V0_1_0_DRAFT(
@@ -182,6 +185,7 @@ struct WasmState {
     ctx: WasiCtx,
     http_ctx: WasiHttpCtx,
     wasi_keyvalue_ctx: WasiKeyValueCtx,
+    wit_process_ctx: WitProcessCtx,
 }
 
 impl Default for WasmState {
@@ -191,6 +195,7 @@ impl Default for WasmState {
             ctx: WasiCtx::builder().build(),
             http_ctx: WasiHttpCtx::new(),
             wasi_keyvalue_ctx: WasiKeyValueCtx::new(KEYVALUE_STORE.clone()),
+            wit_process_ctx: WitProcessCtx {},
         }
     }
 }

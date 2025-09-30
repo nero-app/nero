@@ -1,20 +1,22 @@
-#![allow(unused_variables)]
+#![allow(dead_code, unused_variables)]
+
 use std::process::{ExitStatus, Stdio};
 
+use anyhow::Result;
 use tokio::process::{Child, Command};
-use wasmtime::component::Resource;
-use wasmtime_wasi::p2::{
-    IoError,
-    bindings::io::streams::{InputStream, OutputStream},
+use wasmtime::component::{HasData, Resource};
+use wasmtime_wasi::{
+    ResourceTable,
+    p2::{
+        IoError,
+        bindings::io::streams::{InputStream, OutputStream},
+    },
 };
-
-use crate::WasmState;
 
 pub use self::generated::wit::*;
 
 mod generated {
     wasmtime::component::bindgen!({
-        path: "./wit/v0.1.0-draft",
         world: "wit:process/imports",
         imports: {
             "wit:process/process/[method]command.output": async | trappable,
@@ -37,9 +39,22 @@ mod generated {
     });
 }
 
-impl process::process::Host for WasmState {}
+pub struct WitProcessCtx {}
 
-impl process::process::HostStdio for WasmState {
+pub struct WitProcess<'a> {
+    ctx: &'a WitProcessCtx,
+    table: &'a mut ResourceTable,
+}
+
+impl<'a> WitProcess<'a> {
+    pub fn new(ctx: &'a WitProcessCtx, table: &'a mut ResourceTable) -> Self {
+        Self { ctx, table }
+    }
+}
+
+impl process::process::Host for WitProcess<'_> {}
+
+impl process::process::HostStdio for WitProcess<'_> {
     fn piped(&mut self) -> wasmtime::Result<Resource<Stdio>> {
         todo!()
     }
@@ -57,7 +72,7 @@ impl process::process::HostStdio for WasmState {
     }
 }
 
-impl process::process::HostExitStatus for WasmState {
+impl process::process::HostExitStatus for WitProcess<'_> {
     fn success(&mut self, resource: Resource<ExitStatus>) -> wasmtime::Result<bool> {
         todo!()
     }
@@ -71,7 +86,7 @@ impl process::process::HostExitStatus for WasmState {
     }
 }
 
-impl process::process::HostCommand for WasmState {
+impl process::process::HostCommand for WitProcess<'_> {
     fn new(&mut self, program: String) -> wasmtime::Result<Resource<Command>> {
         todo!()
     }
@@ -159,7 +174,7 @@ impl process::process::HostCommand for WasmState {
     }
 }
 
-impl process::process::HostChild for WasmState {
+impl process::process::HostChild for WitProcess<'_> {
     fn stdin(
         &mut self,
         resource: Resource<Child>,
@@ -216,4 +231,18 @@ impl process::process::HostChild for WasmState {
     fn drop(&mut self, rep: Resource<Child>) -> wasmtime::Result<()> {
         todo!()
     }
+}
+
+pub fn add_to_linker<T: Send + 'static>(
+    l: &mut wasmtime::component::Linker<T>,
+    f: fn(&mut T) -> WitProcess<'_>,
+) -> Result<()> {
+    process::process::add_to_linker::<_, HasWitProcess>(l, f)?;
+    Ok(())
+}
+
+struct HasWitProcess;
+
+impl HasData for HasWitProcess {
+    type Data<'a> = WitProcess<'a>;
 }

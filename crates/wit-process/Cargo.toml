@@ -1,0 +1,10 @@
+[package]
+name = "nero-wit-process"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = { workspace = true }
+tokio = { workspace = true, features = ["process"] }
+wasmtime = { workspace = true }
+wasmtime-wasi = { workspace = true }

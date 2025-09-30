@@ -1,0 +1,277 @@
+interface process {
+    use wasi:io/error@0.2.7.{error};
+    use wasi:io/streams@0.2.7.{input-stream, output-stream};
+
+    /// Describes what to do with a standard I/O stream for a child process when
+    /// passed to the `stdin`, `stdout`, and `stderr` methods of `command`.
+    resource stdio {
+        /// A new pipe should be arranged to connect the parent and child processes.
+        ///
+        /// Writing more than a pipe buffer's worth of input to stdin without also reading
+        /// stdout and stderr at the same time may cause a deadlock.
+        /// This is an issue when running any program that doesn't guarantee that it reads its
+        /// entire stdin before writing more than a pipe buffer's worth of output.
+        /// The size of a pipe buffer varies on different targets.
+        piped: static func() -> stdio;
+
+        /// The child inherits from the corresponding parent descriptor.
+        inherit: static func() -> stdio;
+
+        /// This stream will be ignored. This is the equivalent of attaching the
+        /// stream to a null device (like `/dev/null` on Unix systems).
+        null: static func() -> stdio;
+    }
+
+    /// Describes the result of a process after it has terminated.
+    ///
+    /// This resource is used to represent the exit status or other termination of a child process.
+    /// Child processes are created via the `command` resource and their exit
+    /// status is exposed through the `status` method, or the `wait` method
+    /// of a `child` process.
+    ///
+    /// An `exit-status` represents every possible disposition of a process. On Unix this
+    /// is the **wait status**. It is *not* simply an *exit status* (a value passed to `exit`).
+    resource exit-status {
+        /// Was termination successful? Signal termination is not considered a
+        /// success, and success is defined as a zero exit status.
+        success: func() -> bool;
+
+        /// Returns the exit code of the process, if any.
+        ///
+        /// In Unix terms the return value is the **exit status**: the value passed to `exit`, if the
+        /// process finished by calling `exit`. Note that on Unix the exit status is truncated to 8
+        /// bits, and that values that didn't come from a program's call to `exit` may be invented by the
+        /// runtime system (often, for example, 255, 254, 127 or 126).
+        ///
+        /// On Unix, this will return `none` if the process was terminated by a signal.
+        code: func() -> option<s32>;
+    }
+
+    /// The output of a finished process.
+    ///
+    /// This is returned in a Result by either the `output` method of a
+    /// `command`, or the `wait_with_output` method of a `child`
+    /// process.
+    record output {
+        /// The status (exit code) of the process.
+        status: exit-status,
+
+        /// The data that the process wrote to stdout.
+        stdout: list<u8>,
+
+        /// The data that the process wrote to stderr.
+        stderr: list<u8>,
+    }
+
+    /// A process configurator, providing fine-grained control
+    /// over how a new process should be spawned.
+    ///
+    /// A default configuration can be
+    /// generated using the constructor, where `program` gives a path to the
+    /// program to be executed. Additional configuration methods allow the settings to be
+    /// changed (for example, by using `command.args` to add arguments) prior to spawning.
+    resource command {
+        /// Constructs a new `command` for launching the program at
+        /// path `program`, with the following default configuration:
+        ///
+        /// * No arguments to the program
+        /// * Inherit the current process's environment
+        /// * Inherit the current process's working directory
+        /// * Inherit stdin/stdout/stderr for `spawn` or `status`, but create pipes for `output`
+        ///
+        /// Builder methods are provided to change these defaults
+        /// and otherwise configure the process.
+        ///
+        /// If `program` is not an absolute path, the `PATH` will be searched in
+        /// an OS-defined way.
+        constructor(program: string);
+
+        /// Adds an argument to pass to the program.
+        ///
+        /// Only one argument can be passed per use. To pass multiple arguments
+        /// in a single call, use `args`.
+        arg: func(arg: string);
+
+
+        /// Adds multiple arguments to pass to the program.
+        ///
+        /// To pass a single argument see `arg`.
+        args: func(args: list<string>);
+
+        /// Inserts or updates an explicit environment variable mapping.
+        ///
+        /// This method allows you to add an environment variable mapping to the spawned process or
+        /// overwrite a previously set value. You can use `command.envs` to set multiple environment
+        /// variables simultaneously.
+        ///
+        /// Child processes will inherit environment variables from their parent process by default.
+        /// Environment variables explicitly set using `command.env` take precedence over inherited
+        /// variables. You can disable environment variable inheritance entirely using
+        /// `command.env_clear` or for a single key using `command.env_remove`.
+        ///
+        /// Note that environment variable names are case-insensitive (but
+        /// case-preserving) on Windows and case-sensitive on all other platforms.
+        env: func(key: string, val: string);
+
+        /// Inserts or updates multiple explicit environment variable mappings.
+        ///
+        /// This method allows you to add multiple environment variable mappings to the spawned process
+        /// or overwrite previously set values. You can use `command.env` to set a single environment
+        /// variable.
+        ///
+        /// Child processes will inherit environment variables from their parent process by default.
+        /// Environment variables explicitly set using `command.envs` take precedence over inherited
+        /// variables. You can disable environment variable inheritance entirely using
+        /// `command.env_clear` or for a single key using `command.env_remove`.
+        ///
+        /// Note that environment variable names are case-insensitive (but case-preserving) on Windows
+        /// and case-sensitive on all other platforms.
+        envs: func(vars: list<tuple<string, string>>);
+
+        /// Removes an explicitly set environment variable and prevents inheriting it from a parent
+        /// process.
+        ///
+        /// This method will remove the explicit value of an environment variable set via
+        /// `command.env` or `command.envs`. In addition, it will prevent the spawned child
+        /// process from inheriting that environment variable from its parent process.
+        ///
+        /// After calling `command.env_remove`, the value associated with its key from
+        /// `command.get_envs` will be `none`.
+        ///
+        /// To clear all explicitly set environment variables and disable all environment variable
+        /// inheritance, you can use `command.env_clear`.
+        env-remove: func(key: string);
+
+        /// Clears all explicitly set environment variables and prevents inheriting any parent process
+        /// environment variables.
+        ///
+        /// This method will remove all explicitly added environment variables set via `command.env`
+        /// or `command.envs`. In addition, it will prevent the spawned child process from inheriting
+        /// any environment variable from its parent process.
+        ///
+        /// After calling `command.env_clear`, the list from `command.get_envs` will be
+        /// empty.
+        ///
+        /// You can use `command.env_remove` to clear a single mapping.
+        env-clear: func();
+
+        /// Sets the working directory for the child process.
+        ///
+        /// If the program path is relative, it's recommended to use an absolute
+        /// program path to avoid ambiguity about whether it should be interpreted
+        /// relative to the parent's working directory or relative to the directory
+        /// set by `current-dir`.
+        current-dir: func(dir: string);
+
+        /// Configuration for the child process's standard input (stdin) handle.
+        ///
+        /// Defaults to `stdio.inherit` when used with `command.spawn` or `command.status`, and
+        /// defaults to `stdio.piped` when used with `command.output`.
+        stdin: func(cfg: stdio);
+
+        /// Configuration for the child process's standard output (stdout) handle.
+        ///
+        /// Defaults to `stdio.inherit` when used with `command.spawn` or `command.status`, and
+        /// defaults to `stdio.piped` when used with `command.output`.
+        stdout: func(cfg: stdio);
+
+        /// Configuration for the child process's standard error (stderr) handle.
+        ///
+        /// Defaults to `stdio.inherit` when used with `command.spawn` or `command.status`, and
+        /// defaults to `stdio.piped` when used with `command.output`.
+        stderr: func(cfg: stdio);
+
+        /// Executes the command as a child process, returning a handle to it.
+        ///
+        /// By default, stdin, stdout and stderr are inherited from the parent.
+        spawn: func() -> result<child, error>;
+
+        /// Executes the command as a child process, waiting for it to finish and
+        /// collecting all of its output.
+        ///
+        /// By default, stdout and stderr are captured (and used to provide the
+        /// resulting output). Stdin is not inherited from the parent and any
+        /// attempt by the child process to read from the stdin stream will result
+        /// in the stream immediately closing.
+        output: func() -> result<output, error>;
+
+        /// Executes a command as a child process, waiting for it to finish and
+        /// collecting its status.
+        ///
+        /// By default, stdin, stdout and stderr are inherited from the parent.
+        status: func() -> result<exit-status, error>;
+    }
+
+    /// Representation of a running or exited child process.
+    ///
+    /// This resource is used to represent and manage child processes. A child
+    /// process is created via the `command` resource, which configures the
+    /// spawning process.
+    ///
+    /// Calling `wait` (or other functions that wrap around it) will make
+    /// the parent process wait until the child has actually exited before
+    /// continuing.
+    resource child {
+        /// The handle for writing to the child's standard input (stdin), if it
+        /// has been captured.
+        stdin: func() -> option<output-stream>;
+
+        /// The handle for reading from the child's standard output (stdout), if it
+        /// has been captured.
+        stdout: func() -> option<input-stream>;
+
+        /// The handle for reading from the child's standard error (stderr), if it
+        /// has been captured.
+        stderr: func() -> option<input-stream>;
+
+        /// Forces the child process to exit. If the child has already exited, `ok`
+        /// is returned.
+        ///
+        /// This is equivalent to sending a SIGKILL on Unix platforms.
+        kill: func() -> result<_, error>;
+
+        /// Returns the OS-assigned process identifier associated with this child.
+        id: func() -> option<u32>;
+
+        /// Waits for the child to exit completely, returning the status that it
+        /// exited with. This function will continue to have the same return value
+        /// after it has been called at least once.
+        ///
+        /// The stdin handle to the child process, if any, will be closed
+        /// before waiting. This helps avoid deadlock: it ensures that the
+        /// child does not block waiting for input from the parent, while
+        /// the parent waits for the child to exit.
+        wait: func() -> result<exit-status, error>;
+
+        /// Attempts to collect the exit status of the child if it has already
+        /// exited.
+        ///
+        /// This function will not block the calling thread and will only
+        /// check to see if the child process has exited or not. If the child has
+        /// exited then on Unix the process ID is reaped. This function is
+        /// guaranteed to repeatedly return a successful exit status so long as the
+        /// child has already exited.
+        ///
+        /// If the child has exited, then `ok(some(status))` is returned. If the
+        /// exit status is not available at this time then `ok(none)` is returned.
+        /// If an error occurs, then that error is returned.
+        ///
+        /// Note that unlike `wait`, this function will not attempt to drop stdin.
+        try-wait: func() -> result<option<exit-status>, error>;
+
+        /// Simultaneously waits for the child to exit and collect all remaining
+        /// output on the stdout/stderr handles, returning an `output`
+        /// instance.
+        ///
+        /// The stdin handle to the child process, if any, will be closed
+        /// before waiting. This helps avoid deadlock: it ensures that the
+        /// child does not block waiting for input from the parent, while
+        /// the parent waits for the child to exit.
+        ///
+        /// By default, stdin, stdout and stderr are inherited from the parent.
+        /// In order to capture the output into this `result<output>` it is
+        /// necessary to create new pipes between parent and child. Use
+        /// `stdout(stdio.piped)` or `stderr(stdio.piped)`, respectively.
+        wait-with-output: func() -> result<output, error>;
+    }
+}

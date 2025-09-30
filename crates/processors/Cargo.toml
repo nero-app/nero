@@ -12,7 +12,8 @@ nero-types = { path = "../types" }
 nero-wasi-keyvalue = { path = "../wasi-keyvalue" }
 nero-wasi-logging = { path = "../wasi-logging" }
 nero-wasm-host = { path = "../wasm-host" }
-tokio = { workspace = true, features = ["net", "process"] }
+nero-wit-process = { path = "../wit-process" }
+tokio = { workspace = true, features = ["net"] }
 url = { workspace = true }
 wasmtime = { workspace = true }
 wasmtime-wasi = { workspace = true }
