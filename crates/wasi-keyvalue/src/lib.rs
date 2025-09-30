@@ -2,29 +2,25 @@ use std::{collections::HashMap, sync::Arc};
 
 use anyhow::Result;
 use tokio::sync::RwLock;
-use wasmtime::component::{Resource, ResourceTableError};
-
-use crate::WasmState;
+use wasmtime::component::{HasData, Resource, ResourceTable, ResourceTableError};
 
 pub use self::generated::wasi::*;
 
 mod generated {
     wasmtime::component::bindgen!({
-        path: "./wit/v0.1.0-draft",
         world: "wasi:keyvalue/imports",
         imports: { default: async | trappable },
         with: {
-            "wasi:keyvalue/store/bucket": crate::keyvalue::Bucket
+            "wasi:keyvalue/store/bucket": crate::Bucket
         },
         trappable_error_type: {
-            "wasi:keyvalue/store/error" => crate::keyvalue::Error,
+            "wasi:keyvalue/store/error" => crate::Error,
         },
     });
 }
 
 pub enum Error {
     NoSuchStore,
-    #[allow(dead_code)]
     AccessDenied,
     Other(String),
 }
@@ -51,11 +47,22 @@ impl WasiKeyValueCtx {
     }
 }
 
-impl keyvalue::store::Host for WasmState {
+pub struct WasiKeyValue<'a> {
+    ctx: &'a WasiKeyValueCtx,
+    table: &'a mut ResourceTable,
+}
+
+impl<'a> WasiKeyValue<'a> {
+    pub fn new(ctx: &'a WasiKeyValueCtx, table: &'a mut ResourceTable) -> Self {
+        Self { ctx, table }
+    }
+}
+
+impl keyvalue::store::Host for WasiKeyValue<'_> {
     async fn open(&mut self, identifier: String) -> Result<Resource<Bucket>, Error> {
         match identifier.as_str() {
             "" => Ok(self.table.push(Bucket {
-                in_memory_data: self.wasi_keyvalue_ctx.in_memory_data.clone(),
+                in_memory_data: self.ctx.in_memory_data.clone(),
             })?),
             _ => Err(Error::NoSuchStore),
         }
@@ -70,7 +77,7 @@ impl keyvalue::store::Host for WasmState {
     }
 }
 
-impl keyvalue::store::HostBucket for WasmState {
+impl keyvalue::store::HostBucket for WasiKeyValue<'_> {
     async fn get(
         &mut self,
         bucket: Resource<Bucket>,
@@ -126,4 +133,18 @@ impl keyvalue::store::HostBucket for WasmState {
         self.table.delete(bucket)?;
         Ok(())
     }
+}
+
+pub fn add_only_store_to_linker<T: Send + 'static>(
+    l: &mut wasmtime::component::Linker<T>,
+    f: fn(&mut T) -> WasiKeyValue<'_>,
+) -> Result<()> {
+    keyvalue::store::add_to_linker::<_, HasWasiKeyValue>(l, f)?;
+    Ok(())
+}
+
+struct HasWasiKeyValue;
+
+impl HasData for HasWasiKeyValue {
+    type Data<'a> = WasiKeyValue<'a>;
 }

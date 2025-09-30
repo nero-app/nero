@@ -10,6 +10,7 @@ http-body-util = "0.1.3"
 hyper = "1.7.0"
 nero-runtime = { path = "../runtime" }
 nero-types = { path = "../types" }
+nero-wasi-keyvalue = { path = "../wasi-keyvalue" }
 nero-wasi-logging = { path = "../wasi-logging" }
 tokio = { workspace = true, features = ["net", "process"] }
 url = { workspace = true }

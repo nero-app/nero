@@ -14,7 +14,7 @@ pub mod since_v0_1_0_draft {
         exports: { default: async },
         with: {
             "wasi:http": wasmtime_wasi_http::bindings::http,
-            "wasi:keyvalue": crate::keyvalue::keyvalue,
+            "wasi:keyvalue": nero_wasi_keyvalue::keyvalue,
             "wasi:logging": nero_wasi_logging::logging,
         },
     });

@@ -3,6 +3,7 @@ resolver = "2"
 members = [
     "crates/app",
     "crates/extensions",
+    "crates/wasi-keyvalue",
     "crates/wasi-logging",
     "crates/processors",
     "crates/runtime",

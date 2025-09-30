@@ -1,4 +1,3 @@
-mod keyvalue;
 mod process;
 mod processors;
 pub mod server;
@@ -13,9 +12,9 @@ use anyhow::{Result, anyhow};
 use bytes::Bytes;
 use http_body_util::{BodyExt, Full};
 use hyper::header::{HeaderName, HeaderValue};
-use keyvalue::WasiKeyValueCtx;
 use nero_runtime::{Metadata, semver::SemanticVersion};
 use nero_types::HttpResource;
+use nero_wasi_keyvalue::{WasiKeyValue, WasiKeyValueCtx};
 use tokio::sync::RwLock;
 use url::Url;
 use wasmtime::{
@@ -111,7 +110,10 @@ impl nero_runtime::WasmComponent for WasmProcessor {
         wasmtime_wasi::p2::add_to_linker_async(&mut linker).unwrap();
         wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker).unwrap();
         nero_wasi_logging::add_to_linker(&mut linker).unwrap();
-        keyvalue::keyvalue::store::add_to_linker::<_, HasSelf<_>>(&mut linker, |s| s).unwrap();
+        nero_wasi_keyvalue::add_only_store_to_linker(&mut linker, |s: &mut WasmState| {
+            WasiKeyValue::new(&s.wasi_keyvalue_ctx, &mut s.table)
+        })
+        .unwrap();
         process::process::process::add_to_linker::<_, HasSelf<_>>(&mut linker, |s| s).unwrap();
 
         let processor_pre = match version {
