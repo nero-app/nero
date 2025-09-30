@@ -1,5 +1,4 @@
-/nero-app/gen/schemas
-/nero-resources/permissions
+/crates/app/gen/schemas
 /nero-ui/node_modules/
 /nero-ui/dist/
 /target/

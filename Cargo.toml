@@ -1,12 +1,12 @@
 [workspace]
 resolver = "2"
 members = [
-    "nero-app",
-    "nero-extensions",
-    "nero-logging",
-    "nero-processors",
-    "nero-runtime",
-    "nero-types",
+    "crates/app",
+    "crates/extensions",
+    "crates/logging",
+    "crates/processors",
+    "crates/runtime",
+    "crates/types",
 ]
 
 [workspace.dependencies]

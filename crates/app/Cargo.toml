@@ -13,9 +13,9 @@ tauri = { version = "2", features = ["config-toml"] }
 serde = { workspace = true }
 tracing = { workspace = true }
 tracing-subscriber = "0.3.19"
-nero-runtime = { path = "../nero-runtime" }
-nero-processors = { path = "../nero-processors" }
-nero-extensions = { path = "../nero-extensions" }
+nero-runtime = { path = "../runtime" }
+nero-processors = { path = "../processors" }
+nero-extensions = { path = "../extensions" }
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]
