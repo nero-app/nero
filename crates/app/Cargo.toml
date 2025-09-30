@@ -12,7 +12,7 @@ tauri-build = { version = "2", default-features = false, features = [
 tauri = { version = "2", features = ["config-toml"] }
 serde = { workspace = true }
 tracing = { workspace = true }
-tracing-subscriber = "0.3.19"
+tracing-subscriber = "0.3.20"
 nero-processors = { path = "../processors" }
 nero-extensions = { path = "../extensions" }
 nero-wasm-host = { path = "../wasm-host" }
