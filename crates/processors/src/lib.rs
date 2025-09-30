@@ -12,14 +12,14 @@ use bytes::Bytes;
 use http_body_util::{BodyExt, Full};
 use hyper::header::{HeaderName, HeaderValue};
 use nero_types::HttpResource;
-use nero_wasi_keyvalue::{WasiKeyValue, WasiKeyValueCtx};
+use nero_wasi_keyvalue::WasiKeyValueCtx;
 use nero_wasm_host::{Metadata, semver::SemanticVersion};
-use nero_wit_process::{WitProcess, WitProcessCtx};
+use nero_wit_process::WitProcessCtx;
 use tokio::sync::RwLock;
 use url::Url;
 use wasmtime::{
     Engine, Store,
-    component::{Component, Linker, Resource},
+    component::{Component, Resource},
 };
 use wasmtime_wasi::{ResourceTable, WasiCtx, WasiCtxView, WasiView};
 use wasmtime_wasi_http::{
@@ -106,23 +106,14 @@ impl nero_wasm_host::WasmComponent for WasmProcessor {
         component: &Component,
         metadata: Metadata,
     ) -> Result<Self> {
-        let mut linker = Linker::new(engine);
-        wasmtime_wasi::p2::add_to_linker_async(&mut linker).unwrap();
-        wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker).unwrap();
-        nero_wasi_logging::add_to_linker(&mut linker).unwrap();
-        nero_wasi_keyvalue::add_only_store_to_linker(&mut linker, |s: &mut WasmState| {
-            WasiKeyValue::new(&s.wasi_keyvalue_ctx, &mut s.table)
-        })
-        .unwrap();
-        nero_wit_process::add_to_linker(&mut linker, |s: &mut WasmState| {
-            WitProcess::new(&s.wit_process_ctx, &mut s.table)
-        })
-        .unwrap();
-
         let processor_pre = match version {
-            v if v >= since_v0_1_0_draft::MIN_VER => Ok(ProcessorPre::V0_1_0_DRAFT(
-                since_v0_1_0_draft::ProcessorPre::new(linker.instantiate_pre(component)?)?,
-            )),
+            v if v >= since_v0_1_0_draft::MIN_VER => {
+                let linker = since_v0_1_0_draft::linker(engine)?;
+                let pre = linker.instantiate_pre(component)?;
+                Ok(ProcessorPre::V0_1_0_DRAFT(
+                    since_v0_1_0_draft::ProcessorPre::new(pre)?,
+                ))
+            }
             _ => Err(anyhow!("unsupported extension version")),
         }?;
 

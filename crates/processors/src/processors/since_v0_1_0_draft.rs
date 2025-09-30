@@ -1,5 +1,11 @@
+use anyhow::Result;
+use nero_wasi_keyvalue::WasiKeyValue;
 use nero_wasm_host::semver::SemanticVersion;
-use wasmtime::component::bindgen;
+use nero_wit_process::WitProcess;
+use wasmtime::{
+    Engine,
+    component::{Linker, bindgen},
+};
 
 use self::nero::processor::ffmpeg_sidecar;
 use crate::WasmState;
@@ -17,6 +23,20 @@ bindgen!({
         "wasi:logging": nero_wasi_logging::logging,
     },
 });
+
+pub fn linker(engine: &Engine) -> Result<Linker<WasmState>> {
+    let mut linker = Linker::new(engine);
+    wasmtime_wasi::p2::add_to_linker_async(&mut linker)?;
+    wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker)?;
+    nero_wasi_logging::add_to_linker(&mut linker)?;
+    nero_wasi_keyvalue::add_only_store_to_linker(&mut linker, |s: &mut WasmState| {
+        WasiKeyValue::new(&s.wasi_keyvalue_ctx, &mut s.table)
+    })?;
+    nero_wit_process::add_to_linker(&mut linker, |s: &mut WasmState| {
+        WitProcess::new(&s.wit_process_ctx, &mut s.table)
+    })?;
+    Ok(linker)
+}
 
 impl ffmpeg_sidecar::Host for WasmState {
     async fn ffmpeg_path(&mut self) -> wasmtime::Result<Option<String>> {

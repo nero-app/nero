@@ -2,10 +2,13 @@ use self::nero::extension::types::{
     Episode, EpisodesPage, Filter, FilterCategory, SearchFilter, Series, SeriesPage, Video,
 };
 
-use anyhow::Ok;
+use anyhow::Result;
 use http_body_util::BodyExt;
 use nero_wasm_host::semver::SemanticVersion;
-use wasmtime::component::{Resource, bindgen};
+use wasmtime::{
+    Engine,
+    component::{Linker, Resource, bindgen},
+};
 use wasmtime_wasi_http::{
     WasiHttpView,
     bindings::http::types::{Method, Scheme},
@@ -26,6 +29,14 @@ bindgen!({
         "wasi:logging": nero_wasi_logging::logging,
     },
 });
+
+pub fn linker(engine: &Engine) -> Result<Linker<WasmState>> {
+    let mut linker = Linker::new(engine);
+    wasmtime_wasi::p2::add_to_linker_async(&mut linker).unwrap();
+    wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker).unwrap();
+    nero_wasi_logging::add_to_linker(&mut linker).unwrap();
+    Ok(linker)
+}
 
 impl From<Filter> for crate::types::Filter {
     fn from(filter: Filter) -> Self {

@@ -4,13 +4,10 @@ pub mod types {
     pub use nero_types::*;
 }
 
-use anyhow::{Ok, Result, anyhow};
+use anyhow::{Result, anyhow};
 use nero_types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video};
 use nero_wasm_host::{Metadata, semver::SemanticVersion};
-use wasmtime::{
-    Engine, Store,
-    component::{Component, Linker},
-};
+use wasmtime::{Engine, Store, component::Component};
 use wasmtime_wasi::{ResourceTable, WasiCtx, WasiCtxView, WasiView};
 use wasmtime_wasi_http::{WasiHttpCtx, WasiHttpView};
 
@@ -55,15 +52,14 @@ impl nero_wasm_host::WasmComponent for WasmExtension {
         component: &Component,
         metadata: Metadata,
     ) -> Result<Self> {
-        let mut linker = Linker::new(engine);
-        wasmtime_wasi::p2::add_to_linker_async(&mut linker).unwrap();
-        wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker).unwrap();
-        nero_wasi_logging::add_to_linker(&mut linker).unwrap();
-
         let extension_pre = match version {
-            v if v >= since_v0_1_0_draft::MIN_VER => Ok(ExtensionPre::V0_1_0_DRAFT(
-                since_v0_1_0_draft::ExtensionPre::new(linker.instantiate_pre(component)?)?,
-            )),
+            v if v >= since_v0_1_0_draft::MIN_VER => {
+                let linker = since_v0_1_0_draft::linker(engine)?;
+                let pre = linker.instantiate_pre(component)?;
+                Ok(ExtensionPre::V0_1_0_DRAFT(
+                    since_v0_1_0_draft::ExtensionPre::new(pre)?,
+                ))
+            }
             _ => Err(anyhow!("unsupported extension version")),
         }?;
 
