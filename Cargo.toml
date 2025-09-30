@@ -6,7 +6,7 @@ members = [
     "crates/wasi-keyvalue",
     "crates/wasi-logging",
     "crates/processors",
-    "crates/runtime",
+    "crates/wasm-host",
     "crates/types",
 ]
 

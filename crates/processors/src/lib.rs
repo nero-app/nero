@@ -12,9 +12,9 @@ use anyhow::{Result, anyhow};
 use bytes::Bytes;
 use http_body_util::{BodyExt, Full};
 use hyper::header::{HeaderName, HeaderValue};
-use nero_runtime::{Metadata, semver::SemanticVersion};
 use nero_types::HttpResource;
 use nero_wasi_keyvalue::{WasiKeyValue, WasiKeyValueCtx};
+use nero_wasm_host::{Metadata, semver::SemanticVersion};
 use tokio::sync::RwLock;
 use url::Url;
 use wasmtime::{
@@ -99,7 +99,7 @@ pub struct WasmProcessor {
     metadata: Metadata,
 }
 
-impl nero_runtime::WasmComponent for WasmProcessor {
+impl nero_wasm_host::WasmComponent for WasmProcessor {
     async fn instantiate_async(
         engine: &Engine,
         version: SemanticVersion,

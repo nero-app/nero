@@ -4,7 +4,7 @@ use self::nero::extension::types::{
 
 use anyhow::Ok;
 use http_body_util::BodyExt;
-use nero_runtime::semver::SemanticVersion;
+use nero_wasm_host::semver::SemanticVersion;
 use wasmtime::component::{Resource, bindgen};
 use wasmtime_wasi_http::{
     WasiHttpView,

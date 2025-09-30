@@ -6,9 +6,9 @@ edition = "2024"
 [dependencies]
 anyhow = { workspace = true }
 http-body-util = "0.1.3"
-nero-runtime = { path = "../runtime" }
 nero-types = { path = "../types" }
 nero-wasi-logging = { path = "../wasi-logging" }
+nero-wasm-host = { path = "../wasm-host" }
 serde = { workspace = true }
 tokio = { workspace = true, features = ["sync", "fs"] }
 tracing = { workspace = true }

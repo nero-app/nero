@@ -7,7 +7,7 @@ use std::net::SocketAddr;
 use commands::*;
 use nero_extensions::WasmExtension;
 use nero_processors::WasmProcessor;
-use nero_runtime::manager::ExtensionManager;
+use nero_wasm_host::manager::ExtensionManager;
 use tauri::{async_runtime::block_on, Manager};
 
 const BASE_DIR: &str = "Nero";

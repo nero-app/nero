@@ -1,4 +1,4 @@
-use nero_runtime::semver::SemanticVersion;
+use nero_wasm_host::semver::SemanticVersion;
 use wasmtime::component::bindgen;
 
 use self::nero::processor::ffmpeg_sidecar;

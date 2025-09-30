@@ -5,8 +5,8 @@ pub mod types {
 }
 
 use anyhow::{Ok, Result, anyhow};
-use nero_runtime::{Metadata, semver::SemanticVersion};
 use nero_types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video};
+use nero_wasm_host::{Metadata, semver::SemanticVersion};
 use wasmtime::{
     Engine, Store,
     component::{Component, Linker},
@@ -48,7 +48,7 @@ pub struct WasmExtension {
     metadata: Metadata,
 }
 
-impl nero_runtime::WasmComponent for WasmExtension {
+impl nero_wasm_host::WasmComponent for WasmExtension {
     async fn instantiate_async(
         engine: &Engine,
         version: SemanticVersion,
