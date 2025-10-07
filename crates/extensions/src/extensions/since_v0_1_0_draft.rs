@@ -3,17 +3,12 @@ use self::nero::extension::types::{
 };
 
 use anyhow::Result;
-use http_body_util::BodyExt;
 use nero_wasm_host::semver::SemanticVersion;
 use wasmtime::{
     Engine,
     component::{Linker, Resource, bindgen},
 };
-use wasmtime_wasi_http::{
-    WasiHttpView,
-    bindings::http::types::{Method, Scheme},
-    types::HostOutgoingRequest,
-};
+use wasmtime_wasi_http::{WasiHttpView, types::HostOutgoingRequest};
 
 use crate::{AsyncTryIntoWithStore, WasmState, extensions::AsyncTryFromWithStore};
 
@@ -151,58 +146,13 @@ impl AsyncTryFromWithStore<Video> for crate::types::Video {
     }
 }
 
-impl AsyncTryFromWithStore<Resource<HostOutgoingRequest>> for crate::types::HttpResource {
+impl AsyncTryFromWithStore<Resource<HostOutgoingRequest>> for HostOutgoingRequest {
     async fn try_from_with_store(
         resource: Resource<HostOutgoingRequest>,
         store: &mut wasmtime::Store<WasmState>,
     ) -> anyhow::Result<Self> {
         let table = store.data_mut().table();
         let outgoing_request = table.delete(resource)?;
-
-        let method = match outgoing_request.method {
-            Method::Get => crate::types::Method::Get,
-            Method::Head => crate::types::Method::Head,
-            Method::Post => crate::types::Method::Post,
-            Method::Put => crate::types::Method::Put,
-            Method::Delete => crate::types::Method::Delete,
-            Method::Connect => crate::types::Method::Connect,
-            Method::Options => crate::types::Method::Options,
-            Method::Trace => crate::types::Method::Trace,
-            Method::Patch => crate::types::Method::Patch,
-            Method::Other(other) => crate::types::Method::Other(other),
-        };
-
-        let scheme = match outgoing_request.scheme.unwrap_or(Scheme::Https) {
-            Scheme::Http => "http".to_owned(),
-            Scheme::Https => "https".to_owned(),
-            Scheme::Other(other) => other,
-        };
-        let authority = outgoing_request.authority.unwrap_or_else(String::new);
-        let mut uri = format!("{scheme}://{authority}");
-        if let Some(path) = &outgoing_request.path_with_query {
-            uri.push_str(path);
-        }
-        let url = url::Url::parse(&uri)?;
-
-        let headers = outgoing_request
-            .headers
-            .iter()
-            .map(|(name, value)| (name.to_string(), value.to_str().unwrap_or("").to_owned()))
-            .collect();
-
-        let body = match outgoing_request.body {
-            Some(box_body) => {
-                let collected = box_body.collect().await?;
-                Some(collected.to_bytes().to_vec())
-            }
-            None => None,
-        };
-
-        Ok(crate::types::HttpResource {
-            method,
-            url,
-            headers,
-            body,
-        })
+        Ok(outgoing_request)
     }
 }

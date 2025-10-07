@@ -32,8 +32,8 @@ sha512 = "191e55bffb64ddc31f5512935194469e7292f0698e702da25048412b1830128d8bb0bb
 
 [processor]
 url = "https://github.com/dacchidocchi/nero-processor/archive/main.tar.gz"
-sha256 = "fb5ccb53648a2dc413272dbe548c7175f4bc991e5318965d1757585e56e87755"
-sha512 = "fe35268fd2a30701abb428bcf9f43f73098c2db712c79b1096f97b754474d5994735069e7c9ee6bb65d04ac555a5cce9e414fe2a61f58cfff19a39d172d8634d"
+sha256 = "3f9de8918ea1bdd9104b18c265a6b15d3f66d721b6953997308840f974d43587"
+sha512 = "21a09abd8176d95467c32aeca5e2cf799e67427f748b040f8a973e77858da9bc12a54eab1d04c9ebe4872a32e44abeea6f0e7eeb22090334227d559910c8ed79"
 deps = ["cli", "clocks", "filesystem", "http", "io", "keyvalue", "logging", "process", "random", "sockets"]
 
 [random]

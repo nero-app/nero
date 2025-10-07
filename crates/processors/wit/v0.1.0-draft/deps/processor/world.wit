@@ -1,7 +1,6 @@
 package nero:processor@0.1.0-draft;
 
 world processor {
-    use wasi:http/types@0.2.7.{incoming-request};
     export wasi:http/incoming-handler@0.2.7;
     import wasi:http/outgoing-handler@0.2.7;
     import wasi:logging/logging@0.1.0-draft;
@@ -11,7 +10,4 @@ world processor {
     import wit:process/process@0.1.0-draft;
     @unstable(feature = processor-sidecars)
     import ffmpeg-sidecar;
-
-    type http-resource = incoming-request;
-    export resolve-resource: func(http-resource: http-resource) -> string;
 }

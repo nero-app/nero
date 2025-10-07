@@ -1,20 +1,17 @@
-use nero_extensions::types::{
-    EpisodesPage, FilterCategory, HttpResource, SearchFilter, Series, SeriesPage, Video,
+use tauri::{Result, State};
+
+use crate::{
+    types::{
+        AyncTryIntoWithState, EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video,
+    },
+    AppState,
 };
-use tauri::{Result, State, Url};
-
-use crate::AppState;
-
-#[tauri::command]
-#[tracing::instrument(skip(state))]
-pub async fn resolve_resource(state: State<'_, AppState>, resource: HttpResource) -> Result<Url> {
-    Ok(state.processor.resolve_resource(resource).await?)
-}
 
 #[tauri::command]
 #[tracing::instrument(skip(state))]
 pub async fn get_filters(state: State<'_, AppState>) -> Result<Vec<FilterCategory>> {
-    Ok(state.extension.filters().await?)
+    let categories = state.extension.filters().await?;
+    Ok(categories.into_iter().map(Into::into).collect())
 }
 
 #[tauri::command]
@@ -25,13 +22,16 @@ pub async fn search(
     page: Option<u16>,
     filters: Vec<SearchFilter>,
 ) -> Result<SeriesPage> {
-    Ok(state.extension.search(query, page, filters).await?)
+    let ext_filters = filters.into_iter().map(Into::into).collect();
+    let page = state.extension.search(query, page, ext_filters).await?;
+    Ok(page.async_try_into_with_state(&state).await?)
 }
 
 #[tauri::command]
 #[tracing::instrument(skip(state))]
 pub async fn get_series_info(state: State<'_, AppState>, series_id: &str) -> Result<Series> {
-    Ok(state.extension.get_series_info(series_id).await?)
+    let series = state.extension.get_series_info(series_id).await?;
+    Ok(series.async_try_into_with_state(&state).await?)
 }
 
 #[tauri::command]
@@ -41,7 +41,8 @@ pub async fn get_series_episodes(
     series_id: &str,
     page: Option<u16>,
 ) -> Result<EpisodesPage> {
-    Ok(state.extension.get_series_episodes(series_id, page).await?)
+    let page = state.extension.get_series_episodes(series_id, page).await?;
+    Ok(page.async_try_into_with_state(&state).await?)
 }
 
 #[tauri::command]
@@ -51,8 +52,14 @@ pub async fn get_series_videos(
     series_id: &str,
     episode_id: &str,
 ) -> Result<Vec<Video>> {
-    Ok(state
+    let extension_videos = state
         .extension
         .get_series_videos(series_id, episode_id)
-        .await?)
+        .await?;
+
+    let mut videos = Vec::with_capacity(extension_videos.len());
+    for video in extension_videos {
+        videos.push(video.async_try_into_with_state(&state).await?);
+    }
+    Ok(videos)
 }

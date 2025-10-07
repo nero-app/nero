@@ -2,12 +2,10 @@
   import shockedCat from "../assets/images/shocked_cat.svg";
   import EpisodesList from "../components/EpisodesList.svelte";
   import ErrorMessage from "../components/ErrorMessage.svelte";
-  import { httpResource } from "../state/actions.svelte";
   import {
     createSeriesVideosQuery,
     createInfiniteEpisodesQuery,
   } from "../state/queries.svelte";
-  import type { HttpResource } from "../types/httpResource";
   import type { Video } from "../types/video";
 
   let { params }: { params: { seriesId: string; episodeId: string } } =
@@ -31,15 +29,15 @@
   </select>
 {/snippet}
 
-{#snippet videoPlayer(resource: HttpResource)}
+{#snippet videoPlayer(url: string)}
   <!-- svelte-ignore a11y_media_has_caption -->
   <video class="aspect-video" controls>
-    <source use:httpResource={resource} type="video/mp4" />
+    <source src={url} />
   </video>
 {/snippet}
 
 {#snippet videoSection(videos: Video[])}
-  {@render videoPlayer(videos[selectedVideoIndex].httpResource)}
+  {@render videoPlayer(videos[selectedVideoIndex].url)}
   {@render videoSelector(videos)}
   <!-- TODO -->
   <section class="flex flex-col gap-2">

@@ -1,9 +1,7 @@
-import type { HttpResource } from "./httpResource";
-
 export interface Series {
   id: string;
   title: string;
-  posterResource?: HttpResource;
+  posterUrl?: string;
   synopsis?: string;
   type?: string;
 }

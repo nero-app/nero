@@ -1,14 +1,15 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod commands;
+mod types;
 
-use std::net::SocketAddr;
+use std::{net::SocketAddr, sync::Arc};
 
 use commands::*;
 use nero_extensions::WasmExtension;
-use nero_processors::WasmProcessor;
-use nero_wasm_host::manager::ExtensionManager;
-use tauri::{async_runtime::block_on, Manager};
+use nero_processors::{server::HttpServer, WasmProcessor};
+use nero_wasm_host::{manager::ExtensionManager, WasmComponent};
+use tauri::{Manager, Result};
 
 const BASE_DIR: &str = "Nero";
 const EXTENSIONS_DIR: &str = "Extensions";
@@ -16,7 +17,24 @@ const PROCESSORS_DIR: &str = "Processors";
 
 pub struct AppState {
     pub extension: WasmExtension,
-    pub processor: WasmProcessor,
+    pub processor: Arc<HttpServer>,
+}
+
+fn load_first_extension<T: WasmComponent>(app: &tauri::App, subdir: &str) -> Result<T> {
+    let dir = app
+        .path()
+        .document_dir()
+        .unwrap()
+        .join(BASE_DIR)
+        .join(subdir);
+
+    let manager = ExtensionManager::new(dir)?;
+    let extension = tauri::async_runtime::block_on(async {
+        let extensions = manager.get_available_extensions().await?;
+        manager.load_extension_async(&extensions[0].0).await
+    })?;
+
+    Ok(extension)
 }
 
 fn main() {
@@ -24,47 +42,27 @@ fn main() {
 
     tauri::Builder::default()
         .setup(|app| {
-            let extensions_dir = app
-                .path()
-                .document_dir()
-                .unwrap()
-                .join(BASE_DIR)
-                .join(EXTENSIONS_DIR);
-            let manager = ExtensionManager::new(extensions_dir)?;
             // For the moment, load the first extension found in the extensions directory.
             // TODO: if there are no extensions, open a screen with relevant information for
             // "how to load an extension".
-            let first_extension = block_on(async {
-                let extensions = manager.get_available_extensions().await?;
-                manager.load_extension_async(&extensions[0].0).await
-            });
-
-            let processors_dir = app
-                .path()
-                .document_dir()
-                .unwrap()
-                .join(BASE_DIR)
-                .join(PROCESSORS_DIR);
-            let manager = ExtensionManager::new(processors_dir)?;
-            let first_processor = block_on(async {
-                let processors = manager.get_available_extensions().await?;
-                manager.load_extension_async(&processors[0].0).await
-            });
+            let extension = load_first_extension::<WasmExtension>(app, EXTENSIONS_DIR)?;
+            let processor = load_first_extension::<WasmProcessor>(app, PROCESSORS_DIR)?;
 
             let addr = SocketAddr::from(([127, 0, 0, 1], 4321));
-            let processor: nero_processors::WasmProcessor = first_processor.unwrap();
-            let server = nero_processors::server::HttpServer::new(addr, &processor).unwrap();
-            tauri::async_runtime::spawn(async move { server.run().await });
+            let server = HttpServer::new(addr, processor);
+            tauri::async_runtime::spawn({
+                let server = server.clone();
+                async move { server.run().await }
+            });
 
             app.manage(AppState {
-                extension: first_extension?,
-                processor,
+                extension,
+                processor: server,
             });
 
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![
-            resolve_resource,
             get_filters,
             search,
             get_series_info,

@@ -3,7 +3,6 @@
   import shareIcon from "../assets/icons/share_icon.svg";
   import EpisodesList from "../components/EpisodesList.svelte";
   import ErrorMessage from "../components/ErrorMessage.svelte";
-  import { httpResource } from "../state/actions.svelte";
   import {
     createInfiniteEpisodesQuery,
     createSeriesInfoQuery,
@@ -79,7 +78,7 @@
       <!-- TODO: Handle missing poster -->
       <img
         class="size-full rounded-xl object-cover"
-        use:httpResource={$seriesQuery.data.posterResource!}
+        src={$seriesQuery.data.posterUrl!}
         alt="{$seriesQuery.data.title} poster"
       />
     {/if}

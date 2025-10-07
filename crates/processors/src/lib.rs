@@ -1,182 +1,34 @@
 mod processors;
 pub mod server;
+mod types;
 
 use std::{
     collections::HashMap,
-    str::FromStr,
     sync::{Arc, LazyLock},
 };
 
 use anyhow::{Result, anyhow};
-use bytes::Bytes;
-use http_body_util::{BodyExt, Full};
-use hyper::header::{HeaderName, HeaderValue};
-use nero_types::HttpResource;
 use nero_wasi_keyvalue::WasiKeyValueCtx;
 use nero_wasm_host::{Metadata, semver::SemanticVersion};
 use nero_wit_process::WitProcessCtx;
 use tokio::sync::RwLock;
-use url::Url;
-use wasmtime::{
-    Engine, Store,
-    component::{Component, Resource},
-};
+use wasmtime::{Engine, component::Component};
 use wasmtime_wasi::{ResourceTable, WasiCtx, WasiCtxView, WasiView};
-use wasmtime_wasi_http::{
-    WasiHttpCtx, WasiHttpView,
-    bindings::{
-        exports::wasi::http::incoming_handler::{IncomingRequest, ResponseOutparam},
-        http::types::Scheme,
-    },
-    types::HostIncomingRequest,
-};
+use wasmtime_wasi_http::{WasiHttpCtx, WasiHttpView};
 
-use crate::{processors::since_v0_1_0_draft, server::SERVER_ADDR};
+use crate::processors::{ProcessorPre, since_v0_1_0_draft};
 
-pub static KEYVALUE_STORE: LazyLock<Arc<RwLock<HashMap<String, Vec<u8>>>>> =
+type KeyValeStoreType = RwLock<HashMap<String, Vec<u8>>>;
+
+pub static KEYVALUE_STORE: LazyLock<Arc<KeyValeStoreType>> =
     LazyLock::new(|| Arc::new(RwLock::new(HashMap::new())));
-
-#[allow(non_camel_case_types)]
-#[derive(Clone)]
-enum ProcessorPre {
-    V0_1_0_DRAFT(since_v0_1_0_draft::ProcessorPre<WasmState>),
-}
-
-impl ProcessorPre {
-    fn engine(&self) -> &Engine {
-        match self {
-            ProcessorPre::V0_1_0_DRAFT(processor_pre) => processor_pre.engine(),
-        }
-    }
-
-    async fn instantiate_async(&self, store: &mut Store<WasmState>) -> Result<Processor> {
-        match self {
-            ProcessorPre::V0_1_0_DRAFT(pre) => {
-                let processor = pre.instantiate_async(store).await?;
-                Ok(Processor::V0_1_0_DRAFT(processor))
-            }
-        }
-    }
-}
-
-#[allow(non_camel_case_types)]
-enum Processor {
-    V0_1_0_DRAFT(since_v0_1_0_draft::Processor),
-}
-
-impl Processor {
-    async fn resolve_resource(
-        &self,
-        store: &mut Store<WasmState>,
-        incoming: Resource<HostIncomingRequest>,
-    ) -> Result<String> {
-        match self {
-            Processor::V0_1_0_DRAFT(processor) => {
-                processor.call_resolve_resource(store, incoming).await
-            }
-        }
-    }
-
-    async fn handle_incoming_request(
-        &self,
-        store: &mut Store<WasmState>,
-        req: Resource<IncomingRequest>,
-        out: Resource<ResponseOutparam>,
-    ) -> Result<()> {
-        match self {
-            Processor::V0_1_0_DRAFT(processor) => {
-                processor
-                    .wasi_http_incoming_handler()
-                    .call_handle(store, req, out)
-                    .await
-            }
-        }
-    }
-}
-
-pub struct WasmProcessor {
-    processor_pre: ProcessorPre,
-    metadata: Metadata,
-}
-
-impl nero_wasm_host::WasmComponent for WasmProcessor {
-    async fn instantiate_async(
-        engine: &Engine,
-        version: SemanticVersion,
-        component: &Component,
-        metadata: Metadata,
-    ) -> Result<Self> {
-        let processor_pre = match version {
-            v if v >= since_v0_1_0_draft::MIN_VER => {
-                let linker = since_v0_1_0_draft::linker(engine)?;
-                let pre = linker.instantiate_pre(component)?;
-                Ok(ProcessorPre::V0_1_0_DRAFT(
-                    since_v0_1_0_draft::ProcessorPre::new(pre)?,
-                ))
-            }
-            _ => Err(anyhow!("unsupported extension version")),
-        }?;
-
-        Ok(Self {
-            processor_pre,
-            metadata,
-        })
-    }
-
-    fn metadata(&self) -> &Metadata {
-        &self.metadata
-    }
-}
-
-impl WasmProcessor {
-    pub async fn resolve_resource(&self, resource: HttpResource) -> Result<Url> {
-        let engine = self.processor_pre.engine();
-        let mut store = Store::new(engine, WasmState::default());
-
-        let method = match resource.method {
-            nero_types::Method::Get => hyper::Method::GET,
-            nero_types::Method::Head => hyper::Method::HEAD,
-            nero_types::Method::Post => hyper::Method::POST,
-            nero_types::Method::Put => hyper::Method::PUT,
-            nero_types::Method::Delete => hyper::Method::DELETE,
-            nero_types::Method::Connect => hyper::Method::CONNECT,
-            nero_types::Method::Options => hyper::Method::OPTIONS,
-            nero_types::Method::Trace => hyper::Method::TRACE,
-            nero_types::Method::Patch => hyper::Method::PATCH,
-            nero_types::Method::Other(other) => hyper::Method::from_bytes(other.as_bytes())?,
-        };
-        let mut req_builder = hyper::Request::builder()
-            .method(method)
-            .uri(resource.url.as_str());
-        for (key, value) in resource.headers {
-            let header_name = HeaderName::from_str(&key)?;
-            let header_value = HeaderValue::from_str(&value)?;
-
-            req_builder = req_builder.header(header_name, header_value);
-        }
-        let body =
-            Full::new(Bytes::from(resource.body.unwrap_or_default())).map_err(|_| unreachable!());
-        let req = req_builder.body(body)?;
-        let incoming = store.data_mut().new_incoming_request(Scheme::Http, req)?;
-
-        let processor = self.processor_pre.instantiate_async(&mut store).await?;
-        let res = processor.resolve_resource(&mut store, incoming).await?;
-
-        let addr = SERVER_ADDR
-            .get()
-            .ok_or_else(|| anyhow!("Server address not set"))?;
-
-        Url::parse(&format!("http://{addr}/{res}"))
-            .map_err(|e| anyhow!("Failed to parse URL: {}", e))
-    }
-}
 
 struct WasmState {
     table: ResourceTable,
     ctx: WasiCtx,
     http_ctx: WasiHttpCtx,
-    wasi_keyvalue_ctx: WasiKeyValueCtx,
     wit_process_ctx: WitProcessCtx,
+    wasi_keyvalue_ctx: WasiKeyValueCtx,
 }
 
 impl Default for WasmState {
@@ -207,5 +59,39 @@ impl WasiHttpView for WasmState {
 
     fn table(&mut self) -> &mut ResourceTable {
         &mut self.table
+    }
+}
+
+pub struct WasmProcessor {
+    processor_pre: ProcessorPre,
+    metadata: Metadata,
+}
+
+impl nero_wasm_host::WasmComponent for WasmProcessor {
+    async fn instantiate_async(
+        engine: &Engine,
+        version: SemanticVersion,
+        component: &Component,
+        metadata: Metadata,
+    ) -> Result<Self> {
+        let processor_pre = match version {
+            v if v >= since_v0_1_0_draft::MIN_VER => {
+                let linker = since_v0_1_0_draft::linker(engine)?;
+                let pre = linker.instantiate_pre(component)?;
+                Ok(ProcessorPre::V0_1_0_DRAFT(
+                    since_v0_1_0_draft::ProcessorPre::new(pre)?,
+                ))
+            }
+            _ => Err(anyhow!("unsupported processor version")),
+        }?;
+
+        Ok(Self {
+            processor_pre,
+            metadata,
+        })
+    }
+
+    fn metadata(&self) -> &Metadata {
+        &self.metadata
     }
 }

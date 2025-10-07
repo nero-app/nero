@@ -1,7 +1,5 @@
-import type { HttpResource } from "./httpResource";
-
 export interface Video {
-  httpResource: HttpResource;
+  url: string;
   server: string;
   resolution: [number, number];
 }

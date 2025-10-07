@@ -1,43 +1,50 @@
 mod extensions;
-
-pub mod types {
-    pub use nero_types::*;
-}
+pub mod types;
 
 use anyhow::{Result, anyhow};
-use nero_types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video};
 use nero_wasm_host::{Metadata, semver::SemanticVersion};
 use wasmtime::{Engine, Store, component::Component};
 use wasmtime_wasi::{ResourceTable, WasiCtx, WasiCtxView, WasiView};
 use wasmtime_wasi_http::{WasiHttpCtx, WasiHttpView};
 
-use crate::extensions::{AsyncTryIntoWithStore, since_v0_1_0_draft};
+use crate::{
+    extensions::{AsyncTryIntoWithStore, Extension, ExtensionPre, since_v0_1_0_draft},
+    types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video},
+};
 
-#[allow(non_camel_case_types)]
-enum ExtensionPre {
-    V0_1_0_DRAFT(since_v0_1_0_draft::ExtensionPre<WasmState>),
+struct WasmState {
+    table: ResourceTable,
+    ctx: WasiCtx,
+    http_ctx: WasiHttpCtx,
 }
 
-impl ExtensionPre {
-    fn engine(&self) -> &Engine {
-        match self {
-            ExtensionPre::V0_1_0_DRAFT(extension_pre) => extension_pre.engine(),
-        }
-    }
-
-    async fn instantiate_async(&self, store: &mut Store<WasmState>) -> Result<Extension> {
-        match self {
-            ExtensionPre::V0_1_0_DRAFT(pre) => {
-                let extension = pre.instantiate_async(store).await?;
-                Ok(Extension::V0_1_0_DRAFT(extension))
-            }
+impl WasiView for WasmState {
+    fn ctx(&mut self) -> wasmtime_wasi::WasiCtxView<'_> {
+        WasiCtxView {
+            ctx: &mut self.ctx,
+            table: &mut self.table,
         }
     }
 }
 
-#[allow(non_camel_case_types)]
-enum Extension {
-    V0_1_0_DRAFT(since_v0_1_0_draft::Extension),
+impl WasiHttpView for WasmState {
+    fn ctx(&mut self) -> &mut WasiHttpCtx {
+        &mut self.http_ctx
+    }
+
+    fn table(&mut self) -> &mut ResourceTable {
+        &mut self.table
+    }
+}
+
+impl Default for WasmState {
+    fn default() -> Self {
+        Self {
+            table: ResourceTable::new(),
+            ctx: WasiCtx::builder().build(),
+            http_ctx: WasiHttpCtx::new(),
+        }
+    }
 }
 
 pub struct WasmExtension {
@@ -166,41 +173,6 @@ impl WasmExtension {
                 }
                 Ok(items)
             }
-        }
-    }
-}
-
-pub(crate) struct WasmState {
-    table: ResourceTable,
-    ctx: WasiCtx,
-    http_ctx: WasiHttpCtx,
-}
-
-impl WasiView for WasmState {
-    fn ctx(&mut self) -> wasmtime_wasi::WasiCtxView<'_> {
-        WasiCtxView {
-            ctx: &mut self.ctx,
-            table: &mut self.table,
-        }
-    }
-}
-
-impl WasiHttpView for WasmState {
-    fn ctx(&mut self) -> &mut WasiHttpCtx {
-        &mut self.http_ctx
-    }
-
-    fn table(&mut self) -> &mut ResourceTable {
-        &mut self.table
-    }
-}
-
-impl Default for WasmState {
-    fn default() -> Self {
-        Self {
-            table: ResourceTable::new(),
-            ctx: WasiCtx::builder().build(),
-            http_ctx: WasiHttpCtx::new(),
         }
     }
 }

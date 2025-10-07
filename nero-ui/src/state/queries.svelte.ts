@@ -1,20 +1,9 @@
 import type { FilterCategory, SearchFilter } from "../types/filters";
-import type { HttpResource } from "../types/httpResource";
 import type { EpisodesPage, SeriesPage } from "../types/page";
 import type { Series } from "../types/series";
 import type { Video } from "../types/video";
 import { createInfiniteQuery, createQuery } from "@tanstack/svelte-query";
 import { invoke } from "@tauri-apps/api/core";
-
-export function createResourceUrlQuery(resource: HttpResource) {
-  return createQuery({
-    queryKey: ["httpResource", resource.url.toString()],
-    queryFn: () =>
-      invoke<string>("resolve_resource", {
-        resource,
-      }),
-  });
-}
 
 export function createFiltersQuery() {
   return createQuery({
