@@ -4,7 +4,6 @@ world processor {
     export wasi:http/incoming-handler@0.2.7;
     import wasi:http/outgoing-handler@0.2.7;
     import wasi:logging/logging@0.1.0-draft;
-    import wasi:keyvalue/store@0.2.0-draft;
 
     @unstable(feature = processor-sidecars)
     import wit:process/process@0.1.0-draft;

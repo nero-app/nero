@@ -1,5 +1,0 @@
-package nero:wasi-keyvalue;
-
-world imports {
-    include wasi:keyvalue/imports@0.2.0-draft;
-}

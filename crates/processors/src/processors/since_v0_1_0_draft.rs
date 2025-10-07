@@ -1,5 +1,4 @@
 use anyhow::Result;
-use nero_wasi_keyvalue::WasiKeyValue;
 use nero_wasm_host::semver::SemanticVersion;
 use nero_wit_process::WitProcess;
 use wasmtime::{
@@ -19,7 +18,6 @@ bindgen!({
     exports: { default: async },
     with: {
         "wasi:http": wasmtime_wasi_http::bindings::http,
-        "wasi:keyvalue": nero_wasi_keyvalue::keyvalue,
         "wasi:logging": nero_wasi_logging::logging,
     },
 });
@@ -29,9 +27,6 @@ pub fn linker(engine: &Engine) -> Result<Linker<WasmState>> {
     wasmtime_wasi::p2::add_to_linker_async(&mut linker)?;
     wasmtime_wasi_http::add_only_http_to_linker_async(&mut linker)?;
     nero_wasi_logging::add_to_linker(&mut linker)?;
-    nero_wasi_keyvalue::add_only_store_to_linker(&mut linker, |s: &mut WasmState| {
-        WasiKeyValue::new(&s.wasi_keyvalue_ctx, &mut s.table)
-    })?;
     nero_wit_process::add_to_linker(&mut linker, |s: &mut WasmState| {
         WitProcess::new(&s.wit_process_ctx, &mut s.table)
     })?;

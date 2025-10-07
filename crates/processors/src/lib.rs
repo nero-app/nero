@@ -2,33 +2,20 @@ mod processors;
 pub mod server;
 mod types;
 
-use std::{
-    collections::HashMap,
-    sync::{Arc, LazyLock},
-};
-
 use anyhow::{Result, anyhow};
-use nero_wasi_keyvalue::WasiKeyValueCtx;
 use nero_wasm_host::{Metadata, semver::SemanticVersion};
 use nero_wit_process::WitProcessCtx;
-use tokio::sync::RwLock;
 use wasmtime::{Engine, component::Component};
 use wasmtime_wasi::{ResourceTable, WasiCtx, WasiCtxView, WasiView};
 use wasmtime_wasi_http::{WasiHttpCtx, WasiHttpView};
 
 use crate::processors::{ProcessorPre, since_v0_1_0_draft};
 
-type KeyValeStoreType = RwLock<HashMap<String, Vec<u8>>>;
-
-pub static KEYVALUE_STORE: LazyLock<Arc<KeyValeStoreType>> =
-    LazyLock::new(|| Arc::new(RwLock::new(HashMap::new())));
-
 struct WasmState {
     table: ResourceTable,
     ctx: WasiCtx,
     http_ctx: WasiHttpCtx,
     wit_process_ctx: WitProcessCtx,
-    wasi_keyvalue_ctx: WasiKeyValueCtx,
 }
 
 impl Default for WasmState {
@@ -37,7 +24,6 @@ impl Default for WasmState {
             table: ResourceTable::new(),
             ctx: WasiCtx::builder().build(),
             http_ctx: WasiHttpCtx::new(),
-            wasi_keyvalue_ctx: WasiKeyValueCtx::new(KEYVALUE_STORE.clone()),
             wit_process_ctx: WitProcessCtx {},
         }
     }
