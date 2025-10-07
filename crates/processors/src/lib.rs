@@ -3,7 +3,7 @@ pub mod server;
 mod types;
 
 use anyhow::{Result, anyhow};
-use nero_wasm_host::{Metadata, semver::SemanticVersion};
+use nero_wasm_host::{Metadata, semver::Version};
 use nero_wit_process::WitProcessCtx;
 use wasmtime::{Engine, component::Component};
 use wasmtime_wasi::{ResourceTable, WasiCtx, WasiCtxView, WasiView};
@@ -56,7 +56,7 @@ pub struct WasmProcessor {
 impl nero_wasm_host::WasmComponent for WasmProcessor {
     async fn instantiate_async(
         engine: &Engine,
-        version: SemanticVersion,
+        version: Version,
         component: &Component,
         metadata: Metadata,
     ) -> Result<Self> {

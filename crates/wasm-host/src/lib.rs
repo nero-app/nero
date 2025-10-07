@@ -1,19 +1,18 @@
 mod host;
 pub mod manager;
-pub mod semver;
 
 pub use host::WasmHost;
+pub use semver;
 pub use wasm_metadata::Metadata;
 
 use anyhow::Result;
+use semver::Version;
 use wasmtime::{Engine, component::Component};
-
-use crate::semver::SemanticVersion;
 
 pub trait WasmComponent: Sized {
     fn instantiate_async(
         engine: &Engine,
-        version: SemanticVersion,
+        version: Version,
         component: &Component,
         metadata: Metadata,
     ) -> impl Future<Output = Result<Self>>;

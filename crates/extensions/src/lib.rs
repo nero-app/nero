@@ -2,7 +2,7 @@ mod extensions;
 pub mod types;
 
 use anyhow::{Result, anyhow};
-use nero_wasm_host::{Metadata, semver::SemanticVersion};
+use nero_wasm_host::{Metadata, semver::Version};
 use wasmtime::{Engine, Store, component::Component};
 use wasmtime_wasi::{ResourceTable, WasiCtx, WasiCtxView, WasiView};
 use wasmtime_wasi_http::{WasiHttpCtx, WasiHttpView};
@@ -55,7 +55,7 @@ pub struct WasmExtension {
 impl nero_wasm_host::WasmComponent for WasmExtension {
     async fn instantiate_async(
         engine: &Engine,
-        version: SemanticVersion,
+        version: Version,
         component: &Component,
         metadata: Metadata,
     ) -> Result<Self> {

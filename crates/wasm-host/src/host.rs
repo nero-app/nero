@@ -1,10 +1,11 @@
 use std::path::Path;
 
 use anyhow::Result;
+use semver::Version;
 use wasm_metadata::Payload;
 use wasmtime::{Engine, component::Component};
 
-use crate::{WasmComponent, semver::SemanticVersion};
+use crate::WasmComponent;
 
 pub struct WasmHost {
     engine: Engine,
@@ -45,7 +46,7 @@ impl WasmHost {
 
     // TODO:
     #[allow(unused_variables)]
-    fn get_extension_version(wasm_bytes: &[u8]) -> Result<SemanticVersion> {
-        Ok(SemanticVersion::new(0, 1, 0))
+    fn get_extension_version(wasm_bytes: &[u8]) -> Result<Version> {
+        Ok(Version::new(0, 1, 0))
     }
 }

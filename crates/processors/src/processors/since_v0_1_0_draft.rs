@@ -1,5 +1,5 @@
 use anyhow::Result;
-use nero_wasm_host::semver::SemanticVersion;
+use nero_wasm_host::semver::Version;
 use nero_wit_process::WitProcess;
 use wasmtime::{
     Engine,
@@ -9,7 +9,7 @@ use wasmtime::{
 use self::nero::processor::ffmpeg_sidecar;
 use crate::WasmState;
 
-pub const MIN_VER: SemanticVersion = SemanticVersion::new(0, 1, 0);
+pub const MIN_VER: Version = Version::new(0, 1, 0);
 
 bindgen!({
     path: "./wit/v0.1.0-draft",

@@ -3,7 +3,7 @@ use self::nero::extension::types::{
 };
 
 use anyhow::Result;
-use nero_wasm_host::semver::SemanticVersion;
+use nero_wasm_host::semver::Version;
 use wasmtime::{
     Engine,
     component::{Linker, Resource, bindgen},
@@ -12,7 +12,7 @@ use wasmtime_wasi_http::{WasiHttpView, types::HostOutgoingRequest};
 
 use crate::{AsyncTryIntoWithStore, WasmState, extensions::AsyncTryFromWithStore};
 
-pub const MIN_VER: SemanticVersion = SemanticVersion::new(0, 1, 0);
+pub const MIN_VER: Version = Version::new(0, 1, 0);
 
 bindgen!({
     path: "./wit/v0.1.0-draft",
