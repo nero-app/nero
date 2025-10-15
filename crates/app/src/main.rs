@@ -6,21 +6,19 @@ mod types;
 use std::{net::SocketAddr, sync::Arc};
 
 use commands::*;
-use nero_extensions::WasmExtension;
-use nero_processors::{server::HttpServer, WasmProcessor};
-use nero_wasm_host::{manager::ExtensionManager, WasmComponent};
+use nero_extensions::{manager::ExtensionManager, WasmExtension};
+use nero_processor::HttpServer;
 use tauri::{Manager, Result};
 
 const BASE_DIR: &str = "Nero";
 const EXTENSIONS_DIR: &str = "Extensions";
-const PROCESSORS_DIR: &str = "Processors";
 
 pub struct AppState {
     pub extension: WasmExtension,
     pub processor: Arc<HttpServer>,
 }
 
-fn load_first_extension<T: WasmComponent>(app: &tauri::App, subdir: &str) -> Result<T> {
+fn load_first_extension(app: &tauri::App, subdir: &str) -> Result<WasmExtension> {
     let dir = app
         .path()
         .document_dir()
@@ -45,11 +43,10 @@ fn main() {
             // For the moment, load the first extension found in the extensions directory.
             // TODO: if there are no extensions, open a screen with relevant information for
             // "how to load an extension".
-            let extension = load_first_extension::<WasmExtension>(app, EXTENSIONS_DIR)?;
-            let processor = load_first_extension::<WasmProcessor>(app, PROCESSORS_DIR)?;
+            let extension = load_first_extension(app, EXTENSIONS_DIR)?;
 
             let addr = SocketAddr::from(([127, 0, 0, 1], 4321));
-            let server = HttpServer::new(addr, processor);
+            let server = Arc::new(HttpServer::new(addr));
             tauri::async_runtime::spawn({
                 let server = server.clone();
                 async move { server.run().await }

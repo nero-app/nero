@@ -1,8 +1,11 @@
 mod extensions;
+pub mod host;
+pub mod manager;
 pub mod types;
 
 use anyhow::{Result, anyhow};
-use nero_wasm_host::{Metadata, semver::Version};
+use semver::Version;
+use wasm_metadata::Metadata;
 use wasmtime::{Engine, Store, component::Component};
 use wasmtime_wasi::{ResourceTable, WasiCtx, WasiCtxView, WasiView};
 use wasmtime_wasi_http::{WasiHttpCtx, WasiHttpView};
@@ -52,7 +55,7 @@ pub struct WasmExtension {
     metadata: Metadata,
 }
 
-impl nero_wasm_host::WasmComponent for WasmExtension {
+impl WasmExtension {
     async fn instantiate_async(
         engine: &Engine,
         version: Version,
@@ -76,12 +79,10 @@ impl nero_wasm_host::WasmComponent for WasmExtension {
         })
     }
 
-    fn metadata(&self) -> &Metadata {
+    pub fn metadata(&self) -> &Metadata {
         &self.metadata
     }
-}
 
-impl WasmExtension {
     pub async fn filters(&self) -> Result<Vec<FilterCategory>> {
         let mut store = Store::new(self.extension_pre.engine(), WasmState::default());
 

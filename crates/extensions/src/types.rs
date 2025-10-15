@@ -1,4 +1,6 @@
-use wasmtime_wasi_http::types::HostOutgoingRequest;
+use bytes::Bytes;
+
+pub type Request = http::Request<Option<Bytes>>;
 
 pub struct Page<T> {
     pub items: Vec<T>,
@@ -11,7 +13,7 @@ pub type EpisodesPage = Page<Episode>;
 pub struct Series {
     pub id: String,
     pub title: String,
-    pub poster_resource: Option<HostOutgoingRequest>,
+    pub poster_request: Option<Request>,
     pub synopsis: Option<String>,
     pub r#type: Option<String>,
 }
@@ -20,14 +22,14 @@ pub struct Episode {
     pub id: String,
     pub number: u16,
     pub title: Option<String>,
-    pub thumbnail_resource: Option<HostOutgoingRequest>,
+    pub thumbnail_request: Option<Request>,
     pub description: Option<String>,
 }
 
 type Resolution = (u16, u16);
 
 pub struct Video {
-    pub http_resource: HostOutgoingRequest,
+    pub http_request: Request,
     pub server: String,
     pub resolution: Resolution,
 }

@@ -3,14 +3,17 @@ use self::nero::extension::types::{
 };
 
 use anyhow::Result;
-use nero_wasm_host::semver::Version;
+use semver::Version;
 use wasmtime::{
     Engine,
     component::{Linker, Resource, bindgen},
 };
 use wasmtime_wasi_http::{WasiHttpView, types::HostOutgoingRequest};
 
-use crate::{AsyncTryIntoWithStore, WasmState, extensions::AsyncTryFromWithStore};
+use crate::{
+    AsyncTryIntoWithStore, WasmState,
+    extensions::{AsyncTryFromWithStore, IntoHttpRequest},
+};
 
 pub const MIN_VER: Version = Version::new(0, 1, 0);
 
@@ -89,8 +92,12 @@ impl AsyncTryFromWithStore<Series> for crate::types::Series {
         Ok(crate::types::Series {
             id: series.id,
             title: series.title,
-            poster_resource: match series.poster_resource {
-                Some(r) => Some(r.try_into_with_store(store).await?),
+            poster_request: match series.poster_resource {
+                Some(r) => {
+                    let outgoing: HostOutgoingRequest = r.try_into_with_store(store).await?;
+                    let request = outgoing.into_http_request().await?;
+                    Some(request)
+                }
                 None => None,
             },
             synopsis: series.synopsis,
@@ -124,8 +131,12 @@ impl AsyncTryFromWithStore<Episode> for crate::types::Episode {
             id: episode.id,
             number: episode.number,
             title: episode.title,
-            thumbnail_resource: match episode.thumbnail_resource {
-                Some(r) => Some(r.try_into_with_store(store).await?),
+            thumbnail_request: match episode.thumbnail_resource {
+                Some(r) => {
+                    let outgoing: HostOutgoingRequest = r.try_into_with_store(store).await?;
+                    let request = outgoing.into_http_request().await?;
+                    Some(request)
+                }
                 None => None,
             },
             description: episode.description,
@@ -139,7 +150,11 @@ impl AsyncTryFromWithStore<Video> for crate::types::Video {
         store: &mut wasmtime::Store<WasmState>,
     ) -> anyhow::Result<Self> {
         Ok(crate::types::Video {
-            http_resource: video.http_resource.try_into_with_store(store).await?,
+            http_request: {
+                let outgoing: HostOutgoingRequest =
+                    video.http_resource.try_into_with_store(store).await?;
+                outgoing.into_http_request().await?
+            },
             server: video.server,
             resolution: video.resolution,
         })

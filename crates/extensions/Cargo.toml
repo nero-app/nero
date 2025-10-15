@@ -5,10 +5,14 @@ edition = "2024"
 
 [dependencies]
 anyhow = { workspace = true }
+bytes = { workspace = true }
+http = { workspace = true }
+semver = "1.0.27"
 nero-wasi-logging = { path = "../wasi-logging" }
-nero-wasm-host = { path = "../wasm-host" }
 tokio = { workspace = true, features = ["sync", "fs"] }
 tracing = { workspace = true }
+wasm-metadata = "0.227.1"
 wasmtime = { workspace = true }
 wasmtime-wasi = { workspace = true }
 wasmtime-wasi-http = { workspace = true }
+http-body-util = "0.1.3"

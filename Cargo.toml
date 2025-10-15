@@ -3,17 +3,18 @@ resolver = "2"
 members = [
     "crates/app",
     "crates/extensions",
+    "crates/processor",
     "crates/wasi-logging",
-    "crates/wit-process",
-    "crates/processors",
-    "crates/wasm-host",
 ]
 
 [workspace.dependencies]
 anyhow = "1.0.95"
+bytes = "1.10.1"
+http = "1.3.1"
+serde = { version = "1.0.219", features = ["derive"] }
 tokio = "1.46.1"
 tracing = "0.1.41"
-url = { version = "2.5.4", features = ["serde"] }
+url = { version = "2.5.4" }
 wasmtime = "37.0.1"
 wasmtime-wasi = "37.0.1"
 wasmtime-wasi-http = "37.0.1"

@@ -1,5 +1,0 @@
-package nero:wit-process;
-
-world imports {
-    include wit:process/imports@0.1.0-draft;
-}

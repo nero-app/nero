@@ -10,14 +10,13 @@ tauri-build = { version = "2", default-features = false, features = [
 
 [dependencies]
 anyhow = { workspace = true }
-serde = { version = "1.0.219", features = ["derive"] }
+serde = { workspace = true }
 tauri = { version = "2", features = ["config-toml"] }
 tracing = { workspace = true }
 tracing-subscriber = "0.3.20"
-url = { workspace = true }
-nero-processors = { path = "../processors" }
+url = { workspace = true, features = ["serde"] }
+nero-processor = { path = "../processor" }
 nero-extensions = { path = "../extensions" }
-nero-wasm-host = { path = "../wasm-host" }
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]

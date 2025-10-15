@@ -67,8 +67,8 @@ impl AsyncTryFromWithState<nero_extensions::types::Series> for Series {
         Ok(Self {
             id: series.id,
             title: series.title,
-            poster_url: match series.poster_resource {
-                Some(req) => Some(state.processor.store_outgoing_request(req).await?),
+            poster_url: match series.poster_request {
+                Some(req) => Some(state.processor.handle_request(req).await?),
                 None => None,
             },
             synopsis: series.synopsis,
@@ -96,8 +96,8 @@ impl AsyncTryFromWithState<nero_extensions::types::Episode> for Episode {
             id: episode.id,
             number: episode.number,
             title: episode.title,
-            thumbnail_url: match episode.thumbnail_resource {
-                Some(req) => Some(state.processor.store_outgoing_request(req).await?),
+            thumbnail_url: match episode.thumbnail_request {
+                Some(req) => Some(state.processor.handle_request(req).await?),
                 None => None,
             },
             description: episode.description,
@@ -120,10 +120,7 @@ impl AsyncTryFromWithState<nero_extensions::types::Video> for Video {
         state: &AppState,
     ) -> anyhow::Result<Self> {
         Ok(Self {
-            url: state
-                .processor
-                .store_outgoing_request(video.http_resource)
-                .await?,
+            url: state.processor.handle_request(video.http_request).await?,
             server: video.server,
             resolution: video.resolution,
         })

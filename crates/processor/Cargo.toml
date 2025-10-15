@@ -1,0 +1,19 @@
+[package]
+name = "nero-processor"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = "0.8.6"
+bytes = { workspace = true }
+http = { workspace = true }
+mime = "0.3.17"
+mime_guess = "2.0.5"
+moka = { version = "0.12.11", features = ["future"] }
+reqwest = { version = "0.12.23", features = ["stream"] }
+serde = { workspace = true }
+thiserror = "2.0.17"
+tokio = { workspace = true, features = ["net"] }
+tracing = { workspace = true }
+url = { workspace = true }
+uuid = { version = "1.18.1", features = ["v4", "serde"] }
