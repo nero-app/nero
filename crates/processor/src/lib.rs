@@ -69,9 +69,13 @@ impl HttpServer {
         request_id: &Uuid,
         request: &Request<Option<Bytes>>,
     ) -> Result<Url, Error> {
+        if request.headers().is_empty() {
+            return Ok(Url::parse(&request.uri().to_string())?);
+        }
+
         let mut base = Url::parse(&format!("http://{}", self.state.addr)).unwrap();
 
-        if request.method() != http::Method::GET && request.method() != http::Method::HEAD {
+        if request.method() != http::Method::GET {
             base.set_path(&format!("/other/{request_id}"));
             return Ok(base);
         }

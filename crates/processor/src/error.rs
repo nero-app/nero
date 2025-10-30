@@ -5,6 +5,9 @@ use tracing::error;
 
 #[derive(Error, Debug)]
 pub enum Error {
+    #[error("Invalid URL")]
+    InvalidUrl(#[from] url::ParseError),
+
     #[error("Request not found")]
     NotFound,
 
@@ -27,6 +30,7 @@ pub enum Error {
 impl IntoResponse for Error {
     fn into_response(self) -> Response {
         let status = match &self {
+            Error::InvalidUrl(_) => StatusCode::BAD_REQUEST,
             Error::NotFound => StatusCode::NOT_FOUND,
             Error::UnsupportedScheme => StatusCode::BAD_REQUEST,
             Error::UnsupportedMediaType => StatusCode::UNSUPPORTED_MEDIA_TYPE,
