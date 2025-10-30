@@ -9,7 +9,6 @@ pub use video::*;
 use axum::{body::Body, response::Response};
 use http::HeaderMap;
 use reqwest::Client;
-use tracing::warn;
 
 use crate::error::Error;
 
@@ -44,7 +43,6 @@ impl ForwardRequest {
         let res = req.send().await?;
         let status = res.status();
         if !status.is_success() {
-            warn!("Remote server returned status {} for {}", status, self.url);
             return Err(Error::RemoteServer(status));
         }
 
