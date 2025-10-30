@@ -16,10 +16,7 @@ use uuid::Uuid;
 use crate::{
     error::Error,
     mime_detector::mime_type,
-    routes::{
-        handle_application_request, handle_image_request, handle_other_request,
-        handle_video_request,
-    },
+    routes::{handle_image_request, handle_other_request, handle_video_request},
 };
 
 struct ServerState {
@@ -49,7 +46,7 @@ impl HttpServer {
         let app = Router::new()
             .route("/image/{request_id}", get(handle_image_request))
             .route("/video/{request_id}", get(handle_video_request))
-            .route("/application/{request_id}", get(handle_application_request))
+            // .route("/application/{request_id}", get(handle_application_request))
             .route("/other/{request_id}", get(handle_other_request))
             .with_state(self.state.clone());
 
@@ -85,16 +82,11 @@ impl HttpServer {
             .ok_or(Error::UnsupportedMediaType)?;
 
         match mime_type.type_() {
-            mime::IMAGE => {
-                base.set_path(&format!("/image/{request_id}"));
-            }
-            mime::VIDEO => {
-                base.set_path(&format!("/video/{request_id}"));
-                base.set_query(Some(&format!("subtype={}", mime_type.subtype())));
-            }
+            mime::IMAGE => base.set_path(&format!("/image/{request_id}")),
+            mime::VIDEO => base.set_path(&format!("/video/{request_id}")),
             mime::APPLICATION => {
-                base.set_path(&format!("/application/{request_id}"));
-                base.set_query(Some(&format!("subtype={}", mime_type.subtype())));
+                let mime_type = mime_type.to_string();
+                base.set_path(&format!("/application/{mime_type}/{request_id}"));
             }
             _ => return Err(Error::UnsupportedMediaType),
         }

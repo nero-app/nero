@@ -11,16 +11,9 @@ pub use video::*;
 use axum::{body::Body, response::Response};
 use http::HeaderMap;
 use reqwest::Client;
-use serde::Deserialize;
 use tracing::warn;
 
 use crate::error::Error;
-
-#[allow(dead_code)]
-#[derive(Debug, Deserialize)]
-pub(super) struct HandlersQueryParams {
-    subtype: String,
-}
 
 pub struct ForwardRequest {
     client: Client,

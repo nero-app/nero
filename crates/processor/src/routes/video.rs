@@ -1,18 +1,17 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Path, Query, Request, State},
+    extract::{Path, Request, State},
     response::Response,
 };
 use uuid::Uuid;
 
-use crate::{ServerState, error::Error, routes::HandlersQueryParams};
+use crate::{ServerState, error::Error};
 
 #[allow(unused_variables)]
 pub async fn handle_video_request(
     State(state): State<Arc<ServerState>>,
     Path(request_id): Path<Uuid>,
-    Query(query): Query<HandlersQueryParams>,
     req: Request,
 ) -> Result<Response, Error> {
     todo!()
