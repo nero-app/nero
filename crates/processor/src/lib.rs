@@ -46,7 +46,6 @@ impl HttpServer {
         let app = Router::new()
             .route("/image/{request_id}", get(handle_image_request))
             .route("/video/{request_id}", get(handle_video_request))
-            // .route("/application/{request_id}", get(handle_application_request))
             .route("/other/{request_id}", get(handle_other_request))
             .with_state(self.state.clone());
 
@@ -85,8 +84,9 @@ impl HttpServer {
             mime::IMAGE => base.set_path(&format!("/image/{request_id}")),
             mime::VIDEO => base.set_path(&format!("/video/{request_id}")),
             mime::APPLICATION => {
-                let mime_type = mime_type.to_string();
-                base.set_path(&format!("/application/{mime_type}/{request_id}"));
+                // let mime_type = mime_type.to_string();
+                // base.set_path(&format!("/application/{mime_type}/{request_id}"));
+                todo!()
             }
             _ => return Err(Error::UnsupportedMediaType),
         }
