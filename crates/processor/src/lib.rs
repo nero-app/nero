@@ -55,45 +55,41 @@ impl HttpServer {
     }
 
     pub async fn handle_request(&self, request: Request<Option<Bytes>>) -> Result<Url, Error> {
-        let uuid = Uuid::new_v4();
-        self.state.http_requests.insert(uuid, request.clone()).await;
-
         match request.uri().scheme().unwrap().as_str() {
-            "http" | "https" => self.handle_http_request(&uuid, &request).await,
+            "http" | "https" => self.handle_http_request(request).await,
             _ => Err(Error::UnsupportedScheme),
         }
     }
 
-    async fn handle_http_request(
-        &self,
-        request_id: &Uuid,
-        request: &Request<Option<Bytes>>,
-    ) -> Result<Url, Error> {
+    async fn handle_http_request(&self, request: Request<Option<Bytes>>) -> Result<Url, Error> {
         if request.headers().is_empty() {
             return Ok(Url::parse(&request.uri().to_string())?);
         }
 
+        let uuid = Uuid::new_v4();
         let mut base = Url::parse(&format!("http://{}", self.state.addr)).unwrap();
 
         if request.method() != http::Method::GET {
-            base.set_path(&format!("/other/{request_id}"));
+            base.set_path(&format!("/other/{uuid}"));
             return Ok(base);
         }
 
-        let mime_type = mime_type(&self.state.http_client, request)
+        let mime_type = mime_type(&self.state.http_client, &request)
             .await?
             .ok_or(Error::UnsupportedMediaType)?;
 
         match mime_type.type_() {
-            mime::IMAGE => base.set_path(&format!("/image/{request_id}")),
-            mime::VIDEO => base.set_path(&format!("/video/{request_id}")),
+            mime::IMAGE => base.set_path(&format!("/image/{uuid}")),
+            mime::VIDEO => base.set_path(&format!("/video/{uuid}")),
             mime::APPLICATION => {
                 // let mime_type = mime_type.to_string();
-                // base.set_path(&format!("/application/{mime_type}/{request_id}"));
+                // base.set_path(&format!("/application/{mime_type}/{uuid}"));
                 todo!()
             }
             _ => return Err(Error::UnsupportedMediaType),
         }
+
+        self.state.http_requests.insert(uuid, request).await;
 
         Ok(base)
     }
