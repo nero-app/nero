@@ -18,7 +18,7 @@
       <a href="/" use:link>Home</a>
     </li>
     <li>
-      <a href="/extensions" use:link>Extensions</a>
+      <a href="/settings/extensions" use:link>Extensions</a>
     </li>
     <li>
       <a href="/settings" use:link>Settings</a>
