@@ -1,5 +1,5 @@
 /crates/app/gen/schemas
-/nero-ui/node_modules/
+/node_modules/
 /nero-ui/dist/
 /target/
 /Cargo.lock

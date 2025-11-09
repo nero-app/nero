@@ -5,8 +5,8 @@ mainBinaryName = "nero"
 version = "0.1.0"
 
 [build]
-beforeDevCommand = "cd ../nero-ui && bun run dev"
-beforeBuildCommand = "cd ../nero-ui && bun run build"
+beforeDevCommand = "bun run dev"
+beforeBuildCommand = "bun run build"
 frontendDist = "../nero-ui/dist"
 devUrl = "http://localhost:1420"
 

@@ -1,0 +1,25 @@
+{
+  "name": "nero",
+  "private": true,
+  "workspaces": [
+    "nero-ui"
+  ],
+  "scripts": {
+    "dev": "bun run dev:ui",
+    "dev:ui": "bun --filter nero-ui dev",
+    "build": "bun run build:ui",
+    "build:ui": "bun --filter nero-ui build"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "2.5.0"
+  },
+  "devDependencies": {
+    "@trivago/prettier-plugin-sort-imports": "5.2.2",
+    "prettier": "3.5.3",
+    "prettier-plugin-classnames": "0.7.8",
+    "prettier-plugin-merge": "0.7.3",
+    "prettier-plugin-svelte": "3.3.3",
+    "prettier-plugin-tailwindcss": "0.6.11",
+    "typescript": "5.7.2"
+  }
+}

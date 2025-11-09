@@ -8,4 +8,5 @@ export default defineConfig({
     port: 1420,
     strictPort: true,
   },
+  cacheDir: "../node_modules/.vite",
 });
