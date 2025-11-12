@@ -2,12 +2,16 @@
   import shockedCat from "../assets/images/shocked_cat.svg";
   import ErrorMessage from "../components/ErrorMessage.svelte";
   import SeriesCard from "../components/SeriesCard.svelte";
-  import { createInfiniteScroll } from "../state/createInfiniteScroll.svelte";
+  import { createInfiniteScroll } from "../lib/infiniteScroll.svelte";
   import {
     createFiltersQuery,
     createInfiniteSearchQuery,
-  } from "../state/queries.svelte";
-  import type { Filter, FilterCategory, SearchFilter } from "../types/filters";
+  } from "../lib/queries.svelte";
+  import type {
+    Filter,
+    FilterCategory,
+    SearchFilter,
+  } from "@nero/plugin-extensions";
 
   let { querystring }: { querystring: string } = $props();
   $inspect(querystring);

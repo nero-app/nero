@@ -1,6 +1,6 @@
 <script lang="ts">
   import { link } from "../pages/Router.svelte";
-  import type { Episode } from "../types/episode";
+  import type { Episode } from "@nero/plugin-extensions";
 
   let {
     seriesId,

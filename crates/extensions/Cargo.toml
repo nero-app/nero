@@ -11,7 +11,7 @@ semver = "1.0.27"
 nero-wasi-logging = { path = "../wasi-logging" }
 tokio = { workspace = true, features = ["sync", "fs"] }
 tracing = { workspace = true }
-wasm-metadata = "0.227.1"
+wasm-metadata = { workspace = true }
 wasmtime = { workspace = true }
 wasmtime-wasi = { workspace = true }
 wasmtime-wasi-http = { workspace = true }

@@ -10,6 +10,7 @@
     "format": "prettier --write ."
   },
   "dependencies": {
+    "@nero/plugin-extensions": "workspace:*",
     "@tanstack/svelte-query": "5.75.4",
     "@tanstack/svelte-query-devtools": "5.75.4",
     "regexparam": "3.0.0"

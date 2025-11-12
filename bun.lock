@@ -16,9 +16,14 @@
         "typescript": "5.7.2",
       },
     },
+    "crates/plugin-extensions": {
+      "name": "@nero/plugin-extensions",
+      "version": "0.1.0",
+    },
     "nero-ui": {
       "name": "nero-ui",
       "dependencies": {
+        "@nero/plugin-extensions": "workspace:*",
         "@tanstack/svelte-query": "5.75.4",
         "@tanstack/svelte-query-devtools": "5.75.4",
         "regexparam": "3.0.0",
@@ -113,6 +118,8 @@
     "@jridgewell/sourcemap-codec": ["@jridgewell/sourcemap-codec@1.5.5", "", {}, "sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og=="],
 
     "@jridgewell/trace-mapping": ["@jridgewell/trace-mapping@0.3.31", "", { "dependencies": { "@jridgewell/resolve-uri": "^3.1.0", "@jridgewell/sourcemap-codec": "^1.4.14" } }, "sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw=="],
+
+    "@nero/plugin-extensions": ["@nero/plugin-extensions@workspace:crates/plugin-extensions"],
 
     "@rollup/rollup-android-arm-eabi": ["@rollup/rollup-android-arm-eabi@4.53.1", "", { "os": "android", "cpu": "arm" }, "sha512-bxZtughE4VNVJlL1RdoSE545kc4JxL7op57KKoi59/gwuU5rV6jLWFXXc8jwgFoT6vtj+ZjO+Z2C5nrY0Cl6wA=="],
 

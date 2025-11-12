@@ -6,9 +6,9 @@
   import {
     createInfiniteEpisodesQuery,
     createSeriesInfoQuery,
-  } from "../state/queries.svelte";
-  import type { Series } from "../types/series";
+  } from "../lib/queries.svelte";
   import { link } from "./Router.svelte";
+  import type { Series } from "@nero/plugin-extensions";
 
   let { params }: { params: { seriesId: string } } = $props();
 

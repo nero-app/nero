@@ -1,0 +1,19 @@
+[package]
+name = "tauri-plugin-nero-extensions"
+version = "0.1.0"
+edition = "2024"
+links = "tauri-plugin-nero-extensions"
+
+[build-dependencies]
+tauri-plugin = { version = "2.5.1", features = ["build"] }
+
+[dependencies]
+anyhow = { workspace = true }
+serde = { workspace = true }
+tauri = { version = "2", default-features = false }
+tokio = { workspace = true, features = ["fs"] }
+tracing = { workspace = true }
+url = { workspace = true, features = ["serde"] }
+nero-processor = { path = "../processor" }
+nero-extensions = { path = "../extensions" }
+wasm-metadata = { workspace = true }

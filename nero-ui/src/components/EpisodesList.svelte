@@ -1,9 +1,9 @@
 <script lang="ts">
   import sortIcon from "../assets/icons/sort_icon.svg";
-  import { createInfiniteScroll } from "../state/createInfiniteScroll.svelte";
-  import type { EpisodesPage } from "../types/page";
+  import { createInfiniteScroll } from "../lib/infiniteScroll.svelte";
   import EpisodeCard from "./EpisodeCard.svelte";
   import ErrorMessage from "./ErrorMessage.svelte";
+  import type { EpisodesPage } from "@nero/plugin-extensions";
   import type {
     CreateInfiniteQueryResult,
     InfiniteData,

@@ -2,12 +2,15 @@
   "name": "nero",
   "private": true,
   "workspaces": [
+    "crates/plugin-extensions",
     "nero-ui"
   ],
   "scripts": {
-    "dev": "bun run dev:ui",
+    "dev": "bun run dev:plugin & bun run dev:ui",
+    "dev:plugin": "bun --filter @nero/plugin-extensions dev",
     "dev:ui": "bun --filter nero-ui dev",
-    "build": "bun run build:ui",
+    "build": "bun run build:plugin && bun run build:ui",
+    "build:plugin": "bun --filter @nero/plugin-extensions build",
     "build:ui": "bun --filter nero-ui build"
   },
   "dependencies": {

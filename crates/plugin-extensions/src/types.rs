@@ -1,21 +1,21 @@
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::AppState;
+use crate::PluginState;
 
 pub trait AsyncTryFromWithState<T>: Sized {
-    async fn async_try_from_with_state(value: T, state: &AppState) -> anyhow::Result<Self>;
+    async fn async_try_from_with_state(value: T, state: &PluginState) -> anyhow::Result<Self>;
 }
 
 pub trait AyncTryIntoWithState<T>: Sized {
-    async fn async_try_into_with_state(self, state: &AppState) -> anyhow::Result<T>;
+    async fn async_try_into_with_state(self, state: &PluginState) -> anyhow::Result<T>;
 }
 
 impl<T, U> AyncTryIntoWithState<U> for T
 where
     U: AsyncTryFromWithState<T>,
 {
-    async fn async_try_into_with_state(self, state: &AppState) -> anyhow::Result<U> {
+    async fn async_try_into_with_state(self, state: &PluginState) -> anyhow::Result<U> {
         U::async_try_from_with_state(self, state).await
     }
 }
@@ -23,8 +23,8 @@ where
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Page<T> {
-    pub items: Vec<T>,
-    pub has_next_page: bool,
+    items: Vec<T>,
+    has_next_page: bool,
 }
 
 impl<T, U> AsyncTryFromWithState<nero_extensions::types::Page<T>> for Page<U>
@@ -33,7 +33,7 @@ where
 {
     async fn async_try_from_with_state(
         page: nero_extensions::types::Page<T>,
-        state: &AppState,
+        state: &PluginState,
     ) -> anyhow::Result<Self> {
         let mut items = Vec::with_capacity(page.items.len());
         for item in page.items {
@@ -52,17 +52,17 @@ pub type EpisodesPage = Page<Episode>;
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Series {
-    pub id: String,
-    pub title: String,
-    pub poster_url: Option<Url>,
-    pub synopsis: Option<String>,
-    pub r#type: Option<String>,
+    id: String,
+    title: String,
+    poster_url: Option<Url>,
+    synopsis: Option<String>,
+    r#type: Option<String>,
 }
 
 impl AsyncTryFromWithState<nero_extensions::types::Series> for Series {
     async fn async_try_from_with_state(
         series: nero_extensions::types::Series,
-        state: &AppState,
+        state: &PluginState,
     ) -> anyhow::Result<Self> {
         Ok(Self {
             id: series.id,
@@ -80,17 +80,17 @@ impl AsyncTryFromWithState<nero_extensions::types::Series> for Series {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Episode {
-    pub id: String,
-    pub number: u16,
-    pub title: Option<String>,
-    pub thumbnail_url: Option<Url>,
-    pub description: Option<String>,
+    id: String,
+    number: u16,
+    title: Option<String>,
+    thumbnail_url: Option<Url>,
+    description: Option<String>,
 }
 
 impl AsyncTryFromWithState<nero_extensions::types::Episode> for Episode {
     async fn async_try_from_with_state(
         episode: nero_extensions::types::Episode,
-        state: &AppState,
+        state: &PluginState,
     ) -> anyhow::Result<Self> {
         Ok(Self {
             id: episode.id,
@@ -117,7 +117,7 @@ pub struct Video {
 impl AsyncTryFromWithState<nero_extensions::types::Video> for Video {
     async fn async_try_from_with_state(
         video: nero_extensions::types::Video,
-        state: &AppState,
+        state: &PluginState,
     ) -> anyhow::Result<Self> {
         Ok(Self {
             url: state.processor.handle_request(video.http_request).await?,
@@ -130,8 +130,8 @@ impl AsyncTryFromWithState<nero_extensions::types::Video> for Video {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Filter {
-    pub id: String,
-    pub display_name: String,
+    id: String,
+    display_name: String,
 }
 
 impl From<nero_extensions::types::Filter> for Filter {
@@ -146,9 +146,9 @@ impl From<nero_extensions::types::Filter> for Filter {
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FilterCategory {
-    pub id: String,
-    pub display_name: String,
-    pub filters: Vec<Filter>,
+    id: String,
+    display_name: String,
+    filters: Vec<Filter>,
 }
 
 impl From<nero_extensions::types::FilterCategory> for FilterCategory {
@@ -163,8 +163,8 @@ impl From<nero_extensions::types::FilterCategory> for FilterCategory {
 
 #[derive(Debug, Deserialize)]
 pub struct SearchFilter {
-    pub id: String,
-    pub values: Vec<String>,
+    id: String,
+    values: Vec<String>,
 }
 
 impl From<SearchFilter> for nero_extensions::types::SearchFilter {

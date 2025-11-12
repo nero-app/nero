@@ -1,6 +1,5 @@
 mod extensions;
 pub mod host;
-pub mod manager;
 pub mod types;
 
 use anyhow::{Result, anyhow};

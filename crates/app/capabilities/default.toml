@@ -2,4 +2,13 @@
 identifier = "main-capability"
 description = "Capability for the main window"
 windows = ["main"]
-permissions = ["core:default"]
+permissions = [
+    "core:default",
+    "nero-extensions:allow-get-extension-metadata",
+    "nero-extensions:allow-load-extension",
+    "nero-extensions:allow-get-filters",
+    "nero-extensions:allow-search",
+    "nero-extensions:allow-get-series-info",
+    "nero-extensions:allow-get-series-episodes",
+    "nero-extensions:allow-get-series-videos",
+]

@@ -3,10 +3,10 @@
   import EpisodesList from "../components/EpisodesList.svelte";
   import ErrorMessage from "../components/ErrorMessage.svelte";
   import {
-    createSeriesVideosQuery,
     createInfiniteEpisodesQuery,
-  } from "../state/queries.svelte";
-  import type { Video } from "../types/video";
+    createSeriesVideosQuery,
+  } from "../lib/queries.svelte";
+  import type { Video } from "@nero/plugin-extensions";
 
   let { params }: { params: { seriesId: string; episodeId: string } } =
     $props();
@@ -37,7 +37,7 @@
 {/snippet}
 
 {#snippet videoSection(videos: Video[])}
-  {@render videoPlayer(videos[selectedVideoIndex].url)}
+  {@render videoPlayer(videos[selectedVideoIndex]!.url)}
   {@render videoSelector(videos)}
   <!-- TODO -->
   <section class="flex flex-col gap-2">

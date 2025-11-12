@@ -1,6 +1,6 @@
 <script lang="ts">
   import { link } from "../pages/Router.svelte";
-  import type { Series } from "../types/series";
+  import type { Series } from "@nero/plugin-extensions";
 
   let { series }: { series: Series } = $props();
 </script>
