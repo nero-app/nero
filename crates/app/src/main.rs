@@ -5,7 +5,9 @@ use std::net::SocketAddr;
 fn main() {
     tracing_subscriber::fmt().init();
 
-    let processor_addr = SocketAddr::from(([127, 0, 0, 1], 4321));
+    let processor_port = portpicker::pick_unused_port()
+        .expect("failed to pick an unused port for the extensions processor");
+    let processor_addr = SocketAddr::from(([127, 0, 0, 1], processor_port));
 
     tauri::Builder::default()
         .plugin(tauri_plugin_nero_extensions::Builder::new(processor_addr).build())

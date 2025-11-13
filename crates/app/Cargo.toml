@@ -9,6 +9,7 @@ tauri-build = { version = "2", default-features = false, features = [
 ] }
 
 [dependencies]
+portpicker = "0.1.1"
 tauri = { version = "2", features = ["config-toml"] }
 tauri-plugin-nero-extensions = { path = "../plugin-extensions" }
 tracing = { workspace = true }
