@@ -1,13 +1,30 @@
-import type { Extension, SearchFilter } from "@nero/plugin-extensions";
-import { createInfiniteQuery, createQuery } from "@tanstack/svelte-query";
+import { getExtension, setExtension } from "./extension.svelte";
+import { Extension, type SearchFilter } from "@nero/plugin-extensions";
+import {
+  createInfiniteQuery,
+  createMutation,
+  createQuery,
+} from "@tanstack/svelte-query";
 
-let extension = $state<Extension | null>(null);
+export function createExtensionMetadataQuery(filePath: string) {
+  return createQuery({
+    queryKey: ["extension-metadata", filePath],
+    queryFn: () => Extension.getMetadata(filePath),
+  });
+}
 
-export function setExtension(extension: Extension | null) {
-  extension = extension;
+export function createLoadExtensionMutation() {
+  return createMutation({
+    mutationFn: async (filePath: string) => {
+      const loadedExtension = await Extension.load(filePath);
+      setExtension(loadedExtension);
+      return loadedExtension;
+    },
+  });
 }
 
 export function createFiltersQuery() {
+  const extension = getExtension();
   return createQuery({
     queryKey: ["filters", extension?.filePath],
     queryFn: () => {
@@ -25,6 +42,7 @@ export function createInfiniteSearchQuery(
   initialPage = 1,
   filters: SearchFilter[] = [],
 ) {
+  const extension = getExtension();
   return createInfiniteQuery({
     queryKey: ["search", extension?.filePath, query, filters],
     queryFn: ({ pageParam = initialPage }) => {
@@ -45,6 +63,7 @@ export function createInfiniteSearchQuery(
 }
 
 export function createSeriesInfoQuery(seriesId: string) {
+  const extension = getExtension();
   return createQuery({
     queryKey: ["series", extension?.filePath, seriesId],
     queryFn: () => {
@@ -58,6 +77,7 @@ export function createSeriesInfoQuery(seriesId: string) {
 }
 
 export function createInfiniteEpisodesQuery(seriesId: string, initialPage = 1) {
+  const extension = getExtension();
   return createInfiniteQuery({
     queryKey: ["episodes", extension?.filePath, seriesId],
     queryFn: ({ pageParam = initialPage }) => {
@@ -78,6 +98,7 @@ export function createInfiniteEpisodesQuery(seriesId: string, initialPage = 1) {
 }
 
 export function createSeriesVideosQuery(seriesId: string, episodeId: string) {
+  const extension = getExtension();
   return createQuery({
     queryKey: ["videos", extension?.filePath, seriesId, episodeId],
     queryFn: () => {
