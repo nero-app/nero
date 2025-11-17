@@ -12,4 +12,5 @@ permissions = [
     "nero-extensions:allow-get-series-info",
     "nero-extensions:allow-get-series-episodes",
     "nero-extensions:allow-get-series-videos",
+    "store:default",
 ]

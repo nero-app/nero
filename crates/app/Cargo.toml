@@ -13,6 +13,7 @@ portpicker = "0.1.1"
 tauri = { version = "2", features = ["config-toml"] }
 tauri-plugin-dialog = "2.4.2"
 tauri-plugin-nero-extensions = { path = "../plugin-extensions" }
+tauri-plugin-store = "2.4.1"
 tracing = { workspace = true }
 tracing-subscriber = "0.3.20"
 
