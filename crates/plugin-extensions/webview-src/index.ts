@@ -62,9 +62,11 @@ export interface Video {
 
 export class Extension {
   readonly filePath: string;
+  readonly metadata: Metadata;
 
-  private constructor(filePath: string) {
+  private constructor(filePath: string, metadata: Metadata) {
     this.filePath = filePath;
+    this.metadata = metadata;
   }
 
   static async getMetadata(filePath: string): Promise<Metadata> {
@@ -74,8 +76,9 @@ export class Extension {
   }
 
   static async load(filePath: string): Promise<Extension> {
+    const metadata = await Extension.getMetadata(filePath);
     await invoke("plugin:nero-extensions|load_extension", { filePath });
-    return new Extension(filePath);
+    return new Extension(filePath, metadata);
   }
 
   async getFilters(): Promise<FilterCategory[]> {
