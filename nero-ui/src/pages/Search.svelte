@@ -6,7 +6,7 @@
   import {
     createFiltersQuery,
     createInfiniteSearchQuery,
-  } from "../lib/queries.svelte";
+  } from "../lib/queries";
   import type {
     Filter,
     FilterCategory,

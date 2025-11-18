@@ -5,7 +5,7 @@
   import {
     createInfiniteEpisodesQuery,
     createSeriesVideosQuery,
-  } from "../lib/queries.svelte";
+  } from "../lib/queries";
   import type { Video } from "@nero/plugin-extensions";
 
   let { params }: { params: { seriesId: string; episodeId: string } } =

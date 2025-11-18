@@ -6,7 +6,7 @@
   import {
     createInfiniteEpisodesQuery,
     createSeriesInfoQuery,
-  } from "../lib/queries.svelte";
+  } from "../lib/queries";
   import { link } from "./Router.svelte";
   import type { Series } from "@nero/plugin-extensions";
 

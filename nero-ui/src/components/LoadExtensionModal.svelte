@@ -3,7 +3,7 @@
   import {
     createExtensionMetadataQuery,
     createLoadExtensionMutation,
-  } from "../lib/queries.svelte";
+  } from "../lib/queries";
   import XMarkIcon from "./icons/XMarkIcon.svelte";
   import { onMount } from "svelte";
 
