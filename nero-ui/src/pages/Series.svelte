@@ -3,20 +3,29 @@
   import shareIcon from "../assets/icons/share_icon.svg";
   import EpisodesList from "../components/EpisodesList.svelte";
   import ErrorMessage from "../components/ErrorMessage.svelte";
+  import VideoSelectionModal from "../components/VideoSelectionModal.svelte";
   import {
     createInfiniteEpisodesQuery,
     createSeriesInfoQuery,
   } from "../lib/queries";
-  import { link } from "./Router.svelte";
-  import type { Series } from "@nero/plugin-extensions";
+  import type { Series, Episode } from "@nero/plugin-extensions";
 
   let { params }: { params: { seriesId: string } } = $props();
 
   let seriesQuery = createSeriesInfoQuery(params.seriesId);
   let episodesQuery = createInfiniteEpisodesQuery(params.seriesId);
 
-  // TODO:
-  const firstEpisodeId = 0;
+  let selectedEpisode = $state<Episode | null>(null);
+
+  function openFirstEpisode() {
+    if ($episodesQuery.isSuccess && $episodesQuery.data.pages[0]?.items[0]) {
+      selectedEpisode = $episodesQuery.data.pages[0].items[0];
+    }
+  }
+
+  function closeVideoModal() {
+    selectedEpisode = null;
+  }
 </script>
 
 {#snippet seriesHeaderSkeleton()}
@@ -45,17 +54,18 @@
 
 {#snippet quickActions()}
   <div class="flex gap-4">
-    <!-- TODO: Disable if episodes are not available or if the page does not contain any episodes -->
-    <a
-      class="rounded-lg bg-red-300 px-3 py-1.5 duration-300 active:scale-95"
-      href="/watch/{params.seriesId}/{firstEpisodeId}"
-      use:link
+    <button
+      class="rounded-lg bg-red-300 px-3 py-1.5 duration-300 active:scale-95
+        disabled:cursor-not-allowed disabled:opacity-50"
+      onclick={openFirstEpisode}
+      disabled={!$episodesQuery.isSuccess ||
+        !$episodesQuery.data?.pages[0]?.items[0]}
     >
       <div class="flex items-center gap-2">
         <img src={playIcon} alt="Play icon" />
         <span>Watch now</span>
       </div>
-    </a>
+    </button>
     <!-- TODO: onclick -->
     <button
       class="cursor-pointer rounded-lg bg-red-300 px-3 py-1.5 duration-300 active:scale-95"
@@ -94,6 +104,18 @@
     {:else if $seriesQuery.isSuccess}
       {@render seriesHeader($seriesQuery.data)}
     {/if}
-    <EpisodesList {episodesQuery} seriesId={params.seriesId} />
+    <EpisodesList
+      {episodesQuery}
+      seriesId={params.seriesId}
+      onEpisodeSelect={(episode) => (selectedEpisode = episode)}
+    />
   </article>
 </div>
+
+{#if selectedEpisode}
+  <VideoSelectionModal
+    seriesId={params.seriesId}
+    episode={selectedEpisode}
+    onClose={closeVideoModal}
+  />
+{/if}

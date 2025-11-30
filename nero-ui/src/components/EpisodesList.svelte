@@ -3,7 +3,7 @@
   import { createInfiniteScroll } from "../lib/infiniteScroll.svelte";
   import EpisodeCard from "./EpisodeCard.svelte";
   import ErrorMessage from "./ErrorMessage.svelte";
-  import type { EpisodesPage } from "@nero/plugin-extensions";
+  import type { EpisodesPage, Episode } from "@nero/plugin-extensions";
   import type {
     CreateInfiniteQueryResult,
     InfiniteData,
@@ -13,26 +13,38 @@
     episodesQuery: CreateInfiniteQueryResult<InfiniteData<EpisodesPage>>;
     seriesId: string;
     smallCards?: boolean;
+    onEpisodeSelect?: (episode: Episode) => void;
   }
   let {
     episodesQuery,
     seriesId,
     smallCards = false,
+    onEpisodeSelect,
   }: EpisodesListProps = $props();
 
   let infiniteScroll = createInfiniteScroll(() =>
     $episodesQuery.fetchNextPage(),
   );
+
   let episodes = $derived(
     $episodesQuery.data?.pages.flatMap((page) => page.items) ?? [],
   );
+
+  function handleEpisodeClick(episode: Episode) {
+    onEpisodeSelect?.(episode);
+  }
 </script>
 
 {#snippet episodesList()}
   <ul>
     {#each episodes as episode (episode.id)}
       <li>
-        <EpisodeCard {seriesId} {episode} small={smallCards} />
+        <EpisodeCard
+          {seriesId}
+          {episode}
+          small={smallCards}
+          onclick={() => handleEpisodeClick(episode)}
+        />
       </li>
     {/each}
   </ul>

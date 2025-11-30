@@ -1,19 +1,19 @@
 <script lang="ts">
-  import { link } from "../pages/Router.svelte";
   import type { Episode } from "@nero/plugin-extensions";
 
-  let {
-    seriesId,
-    episode,
-    small,
-  }: { seriesId: string; episode: Episode; small?: boolean } = $props();
+  interface EpisodeCardProps {
+    seriesId: string;
+    episode: Episode;
+    small?: boolean;
+    onclick?: () => void;
+  }
+  let { episode, small, onclick }: EpisodeCardProps = $props();
 </script>
 
-<a
-  class={`grid items-center gap-4 rounded-md p-1 duration-300 hover:bg-gray-100
-active:scale-95 ${small ? "grid-cols-[1fr_1fr]" : "grid-cols-[1fr_4fr_7fr]"}`}
-  href="/watch/{seriesId}/{episode.id}"
-  use:link
+<button
+  class={`grid items-center gap-4 rounded-md p-1 text-start duration-300 hover:bg-gray-100
+  active:scale-95 ${small ? "grid-cols-[1fr_1fr]" : "grid-cols-[1fr_4fr_7fr]"}`}
+  {onclick}
 >
   {#if !small}
     <span class="truncate text-center font-medium">{episode.number}</span>
@@ -40,4 +40,4 @@ active:scale-95 ${small ? "grid-cols-[1fr_1fr]" : "grid-cols-[1fr_4fr_7fr]"}`}
       {episode.description}
     </p>
   </div>
-</a>
+</button>
