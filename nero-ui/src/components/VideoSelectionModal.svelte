@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { appState } from "../lib/appState.svelte";
   import { createSeriesVideosQuery } from "../lib/queries";
   import ErrorMessage from "./ErrorMessage.svelte";
   import type { Episode, Video } from "@nero/plugin-extensions";
@@ -41,8 +42,20 @@
   }
 
   async function selectVideo(video: Video) {
+    const playerPath = appState.config.playerPath;
+
+    if (!playerPath) {
+      alert(
+        "No video player configured. Please set a video player path in settings.",
+      );
+      return;
+    }
+
     try {
-      await invoke("open_video_player", { url: video.url });
+      await invoke("open_video_player", {
+        playerPath,
+        url: video.url,
+      });
       close(video);
     } catch (error) {
       alert(`Error opening video player: ${error}`);
