@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { getExtension } from "../lib/extension.svelte";
+  import { appState } from "../lib/appState.svelte";
   import {
     createExtensionMetadataQuery,
     createLoadExtensionMutation,
@@ -13,7 +13,7 @@
   }
   let { filePath, onClose }: LoadExtensionModalProps = $props();
 
-  const extension = getExtension();
+  const extension = $derived(appState.extension);
   const metadataQuery = createExtensionMetadataQuery(filePath);
   const loadMutation = createLoadExtensionMutation();
 

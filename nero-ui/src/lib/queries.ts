@@ -1,4 +1,4 @@
-import { getExtension, setExtension } from "./extension.svelte";
+import { appState } from "./appState.svelte";
 import { Extension, type SearchFilter } from "@nero/plugin-extensions";
 import {
   createInfiniteQuery,
@@ -17,14 +17,14 @@ export function createLoadExtensionMutation() {
   return createMutation({
     mutationFn: async (filePath: string) => {
       const loadedExtension = await Extension.load(filePath);
-      setExtension(loadedExtension);
+      appState.extension = loadedExtension;
       return loadedExtension;
     },
   });
 }
 
 export function createFiltersQuery() {
-  const extension = getExtension();
+  const extension = appState.extension;
   return createQuery({
     queryKey: ["filters", extension?.filePath],
     queryFn: () => {
@@ -42,7 +42,7 @@ export function createInfiniteSearchQuery(
   initialPage = 1,
   filters: SearchFilter[] = [],
 ) {
-  const extension = getExtension();
+  const extension = appState.extension;
   return createInfiniteQuery({
     queryKey: ["search", extension?.filePath, query, filters],
     queryFn: ({ pageParam = initialPage }) => {
@@ -63,7 +63,7 @@ export function createInfiniteSearchQuery(
 }
 
 export function createSeriesInfoQuery(seriesId: string) {
-  const extension = getExtension();
+  const extension = appState.extension;
   return createQuery({
     queryKey: ["series", extension?.filePath, seriesId],
     queryFn: () => {
@@ -77,7 +77,7 @@ export function createSeriesInfoQuery(seriesId: string) {
 }
 
 export function createInfiniteEpisodesQuery(seriesId: string, initialPage = 1) {
-  const extension = getExtension();
+  const extension = appState.extension;
   return createInfiniteQuery({
     queryKey: ["episodes", extension?.filePath, seriesId],
     queryFn: ({ pageParam = initialPage }) => {
@@ -98,7 +98,7 @@ export function createInfiniteEpisodesQuery(seriesId: string, initialPage = 1) {
 }
 
 export function createSeriesVideosQuery(seriesId: string, episodeId: string) {
-  const extension = getExtension();
+  const extension = appState.extension;
   return createQuery({
     queryKey: ["videos", extension?.filePath, seriesId, episodeId],
     queryFn: () => {

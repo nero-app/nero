@@ -3,7 +3,7 @@
   import InboxIcon from "../../components/icons/InboxIcon.svelte";
   import PlusIcon from "../../components/icons/PlusIcon.svelte";
   import WarningIcon from "../../components/icons/WarningIcon.svelte";
-  import { getExtension } from "../../lib/extension.svelte";
+  import { appState } from "../../lib/appState.svelte";
   import type { Metadata } from "@nero/plugin-extensions";
   import { open } from "@tauri-apps/plugin-dialog";
 
@@ -11,7 +11,7 @@
   let showAddDialog = $state(false);
   let allowUntrusted = $state(true);
 
-  const currentExtension = $derived(getExtension());
+  const currentExtension = $derived(appState.extension);
 
   async function selectExtension() {
     const file = await open({
