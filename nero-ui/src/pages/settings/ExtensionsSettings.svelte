@@ -36,17 +36,28 @@
 
 {#snippet extensionCard(metadata: Metadata)}
   <div class="px-4 py-3">
-    <p class="truncate text-sm font-medium text-neutral-900">
+    <h3 class="truncate text-sm font-medium text-neutral-900">
       {metadata.name}
-    </p>
+    </h3>
     <p class="text-xs text-neutral-500">
       v{metadata.version} • {metadata.authors}
     </p>
   </div>
 {/snippet}
 
-{#snippet extensionList()}
-  <div>
+{#snippet extensionSettings()}
+  <section class="rounded-lg border border-neutral-200">
+    <header
+      class="flex items-center justify-between border-b border-neutral-200 px-4 py-3"
+    >
+      <h2 class="font-medium text-neutral-900">Loaded Extension</h2>
+      <button
+        onclick={selectExtension}
+        class="size-6 cursor-pointer rounded-md duration-300 active:scale-95"
+      >
+        <PlusIcon />
+      </button>
+    </header>
     {#if !currentExtension}
       <div class="flex flex-col items-center px-4 py-8">
         <div class="size-12 text-neutral-400">
@@ -60,39 +71,22 @@
     {:else}
       {@render extensionCard(currentExtension.metadata)}
     {/if}
-  </div>
-{/snippet}
-
-{#snippet extensionSettings()}
-  <div class="rounded-lg border border-neutral-200">
-    <div
-      class="flex items-center justify-between border-b border-neutral-200 px-4 py-3"
-    >
-      <h2 class="font-medium text-neutral-900">Loaded Extension</h2>
-      <button
-        onclick={selectExtension}
-        class="size-6 cursor-pointer rounded-md duration-300 active:scale-95"
-      >
-        <PlusIcon />
-      </button>
-    </div>
-    {@render extensionList()}
-  </div>
+  </section>
 {/snippet}
 
 {#snippet securitySettings()}
-  <div class="p-4">
+  <section class="p-4">
     <h3 class="text-sm font-medium text-neutral-900">Security</h3>
     <div class="mt-3 flex items-center gap-3">
       <!-- svelte-ignore a11y_consider_explicit_label -->
       <button
         class={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full
-        transition-colors ${allowUntrusted ? "bg-amber-500" : "bg-neutral-200"}`}
+  transition-colors ${allowUntrusted ? "bg-amber-500" : "bg-neutral-200"}`}
         onclick={toggleUntrustedExtensions}
       >
         <span
           class={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-    allowUntrusted ? "translate-x-6" : "translate-x-1" }`}
+      allowUntrusted ? "translate-x-6" : "translate-x-1" }`}
         ></span>
       </button>
       <div class="flex-1">
@@ -118,25 +112,25 @@
         </p>
       </div>
     {/if}
-  </div>
+  </section>
 {/snippet}
 
 {#snippet advancedSettings()}
-  <div class="rounded-lg border border-neutral-200">
-    <div class="border-b border-neutral-200 px-4 py-3">
+  <section class="rounded-lg border border-neutral-200">
+    <header class="border-b border-neutral-200 px-4 py-3">
       <h2 class="font-medium text-neutral-900">Advanced Configuration</h2>
-    </div>
+    </header>
     <div class="divide-y divide-neutral-200">
       {@render securitySettings()}
     </div>
-  </div>
+  </section>
 {/snippet}
 
 <div class="flex flex-col gap-4 pb-2">
-  <div>
+  <header>
     <h1 class="text-xl font-semibold text-neutral-900">Extensions</h1>
     <p class="text-neutral-600">Manage and configure extensions</p>
-  </div>
+  </header>
   {@render extensionSettings()}
   {@render advancedSettings()}
 </div>
