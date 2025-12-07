@@ -28,11 +28,11 @@ where
 }
 
 pub(super) trait IntoHttpRequest {
-    async fn into_http_request(self) -> Result<types::Request>;
+    async fn into_http_request(self) -> Result<types::HttpRequest>;
 }
 
 impl IntoHttpRequest for HostOutgoingRequest {
-    async fn into_http_request(self) -> Result<types::Request> {
+    async fn into_http_request(self) -> Result<types::HttpRequest> {
         let mut builder = http::Uri::builder();
         if let Some(scheme) = &self.scheme {
             builder = builder.scheme(match scheme {

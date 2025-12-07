@@ -1,8 +1,11 @@
+use std::str::FromStr;
+
 use self::nero::extension::types::{
     Episode, EpisodesPage, Filter, FilterCategory, SearchFilter, Series, SeriesPage, Video,
 };
 
 use anyhow::Result;
+use magnet_uri::MagnetURI;
 use semver::Version;
 use wasmtime::{
     Engine,
@@ -12,7 +15,10 @@ use wasmtime_wasi_http::{WasiHttpView, types::HostOutgoingRequest};
 
 use crate::{
     AsyncTryIntoWithStore, WasmState,
-    extensions::{AsyncTryFromWithStore, IntoHttpRequest},
+    extensions::{
+        AsyncTryFromWithStore, IntoHttpRequest,
+        since_v0_1_0_draft::nero::extension::{persistent_cache, types::MediaResource},
+    },
 };
 
 pub const MIN_VER: Version = Version::new(0, 1, 0);
@@ -20,12 +26,16 @@ pub const MIN_VER: Version = Version::new(0, 1, 0);
 bindgen!({
     path: "./wit/v0.1.0-draft",
     world: "nero:extension/extension",
-    imports: { default: async },
+    imports: { default: async | trappable, },
     exports: { default: async },
     with: {
         "wasi:http": wasmtime_wasi_http::bindings::http,
         "wasi:logging": nero_wasi_logging::logging,
+        "nero:extension/persistent-cache/cache": Cache,
     },
+    trappable_error_type: {
+        "nero:extension/persistent-cache/error" => Error,
+    }
 });
 
 pub fn linker(engine: &Engine) -> Result<Linker<WasmState>> {
@@ -92,12 +102,8 @@ impl AsyncTryFromWithStore<Series> for crate::types::Series {
         Ok(crate::types::Series {
             id: series.id,
             title: series.title,
-            poster_request: match series.poster_resource {
-                Some(r) => {
-                    let outgoing: HostOutgoingRequest = r.try_into_with_store(store).await?;
-                    let request = outgoing.into_http_request().await?;
-                    Some(request)
-                }
+            poster_resource: match series.poster_resource {
+                Some(mr) => Some(mr.try_into_with_store(store).await?),
                 None => None,
             },
             synopsis: series.synopsis,
@@ -131,12 +137,8 @@ impl AsyncTryFromWithStore<Episode> for crate::types::Episode {
             id: episode.id,
             number: episode.number,
             title: episode.title,
-            thumbnail_request: match episode.thumbnail_resource {
-                Some(r) => {
-                    let outgoing: HostOutgoingRequest = r.try_into_with_store(store).await?;
-                    let request = outgoing.into_http_request().await?;
-                    Some(request)
-                }
+            thumbnail_resource: match episode.thumbnail_resource {
+                Some(mr) => Some(mr.try_into_with_store(store).await?),
                 None => None,
             },
             description: episode.description,
@@ -150,11 +152,7 @@ impl AsyncTryFromWithStore<Video> for crate::types::Video {
         store: &mut wasmtime::Store<WasmState>,
     ) -> anyhow::Result<Self> {
         Ok(crate::types::Video {
-            http_request: {
-                let outgoing: HostOutgoingRequest =
-                    video.http_resource.try_into_with_store(store).await?;
-                outgoing.into_http_request().await?
-            },
+            media_resource: video.media_resource.try_into_with_store(store).await?,
             server: video.server,
             resolution: video.resolution,
         })
@@ -169,5 +167,87 @@ impl AsyncTryFromWithStore<Resource<HostOutgoingRequest>> for HostOutgoingReques
         let table = store.data_mut().table();
         let outgoing_request = table.delete(resource)?;
         Ok(outgoing_request)
+    }
+}
+
+impl AsyncTryFromWithStore<MediaResource> for crate::types::MediaResource {
+    async fn try_from_with_store(
+        media_resource: MediaResource,
+        store: &mut wasmtime::Store<WasmState>,
+    ) -> Result<Self> {
+        match media_resource {
+            MediaResource::HttpRequest(resource) => {
+                let outgoing: HostOutgoingRequest = resource.try_into_with_store(store).await?;
+                let request = outgoing.into_http_request().await?;
+                Ok(crate::types::MediaResource::HttpRequest(Box::new(request)))
+            }
+            MediaResource::MagnetUri(uri) => {
+                let magnet = MagnetURI::from_str(&uri)
+                    .map_err(|e| anyhow::anyhow!("Failed to parse magnet URI: {:?}", e))?;
+                Ok(crate::types::MediaResource::MagnetUri(magnet))
+            }
+        }
+    }
+}
+
+// TODO:
+
+#[allow(dead_code)]
+pub enum Error {
+    NoSuchStore,
+    AccessDenied,
+    StorageLimitExceeded,
+    Other(String),
+}
+
+#[allow(dead_code)]
+pub struct Cache {}
+
+#[allow(unused_variables)]
+impl persistent_cache::Host for WasmState {
+    async fn open(&mut self, identifier: String) -> Result<Resource<Cache>, Error> {
+        todo!()
+    }
+
+    fn convert_error(&mut self, err: Error) -> wasmtime::Result<persistent_cache::Error> {
+        todo!()
+    }
+}
+
+#[allow(unused_variables)]
+impl persistent_cache::HostCache for WasmState {
+    async fn get(&mut self, cache: Resource<Cache>, key: String) -> Result<Option<Vec<u8>>, Error> {
+        todo!()
+    }
+
+    async fn set(
+        &mut self,
+        cache: Resource<Cache>,
+        key: String,
+        value: Vec<u8>,
+        ttl_ms: Option<u32>,
+    ) -> Result<(), Error> {
+        todo!()
+    }
+
+    async fn delete(&mut self, cache: Resource<Cache>, key: String) -> Result<(), Error> {
+        todo!()
+    }
+
+    async fn exists(&mut self, cache: Resource<Cache>, key: String) -> Result<bool, Error> {
+        todo!()
+    }
+
+    async fn list_keys(
+        &mut self,
+        cache: Resource<Cache>,
+        cursor: Option<String>,
+    ) -> Result<persistent_cache::KeyResponse, Error> {
+        todo!()
+    }
+
+    async fn drop(&mut self, cache: Resource<Cache>) -> wasmtime::Result<()> {
+        self.table.delete(cache)?;
+        Ok(())
     }
 }

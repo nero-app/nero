@@ -1,3 +1,5 @@
+use nero_extensions::types::MediaResource;
+use nero_processor::Processor;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -67,8 +69,13 @@ impl AsyncTryFromWithState<nero_extensions::types::Series> for Series {
         Ok(Self {
             id: series.id,
             title: series.title,
-            poster_url: match series.poster_request {
-                Some(req) => Some(state.processor.handle_request(req).await?),
+            poster_url: match series.poster_resource {
+                Some(MediaResource::HttpRequest(req)) => {
+                    Some(state.processor.handle_http_request(*req).await?)
+                }
+                Some(MediaResource::MagnetUri(magnet)) => {
+                    Some(Processor::handle_magnet_uri(magnet)?)
+                }
                 None => None,
             },
             synopsis: series.synopsis,
@@ -96,8 +103,13 @@ impl AsyncTryFromWithState<nero_extensions::types::Episode> for Episode {
             id: episode.id,
             number: episode.number,
             title: episode.title,
-            thumbnail_url: match episode.thumbnail_request {
-                Some(req) => Some(state.processor.handle_request(req).await?),
+            thumbnail_url: match episode.thumbnail_resource {
+                Some(MediaResource::HttpRequest(req)) => {
+                    Some(state.processor.handle_http_request(*req).await?)
+                }
+                Some(MediaResource::MagnetUri(magnet)) => {
+                    Some(Processor::handle_magnet_uri(magnet)?)
+                }
                 None => None,
             },
             description: episode.description,
@@ -120,7 +132,12 @@ impl AsyncTryFromWithState<nero_extensions::types::Video> for Video {
         state: &PluginState,
     ) -> anyhow::Result<Self> {
         Ok(Self {
-            url: state.processor.handle_request(video.http_request).await?,
+            url: match video.media_resource {
+                MediaResource::HttpRequest(req) => {
+                    state.processor.handle_http_request(*req).await?
+                }
+                MediaResource::MagnetUri(magnet) => Processor::handle_magnet_uri(magnet)?,
+            },
             server: video.server,
             resolution: video.resolution,
         })

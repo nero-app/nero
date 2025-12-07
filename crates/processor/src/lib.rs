@@ -7,6 +7,7 @@ use std::{io, net::SocketAddr, sync::Arc};
 use axum::{Router, routing::get};
 use bytes::Bytes;
 use http::Request;
+use magnet_uri::MagnetURI;
 use moka::future::Cache;
 use tokio::net::TcpListener;
 use tracing::debug;
@@ -25,11 +26,11 @@ struct ServerState {
     http_requests: Cache<Uuid, Request<Option<Bytes>>>,
 }
 
-pub struct HttpServer {
+pub struct Processor {
     state: Arc<ServerState>,
 }
 
-impl HttpServer {
+impl Processor {
     pub fn new(addr: SocketAddr) -> Self {
         let state = ServerState {
             addr,
@@ -54,14 +55,12 @@ impl HttpServer {
         axum::serve(listener, app).await
     }
 
-    pub async fn handle_request(&self, request: Request<Option<Bytes>>) -> Result<Url, Error> {
-        match request.uri().scheme().unwrap().as_str() {
-            "http" | "https" => self.handle_http_request(request).await,
-            _ => Err(Error::UnsupportedScheme),
+    pub async fn handle_http_request(&self, request: Request<Option<Bytes>>) -> Result<Url, Error> {
+        let scheme = request.uri().scheme().map(|s| s.as_str());
+        if scheme != Some("http") && scheme != Some("https") {
+            return Err(Error::UnsupportedScheme);
         }
-    }
 
-    async fn handle_http_request(&self, request: Request<Option<Bytes>>) -> Result<Url, Error> {
         if request.headers().is_empty() {
             return Ok(Url::parse(&request.uri().to_string())?);
         }
@@ -92,5 +91,11 @@ impl HttpServer {
         self.state.http_requests.insert(uuid, request).await;
 
         Ok(base)
+    }
+
+    // TODO:
+    #[allow(unused_variables)]
+    pub fn handle_magnet_uri(uri: MagnetURI) -> Result<Url, Error> {
+        todo!()
     }
 }

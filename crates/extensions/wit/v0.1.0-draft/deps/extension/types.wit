@@ -1,15 +1,30 @@
 interface types {
     use wasi:http/types@0.2.7.{outgoing-request};
 
-    /// Represents a remotely accessible HTTP resource to be retrieved by the host environment.
+    /// Represents a media resource that can be retrieved through different protocols.
     ///
-    /// This is an alias for `wasi:http/types.outgoing-request`, and contains all the necessary information
-    /// for issuing an HTTP request to retrieve a remote asset (such as a video, image, or metadata file).
-    ///
-    /// It includes the full URL (via scheme, authority, and path), headers, method, and optional body content.
-    /// This abstraction allows implementors to simply describe how to access a resource, while leaving
-    /// the actual fetching to a downstream HTTP-capable host.
-    type http-resource = outgoing-request;
+    /// This variant allows the specification of media content (such as videos, images, or torrents)
+    /// that may be accessible via HTTP requests or through peer-to-peer networks
+    /// using magnet URIs.
+    variant media-resource {
+        /// An outgoing HTTP request for retrieving resources via web protocols.
+        ///
+        /// This contains all the necessary information for issuing an HTTP request to retrieve
+        /// a remote asset (such as a video, image, or metadata file), including the full request
+        /// details (scheme, authority, path, headers, method, and optional body content).
+        http-request(outgoing-request),
+
+        /// A magnet URI used to identify and retrieve content from peer-to-peer networks.
+        ///
+        /// Unlike HTTP requests which specify how to fetch from a location, magnet URIs identify
+        /// content by its cryptographic hash, allowing it to be retrieved from distributed networks
+        /// (such as BitTorrent) without relying on a centralized server.
+        ///
+        /// This is a simple URI string with no HTTP-specific concepts (no headers, body, or method).
+        ///
+        /// Example format: `magnet:?xt=urn:btih:HASH&dn=name&tr=tracker_url`
+        magnet-uri(string),
+    }
 
     /// Represents a series with its basic details.
     record series {
@@ -17,8 +32,10 @@ interface types {
         id: string,
         /// Title of the series.
         title: string,
-        /// The HTTP resource from which the series poster image can be retrieved.
-        poster-resource: option<http-resource>,
+        /// The media resource from which the series poster image can be retrieved.
+        ///
+        /// This can be either an HTTP request or a magnet URI, depending on how the poster is distributed.
+        poster-resource: option<media-resource>,
         /// Synopsis or description of the series, if available.
         synopsis: option<string>,
         /// Type of the series (e.g., TV show, movie), if available.
@@ -83,8 +100,10 @@ interface types {
         number: u16,
         /// Title of the episode, if available.
         title: option<string>,
-        /// The HTTP resource from which the episode thumbnail image can be retrieved.
-        thumbnail-resource: option<http-resource>,
+        /// The media resource from which the episode thumbnail image can be retrieved.
+        ///
+        /// This can be either an HTTP request or a magnet URI, depending on how the thumbnail is distributed.
+        thumbnail-resource: option<media-resource>,
         /// Description of the episode, if available.
         description: option<string>,
     }
@@ -108,8 +127,11 @@ interface types {
 
     /// Represents a video stream for a specific episode.
     record video {
-        /// The HTTP resource from which the video stream can be retrieved.
-        http-resource: http-resource,
+        /// The media resource from which the video stream can be retrieved.
+        ///
+        /// This can be either an HTTP request for direct streaming or a magnet URI for peer-to-peer
+        /// content distribution (e.g., torrent files).
+        media-resource: media-resource,
         /// The server hosting the video stream.
         server: string,
         /// The resolution of the video stream.

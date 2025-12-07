@@ -3,7 +3,7 @@ mod types;
 use std::net::SocketAddr;
 
 use nero_extensions::{WasmExtension, host::WasmHost};
-use nero_processor::HttpServer;
+use nero_processor::Processor;
 use tauri::{
     Manager, Result, Runtime, State,
     plugin::{self, TauriPlugin},
@@ -18,7 +18,7 @@ use crate::types::{
 struct PluginState {
     host: WasmHost,
     extension: RwLock<Option<WasmExtension>>,
-    processor: HttpServer,
+    processor: Processor,
 }
 
 #[tauri::command]
@@ -133,7 +133,7 @@ impl Builder {
         let state = PluginState {
             host: WasmHost::default(),
             extension: RwLock::new(None),
-            processor: HttpServer::new(self.processor_addr),
+            processor: Processor::new(self.processor_addr),
         };
 
         plugin::Builder::new("nero-extensions")

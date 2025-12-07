@@ -7,6 +7,7 @@ edition = "2024"
 anyhow = { workspace = true }
 bytes = { workspace = true }
 http = { workspace = true }
+magnet-uri = { workspace = true }
 semver = "1.0.27"
 nero-wasi-logging = { path = "../wasi-logging" }
 tokio = { workspace = true, features = ["sync", "fs"] }

@@ -1,6 +1,12 @@
 use bytes::Bytes;
+use magnet_uri::MagnetURI;
 
-pub type Request = http::Request<Option<Bytes>>;
+pub type HttpRequest = http::Request<Option<Bytes>>;
+
+pub enum MediaResource {
+    HttpRequest(Box<HttpRequest>),
+    MagnetUri(MagnetURI),
+}
 
 pub struct Page<T> {
     pub items: Vec<T>,
@@ -13,7 +19,7 @@ pub type EpisodesPage = Page<Episode>;
 pub struct Series {
     pub id: String,
     pub title: String,
-    pub poster_request: Option<Request>,
+    pub poster_resource: Option<MediaResource>,
     pub synopsis: Option<String>,
     pub r#type: Option<String>,
 }
@@ -22,14 +28,14 @@ pub struct Episode {
     pub id: String,
     pub number: u16,
     pub title: Option<String>,
-    pub thumbnail_request: Option<Request>,
+    pub thumbnail_resource: Option<MediaResource>,
     pub description: Option<String>,
 }
 
 type Resolution = (u16, u16);
 
 pub struct Video {
-    pub http_request: Request,
+    pub media_resource: MediaResource,
     pub server: String,
     pub resolution: Resolution,
 }

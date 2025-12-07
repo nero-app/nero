@@ -8,8 +8,8 @@ sha512 = "8d1c9ddaaea70ae54376bfc02dcdd0437336fb4fc67f89763ce09540caefe84cbae89a
 
 [extension]
 url = "https://github.com/dacchidocchi/nero-extension/archive/main.tar.gz"
-sha256 = "fce03967b9df2e1b2f902721ed4e5baf127dea6ec63edb243fe278b82100175b"
-sha512 = "ccdb83f41d3e97b271f97de8ffc8360dab521e371df11192c4d1363f806afe14fb4cf44b5135db26a2ecd410507e0d195d9ed8b1c42fb03e031a488d3cec9fcd"
+sha256 = "e14a58d759c50cfeb336c143e478fb6c2bc203e8843f879cd1e53b78612ea7ad"
+sha512 = "8380128366991d210afb7a9b32d2372bb94de32ede1e0a7ccaaf6a10367958af1f2d16cbc87f6df34f5b06d2ba31eea8fe9ba61d3dc69f172441d510a997ff92"
 deps = ["cli", "clocks", "filesystem", "http", "io", "logging", "random", "sockets"]
 
 [filesystem]
