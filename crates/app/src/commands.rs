@@ -26,7 +26,7 @@ pub fn open_video_player(
         let app_name = player_path
             .trim_end_matches(".app")
             .split('/')
-            .last()
+            .next_back()
             .unwrap_or("");
         format!("{}/Contents/MacOS/{}", player_path, app_name)
     } else {
