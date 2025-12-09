@@ -11,7 +11,7 @@ magnet-uri = { workspace = true }
 mime = "0.3.17"
 mime_guess = "2.0.5"
 moka = { version = "0.12.11", features = ["future"] }
-reqwest = { version = "0.12.23", features = ["stream"] }
+reqwest = { workspace = true, features = ["stream"] }
 serde = { workspace = true }
 thiserror = "2.0.17"
 tokio = { workspace = true, features = ["net"] }
