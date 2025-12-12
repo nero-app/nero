@@ -88,8 +88,9 @@ impl NodeJs {
                 continue;
             };
 
-            let version = Self::get_version_from_node(&node_path).await?;
-            if version_req.matches(&version) {
+            if let Ok(version) = Self::get_version_from_node(&node_path).await
+                && version_req.matches(&version)
+            {
                 let node = Self {
                     node: node_path.to_path_buf(),
                     npm: npm_path,
