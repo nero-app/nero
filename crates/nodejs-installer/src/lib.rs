@@ -20,10 +20,10 @@ pub struct NodeJs {
 }
 
 impl NodeJs {
-    pub async fn auto_download(path: PathBuf, version_req: &VersionReq) -> Result<Self> {
-        tokio::fs::create_dir_all(&path).await?;
+    pub async fn auto_download(path: &PathBuf, version_req: &VersionReq) -> Result<Self> {
+        tokio::fs::create_dir_all(path).await?;
 
-        if let Ok(node) = Self::find_local_installation(&path, version_req).await {
+        if let Ok(node) = Self::find_local_installation(path, version_req).await {
             return Ok(node);
         }
 
@@ -32,7 +32,7 @@ impl NodeJs {
         }
 
         let resolved_version = Self::resolve_remote_version(version_req).await?;
-        Self::download(&path, resolved_version).await
+        Self::download(path, resolved_version).await
     }
 
     async fn find_local_installation(
