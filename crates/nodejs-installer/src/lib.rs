@@ -16,30 +16,25 @@ use tokio_util::compat::FuturesAsyncReadCompatExt;
 pub struct NodeJs {
     node: PathBuf,
     npm: PathBuf,
-    version: Version,
+    node_version: Version,
+    npm_version: Version,
 }
 
 impl NodeJs {
-    pub async fn auto_download(path: &PathBuf, version_req: &VersionReq) -> Result<Self> {
-        tokio::fs::create_dir_all(path).await?;
+    pub async fn from_paths(node: PathBuf, npm: PathBuf) -> Result<Self> {
+        let node_version = Self::get_node_version(&node).await?;
+        let npm_version = Self::get_npm_version(&npm).await?;
 
-        if let Ok(node) = Self::find_local_installation(path, version_req).await {
-            return Ok(node);
-        }
-
-        if let Some(node) = Self::find_system_installation(version_req).await? {
-            return Ok(node);
-        }
-
-        let resolved_version = Self::resolve_remote_version(version_req).await?;
-        Self::download(path, resolved_version).await
+        Ok(Self {
+            node,
+            npm,
+            node_version,
+            npm_version,
+        })
     }
 
-    async fn find_local_installation(
-        install_path: &PathBuf,
-        version_req: &VersionReq,
-    ) -> Result<Self> {
-        let mut entries = tokio::fs::read_dir(install_path).await?;
+    pub async fn from_local(cache_dir: &PathBuf, version_req: &VersionReq) -> Result<Self> {
+        let mut entries = tokio::fs::read_dir(cache_dir).await?;
 
         let mut matching_versions = Vec::new();
         while let Some(entry) = entries.next_entry().await? {
@@ -58,18 +53,24 @@ impl NodeJs {
             }
         }
 
-        matching_versions
+        let (node_version, install_path) = matching_versions
             .into_iter()
             .max_by(|(a, _), (b, _)| a.cmp(b))
-            .map(|(version, path)| Self::from_path_and_version(path, version))
-            .context("No matching installed version found")
+            .context("No matching installed version found")?;
+
+        let (node, npm) = Self::get_binaries_from_install_path(&install_path)?;
+        let npm_version = Self::get_npm_version(&npm).await?;
+
+        Ok(Self {
+            node,
+            npm,
+            node_version,
+            npm_version,
+        })
     }
 
-    async fn find_system_installation(version_req: &VersionReq) -> Result<Option<Self>> {
-        let node_paths = match which::which_all("node") {
-            Ok(paths) => paths,
-            Err(_) => return Ok(None),
-        };
+    pub async fn from_system(version_req: &VersionReq) -> Result<Self> {
+        let node_paths = which::which_all("node").context("No Node.js found in system PATH")?;
 
         for node_path in node_paths {
             let bin_dir = match node_path.parent() {
@@ -88,19 +89,96 @@ impl NodeJs {
                 continue;
             };
 
-            if let Ok(version) = Self::get_version_from_node(&node_path).await
-                && version_req.matches(&version)
+            if let Ok(node_version) = Self::get_node_version(&node_path).await
+                && version_req.matches(&node_version)
+                && let Ok(npm_version) = Self::get_npm_version(&npm_path).await
             {
-                let node = Self {
-                    node: node_path.to_path_buf(),
+                return Ok(Self {
+                    node: node_path,
                     npm: npm_path,
-                    version,
-                };
-                return Ok(Some(node));
+                    node_version,
+                    npm_version,
+                });
             }
         }
 
-        Ok(None)
+        bail!("No compatible Node.js installation found in system (required: {version_req})")
+    }
+
+    pub async fn download(install_path: &PathBuf, version_req: &VersionReq) -> Result<Self> {
+        let resolved_version = Self::resolve_remote_version(version_req).await?;
+
+        let os = match std::env::consts::OS {
+            "macos" => "darwin",
+            "linux" => "linux",
+            "windows" => "win",
+            _ => bail!("Unsupported OS"),
+        };
+        let arch = match std::env::consts::ARCH {
+            "aarch64" => "arm64",
+            "x86" => "x86",
+            "x86_64" => "x64",
+            _ => bail!("Unsupported architecture"),
+        };
+
+        if os == "darwin" && arch == "arm64" && resolved_version.major < 16 {
+            bail!(
+                "Unsupported Node.js version {} on this architecture",
+                resolved_version
+            )
+        }
+
+        let ext = match std::env::consts::OS {
+            "windows" => "zip",
+            _ => "tar.xz",
+        };
+
+        tokio::fs::create_dir_all(install_path).await?;
+
+        let filename = format!("node-v{resolved_version}-{os}-{arch}.{ext}");
+        let url = format!("https://nodejs.org/dist/v{resolved_version}/{filename}");
+        let target_path = install_path.join(resolved_version.to_string());
+
+        let response = reqwest::get(&url).await?;
+        if !response.status().is_success() {
+            bail!("Failed to download file from {url}: {}", response.status())
+        }
+
+        let reader = response
+            .bytes_stream()
+            .map_err(std::io::Error::other)
+            .into_async_read()
+            .compat();
+
+        let temp_dir = tempfile::tempdir_in(install_path)?;
+
+        archive::extract(reader, Path::new(&filename), temp_dir.path()).await?;
+
+        let mut entries_stream = tokio::fs::read_dir(temp_dir.path()).await?;
+        let Some(first_entry) = entries_stream.next_entry().await? else {
+            bail!("The extracted archive is empty")
+        };
+        if entries_stream.next_entry().await?.is_some() {
+            bail!("Expected single directory in archive, found multiple entries")
+        }
+
+        let extracted_path = first_entry.path();
+
+        if target_path.is_dir() {
+            tokio::fs::remove_dir_all(&target_path).await?;
+        }
+
+        tokio::fs::rename(extracted_path, &target_path).await?;
+
+        let (node, npm) = Self::get_binaries_from_install_path(&target_path)?;
+        let npm_version = Self::get_npm_version(&npm).await?;
+
+        Ok(Self {
+            node,
+            npm,
+            node_version: resolved_version,
+            npm_version,
+        })
     }
 
     async fn resolve_remote_version(version_req: &VersionReq) -> Result<Version> {
@@ -131,73 +209,12 @@ impl NodeJs {
         Ok(matching_version)
     }
 
-    async fn download(install_path: &PathBuf, version: Version) -> Result<Self> {
-        let os = match std::env::consts::OS {
-            "macos" => "darwin",
-            "linux" => "linux",
-            "windows" => "win",
-            _ => bail!("Unsupported OS"),
-        };
-        let arch = match std::env::consts::ARCH {
-            "aarch64" => "arm64",
-            "x86" => "x86",
-            "x86_64" => "x64",
-            _ => bail!("Unsupported architecture"),
-        };
+    async fn get_node_version(node_path: &Path) -> Result<Version> {
+        let output = Command::new(node_path).arg("--version").output().await?;
 
-        if os == "darwin" && arch == "arm64" && version.major < 16 {
-            bail!("Unsupported Node.js version {version} on this architecture");
+        if !output.status.success() {
+            bail!("Failed to get Node.js version from {node_path:?}")
         }
-
-        let ext = match std::env::consts::OS {
-            "windows" => "zip",
-            _ => "tar.xz",
-        };
-
-        let filename = format!("node-v{version}-{os}-{arch}.{ext}");
-        let url = format!("https://nodejs.org/dist/v{version}/{filename}");
-        let target_path = install_path.join(version.to_string());
-
-        let response = reqwest::get(&url).await?;
-        if !response.status().is_success() {
-            bail!("Failed to download file from {url}: {}", response.status());
-        }
-
-        let reader = response
-            .bytes_stream()
-            .map_err(std::io::Error::other)
-            .into_async_read()
-            .compat();
-
-        let temp_dir = tempfile::tempdir_in(install_path)?;
-
-        archive::extract(reader, Path::new(&filename), temp_dir.path()).await?;
-
-        let mut entries_stream = tokio::fs::read_dir(temp_dir.path()).await?;
-        let Some(first_entry) = entries_stream.next_entry().await? else {
-            bail!("The extracted archive is empty");
-        };
-        if entries_stream.next_entry().await?.is_some() {
-            bail!("Expected single directory in archive, found multiple entries");
-        }
-
-        let extracted_path = first_entry.path();
-
-        if target_path.is_dir() {
-            tokio::fs::remove_dir_all(&target_path).await?;
-        }
-
-        tokio::fs::rename(extracted_path, &target_path).await?;
-
-        Ok(Self::from_path_and_version(target_path, version))
-    }
-
-    async fn get_version_from_node(node_path: &Path) -> Result<Version> {
-        let output = Command::new(node_path)
-            .arg("-p")
-            .arg("process.version")
-            .output()
-            .await?;
 
         let version_str = String::from_utf8_lossy(&output.stdout);
         let cleaned_version = version_str
@@ -208,11 +225,23 @@ impl NodeJs {
         Ok(Version::parse(cleaned_version)?)
     }
 
-    fn from_path_and_version(install_path: PathBuf, version: Version) -> Self {
+    async fn get_npm_version(npm_path: &Path) -> Result<Version> {
+        let output = Command::new(npm_path).arg("--version").output().await?;
+
+        if !output.status.success() {
+            bail!("Failed to get npm version from {npm_path:?}")
+        }
+
+        let version_str = String::from_utf8_lossy(&output.stdout);
+        Ok(Version::parse(version_str.trim())?)
+    }
+
+    fn get_binaries_from_install_path(install_path: &Path) -> Result<(PathBuf, PathBuf)> {
         let bin_dir = match std::env::consts::OS {
-            "windows" => install_path,
+            "windows" => install_path.to_path_buf(),
             _ => install_path.join("bin"),
         };
+
         let node = bin_dir.join("node").with_extension(EXE_EXTENSION);
         let npm = bin_dir
             .join("npm")
@@ -221,7 +250,14 @@ impl NodeJs {
                 _ => "",
             });
 
-        Self { node, npm, version }
+        if !node.exists() {
+            bail!("node binary not found at {node:?}")
+        }
+        if !npm.exists() {
+            bail!("npm binary not found at {npm:?}")
+        }
+
+        Ok((node, npm))
     }
 
     pub fn node(&self) -> &Path {
@@ -232,7 +268,11 @@ impl NodeJs {
         &self.npm
     }
 
-    pub fn version(&self) -> &Version {
-        &self.version
+    pub fn node_version(&self) -> &Version {
+        &self.node_version
+    }
+
+    pub fn npm_version(&self) -> &Version {
+        &self.npm_version
     }
 }

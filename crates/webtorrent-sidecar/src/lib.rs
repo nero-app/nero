@@ -23,51 +23,31 @@ pub struct WebTorrent {
 }
 
 impl WebTorrent {
-    pub async fn auto_download(
+    pub async fn from_paths(node_path: PathBuf, webtorrent_path: PathBuf) -> Result<Self> {
+        let version = Self::get_webtorrent_version(&node_path, &webtorrent_path).await?;
+
+        Ok(Self {
+            node_path,
+            webtorrent_path,
+            version,
+        })
+    }
+
+    pub async fn from_local(
         node_js: &NodeJs,
-        path: &PathBuf,
+        cache_dir: &PathBuf,
         version_req: &VersionReq,
     ) -> Result<Self> {
         let supported_node = VersionReq::parse(SUPPORTED_NODE_VERSIONS)?;
-        if !supported_node.matches(node_js.version()) {
+        if !supported_node.matches(node_js.node_version()) {
             bail!(
                 "Node.js version {} is not compatible. Required: {}",
-                node_js.version(),
+                node_js.node_version(),
                 SUPPORTED_NODE_VERSIONS
-            );
+            )
         }
 
-        tokio::fs::create_dir_all(path).await?;
-
-        if let Ok(webtorrent) = Self::find_local_installation(node_js, path, version_req).await {
-            return Ok(webtorrent);
-        }
-
-        if let Some(webtorrent) = Self::find_system_installation(node_js, version_req).await? {
-            return Ok(webtorrent);
-        }
-
-        let resolved_version = Self::resolve_remote_version(version_req).await?;
-
-        let supported_webtorrent = VersionReq::parse(SUPPORTED_WEBTORRENT_VERSIONS)?;
-        if !supported_webtorrent.matches(&resolved_version) {
-            bail!(
-                "Resolved webtorrent-cli version {} (from requirement '{}') is not compatible. Required: {}",
-                resolved_version,
-                version_req,
-                SUPPORTED_WEBTORRENT_VERSIONS
-            );
-        }
-
-        Self::download(node_js, path, resolved_version).await
-    }
-
-    async fn find_local_installation(
-        node_js: &NodeJs,
-        install_path: &Path,
-        version_req: &VersionReq,
-    ) -> Result<Self> {
-        let mut entries = tokio::fs::read_dir(install_path).await?;
+        let mut entries = tokio::fs::read_dir(cache_dir).await?;
 
         let mut matching_versions = Vec::new();
         while let Some(entry) = entries.next_entry().await? {
@@ -104,14 +84,17 @@ impl WebTorrent {
             .context("No matching local installation found")
     }
 
-    async fn find_system_installation(
-        node_js: &NodeJs,
-        version_req: &VersionReq,
-    ) -> Result<Option<Self>> {
-        let webtorrent_paths = match which::which_all("webtorrent") {
-            Ok(paths) => paths,
-            Err(_) => return Ok(None),
-        };
+    pub async fn from_system(node_js: &NodeJs, version_req: &VersionReq) -> Result<Self> {
+        let supported_node = VersionReq::parse(SUPPORTED_NODE_VERSIONS)?;
+        if !supported_node.matches(node_js.node_version()) {
+            bail!(
+                "Node.js version {} is not compatible. Required: {}",
+                node_js.node_version(),
+                SUPPORTED_NODE_VERSIONS
+            )
+        }
+
+        let webtorrent_paths = which::which_all("webtorrent")?;
 
         let supported_versions = VersionReq::parse(SUPPORTED_WEBTORRENT_VERSIONS)?;
 
@@ -121,20 +104,78 @@ impl WebTorrent {
             }
 
             if let Ok(version) =
-                Self::get_version_from_webtorrent(node_js.node(), &webtorrent_path).await
+                Self::get_webtorrent_version(node_js.node(), &webtorrent_path).await
                 && version_req.matches(&version)
                 && supported_versions.matches(&version)
             {
-                let webtorrent = Self {
+                return Ok(Self {
                     node_path: node_js.node().to_path_buf(),
                     webtorrent_path,
                     version,
-                };
-                return Ok(Some(webtorrent));
+                });
             }
         }
 
-        Ok(None)
+        bail!("No compatible webtorrent-cli installation found in system (required: {version_req})")
+    }
+
+    pub async fn download(
+        node_js: &NodeJs,
+        install_path: &PathBuf,
+        version_req: &VersionReq,
+    ) -> Result<Self> {
+        let supported_node = VersionReq::parse(SUPPORTED_NODE_VERSIONS)?;
+        if !supported_node.matches(node_js.node_version()) {
+            bail!(
+                "Node.js version {} is not compatible. Required: {}",
+                node_js.node_version(),
+                SUPPORTED_NODE_VERSIONS
+            )
+        }
+
+        tokio::fs::create_dir_all(install_path).await?;
+
+        let resolved_version = Self::resolve_remote_version(version_req).await?;
+
+        let supported_webtorrent = VersionReq::parse(SUPPORTED_WEBTORRENT_VERSIONS)?;
+        if !supported_webtorrent.matches(&resolved_version) {
+            bail!(
+                "Resolved webtorrent-cli version {} (from requirement '{}') is not compatible. Required: {}",
+                resolved_version,
+                version_req,
+                SUPPORTED_WEBTORRENT_VERSIONS
+            )
+        }
+
+        let version_path = install_path.join(resolved_version.to_string());
+        tokio::fs::create_dir_all(&version_path).await?;
+
+        let output = Command::new(node_js.npm())
+            .current_dir(&version_path)
+            .arg("install")
+            .arg("--prefix")
+            .arg(&version_path)
+            .arg(format!("webtorrent-cli@{}", resolved_version))
+            .output()
+            .await?;
+
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            let stdout = String::from_utf8_lossy(&output.stdout);
+            bail!("Failed to install webtorrent-cli:\nSTDOUT: {stdout}\nSTDERR: {stderr}")
+        }
+
+        let webtorrent_cmd = version_path.join(WEBTORRENT_CMD_PATH);
+
+        if !webtorrent_cmd.exists() {
+            bail!("webtorrent-cli was installed but could not be found")
+        }
+
+        Ok(Self {
+            node_path: node_js.node().to_path_buf(),
+            webtorrent_path: webtorrent_cmd,
+            version: resolved_version,
+        })
     }
 
     async fn resolve_remote_version(version_req: &VersionReq) -> Result<Version> {
@@ -165,42 +206,7 @@ impl WebTorrent {
         Ok(matching_version)
     }
 
-    async fn download(node_js: &NodeJs, install_path: &Path, version: Version) -> Result<Self> {
-        let version_path = install_path.join(version.to_string());
-        tokio::fs::create_dir_all(&version_path).await?;
-
-        let output = Command::new(node_js.npm())
-            .current_dir(&version_path)
-            .arg("install")
-            .arg("--prefix")
-            .arg(&version_path)
-            .arg(format!("webtorrent-cli@{}", version))
-            .output()
-            .await?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8_lossy(&output.stderr);
-            let stdout = String::from_utf8_lossy(&output.stdout);
-            bail!("Failed to install webtorrent-cli:\nSTDOUT: {stdout}\nSTDERR: {stderr}",);
-        }
-
-        let webtorrent_cmd = version_path.join(WEBTORRENT_CMD_PATH);
-
-        if !webtorrent_cmd.exists() {
-            bail!("webtorrent-cli was installed but could not be found");
-        }
-
-        Ok(Self {
-            node_path: node_js.node().to_path_buf(),
-            webtorrent_path: webtorrent_cmd,
-            version,
-        })
-    }
-
-    async fn get_version_from_webtorrent(
-        node_path: &Path,
-        webtorrent_path: &Path,
-    ) -> Result<Version> {
+    async fn get_webtorrent_version(node_path: &Path, webtorrent_path: &Path) -> Result<Version> {
         let output = Command::new(node_path)
             .arg(webtorrent_path)
             .arg("--version")
@@ -208,7 +214,7 @@ impl WebTorrent {
             .await?;
 
         if !output.status.success() {
-            bail!("Failed to get webtorrent-cli version");
+            bail!("Failed to get webtorrent-cli version")
         }
 
         let version_str = String::from_utf8_lossy(&output.stdout);
