@@ -4,7 +4,7 @@
   import Router from "./pages/Router.svelte";
   import Search from "./pages/Search.svelte";
   import Series from "./pages/Series.svelte";
-  import Settings from "./pages/settings/Settings.svelte";
+  import Settings from "./pages/Settings.svelte";
   import { QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
   import { SvelteQueryDevtools } from "@tanstack/svelte-query-devtools";
 
