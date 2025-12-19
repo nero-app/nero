@@ -17,3 +17,4 @@ url = { workspace = true, features = ["serde"] }
 nero-processor = { path = "../processor" }
 nero-extensions = { path = "../extensions" }
 wasm-metadata = { workspace = true }
+webtorrent-sidecar = { path = "../webtorrent-sidecar" }

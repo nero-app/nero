@@ -1,4 +1,6 @@
 <script lang="ts">
+  import NodeSettings from "../components/NodeSettings.svelte";
+  import TorrentSettings from "../components/TorrentSettings.svelte";
   import PlayerSettings from "../components/VideoPlayerSettings.svelte";
 </script>
 
@@ -8,4 +10,6 @@
     <p class="text-neutral-600">Customize how the application behaves</p>
   </header>
   <PlayerSettings />
+  <NodeSettings />
+  <TorrentSettings />
 </div>

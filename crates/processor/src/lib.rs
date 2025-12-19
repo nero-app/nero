@@ -1,6 +1,7 @@
 mod error;
 mod mime_detector;
 mod routes;
+use webtorrent_sidecar::WebTorrent;
 
 use std::{io, net::SocketAddr, sync::Arc};
 
@@ -9,7 +10,7 @@ use bytes::Bytes;
 use http::Request;
 use magnet_uri::MagnetURI;
 use moka::future::Cache;
-use tokio::net::TcpListener;
+use tokio::{net::TcpListener, sync::RwLock};
 use tracing::debug;
 use url::Url;
 use uuid::Uuid;
@@ -24,6 +25,7 @@ struct ServerState {
     addr: SocketAddr,
     http_client: reqwest::Client,
     http_requests: Cache<Uuid, Request<Option<Bytes>>>,
+    torrent_handler: RwLock<Option<WebTorrent>>,
 }
 
 pub struct Processor {
@@ -36,6 +38,7 @@ impl Processor {
             addr,
             http_client: reqwest::Client::new(),
             http_requests: Cache::builder().build(),
+            torrent_handler: RwLock::new(None),
         };
 
         Self {
@@ -53,6 +56,14 @@ impl Processor {
         let listener = TcpListener::bind(self.state.addr).await?;
         debug!("listening on {}", listener.local_addr().unwrap());
         axum::serve(listener, app).await
+    }
+
+    pub async fn enable_torrent_support(&self, webtorrent: WebTorrent) {
+        *self.state.torrent_handler.write().await = Some(webtorrent);
+    }
+
+    pub async fn disable_torrent_support(&self) {
+        *self.state.torrent_handler.write().await = None;
     }
 
     pub async fn handle_http_request(&self, request: Request<Option<Bytes>>) -> Result<Url, Error> {
@@ -80,11 +91,10 @@ impl Processor {
         match mime_type.type_() {
             mime::IMAGE => base.set_path(&format!("/image/{uuid}")),
             mime::VIDEO => base.set_path(&format!("/video/{uuid}")),
-            mime::APPLICATION => {
-                // let mime_type = mime_type.to_string();
-                // base.set_path(&format!("/application/{mime_type}/{uuid}"));
+            mime::APPLICATION if mime_type.subtype() == "application/x-bittorrent" => {
                 todo!()
             }
+            mime::APPLICATION => todo!(),
             _ => return Err(Error::UnsupportedMediaType),
         }
 
@@ -93,9 +103,7 @@ impl Processor {
         Ok(base)
     }
 
-    // TODO:
-    #[allow(unused_variables)]
-    pub fn handle_magnet_uri(uri: MagnetURI) -> Result<Url, Error> {
+    pub async fn handle_magnet_uri(&self, uri: MagnetURI) -> Result<Url, Error> {
         todo!()
     }
 }

@@ -25,6 +25,9 @@ pub enum Error {
 
     #[error("IO error: {0}")]
     Io(#[from] std::io::Error),
+
+    #[error("Internal server error: {0}")]
+    Anyhow(#[from] anyhow::Error),
 }
 
 impl IntoResponse for Error {
@@ -44,6 +47,10 @@ impl IntoResponse for Error {
             }
             Error::Io(_) => {
                 error!("IO error: {:#}", self);
+                StatusCode::INTERNAL_SERVER_ERROR
+            }
+            Error::Anyhow(_) => {
+                error!("Anyhow error: {:#}", self);
                 StatusCode::INTERNAL_SERVER_ERROR
             }
         };

@@ -9,13 +9,18 @@ tauri-build = { version = "2", default-features = false, features = [
 ] }
 
 [dependencies]
+anyhow = { workspace = true }
+nodejs-installer = { path = "../nodejs-installer" }
 portpicker = "0.1.1"
+semver = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
 tauri = { version = "2", features = ["config-toml"] }
 tauri-plugin-dialog = "2.4.2"
 tauri-plugin-nero-extensions = { path = "../plugin-extensions" }
 tauri-plugin-store = "2.4.1"
 tracing = { workspace = true }
 tracing-subscriber = "0.3.20"
+webtorrent-sidecar = { path = "../webtorrent-sidecar" }
 
 [features]
 custom-protocol = ["tauri/custom-protocol"]

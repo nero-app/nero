@@ -60,6 +60,14 @@ export interface Video {
   resolution: [number, number];
 }
 
+export async function enableTorrentSupport() {
+  return await invoke("plugin:nero-extensions|enable_torrent_support");
+}
+
+export async function disableTorrentSupport() {
+  return await invoke("plugin:nero-extensions|disable_torrent_support");
+}
+
 export class Extension {
   readonly filePath: string;
   readonly metadata: Metadata;

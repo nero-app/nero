@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+anyhow = { workspace = true }
 axum = "0.8.6"
 bytes = { workspace = true }
 http = { workspace = true }
@@ -18,3 +19,4 @@ tokio = { workspace = true, features = ["net"] }
 tracing = { workspace = true }
 url = { workspace = true }
 uuid = { version = "1.18.1", features = ["v4", "serde"] }
+webtorrent-sidecar = { path = "../webtorrent-sidecar" }

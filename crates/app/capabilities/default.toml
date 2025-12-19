@@ -7,6 +7,8 @@ permissions = [
     "dialog:default",
     "nero-extensions:allow-get-extension-metadata",
     "nero-extensions:allow-load-extension",
+    "nero-extensions:allow-enable-torrent-support",
+    "nero-extensions:allow-disable-torrent-support",
     "nero-extensions:allow-get-filters",
     "nero-extensions:allow-search",
     "nero-extensions:allow-get-series-info",
