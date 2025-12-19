@@ -1,6 +1,6 @@
 <script lang="ts">
   import searchIcon from "../assets/icons/search_icon.svg";
-  import { link, push } from "../pages/Router.svelte";
+  import { link, push } from "./Router.svelte";
 
   let searchQuery = $state("");
   function handleSearch(event: Event) {

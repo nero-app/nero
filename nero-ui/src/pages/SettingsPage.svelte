@@ -1,7 +1,7 @@
 <script lang="ts">
+  import { link } from "../components/Router.svelte";
   import AppSettingsPage from "./AppSettingsPage.svelte";
   import ExtensionsSettingsPage from "./ExtensionsSettingsPage.svelte";
-  import { link } from "./Router.svelte";
   import type { Component } from "svelte";
 
   let { params }: { params: { section?: string } } = $props();
