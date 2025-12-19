@@ -1,8 +1,8 @@
 <script lang="ts">
-  import sortIcon from "../assets/icons/sort_icon.svg";
   import { createInfiniteScroll } from "../lib/infiniteScroll.svelte";
   import EpisodeCard from "./EpisodeCard.svelte";
   import ErrorMessage from "./ErrorMessage.svelte";
+  import SortIcon from "./icons/SortIcon.svelte";
   import type { EpisodesPage, Episode } from "@nero/plugin-extensions";
   import type {
     CreateInfiniteQueryResult,
@@ -60,7 +60,7 @@
       <h2 class="text-2xl font-semibold">Episodes</h2>
       <!-- TODO: onclick -->
       <button class="cursor-pointer">
-        <img src={sortIcon} alt="Sort icon" />
+        <SortIcon />
       </button>
     </div>
     <hr class="border-gray-300" />

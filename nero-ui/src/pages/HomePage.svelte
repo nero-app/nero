@@ -1,6 +1,6 @@
 <script lang="ts">
-  import searchIcon from "../assets/icons/search_icon.svg";
   import shockedCat from "../assets/images/shocked_cat.svg";
+  import SearchIcon from "../components/icons/SearchIcon.svelte";
 
   function focusSearchInput() {
     document.getElementById("search-input")!.focus();
@@ -20,7 +20,7 @@
       onclick={focusSearchInput}
     >
       <div class="flex items-center gap-2">
-        <img src={searchIcon} alt="Search icon" />
+        <SearchIcon />
         <span>Search for series</span>
       </div>
     </button>

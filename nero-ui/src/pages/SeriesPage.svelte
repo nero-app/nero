@@ -1,9 +1,9 @@
 <script lang="ts">
-  import playIcon from "../assets/icons/play_icon.svg";
-  import shareIcon from "../assets/icons/share_icon.svg";
   import EpisodesList from "../components/EpisodesList.svelte";
   import ErrorMessage from "../components/ErrorMessage.svelte";
   import VideoSelectionModal from "../components/VideoSelectionModal.svelte";
+  import PlayIcon from "../components/icons/PlayIcon.svelte";
+  import ShareIcon from "../components/icons/ShareIcon.svelte";
   import {
     createInfiniteEpisodesQuery,
     createSeriesInfoQuery,
@@ -62,7 +62,7 @@
         !$episodesQuery.data?.pages[0]?.items[0]}
     >
       <div class="flex items-center gap-2">
-        <img src={playIcon} alt="Play icon" />
+        <PlayIcon />
         <span>Watch now</span>
       </div>
     </button>
@@ -71,7 +71,7 @@
       class="cursor-pointer rounded-lg bg-red-300 px-3 py-1.5 duration-300 active:scale-95"
     >
       <div class="flex items-center gap-2">
-        <img src={shareIcon} alt="Share icon" />
+        <ShareIcon />
         <span>Share the series</span>
       </div>
     </button>
