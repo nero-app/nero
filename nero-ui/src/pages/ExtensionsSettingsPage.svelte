@@ -1,5 +1,5 @@
 <script lang="ts">
-  import LoadedExtension from "../components/ExtensionLoader.svelte";
+  import ExtensionLoader from "../components/ExtensionLoader.svelte";
   import SecurityExtensionSettings from "../components/ExtensionSecuritySettings.svelte";
 </script>
 
@@ -8,6 +8,6 @@
     <h1 class="text-xl font-semibold text-neutral-900">Extensions</h1>
     <p class="text-neutral-600">Manage and configure extensions</p>
   </header>
-  <LoadedExtension />
+  <ExtensionLoader />
   <SecurityExtensionSettings />
 </div>

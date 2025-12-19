@@ -1,19 +1,19 @@
 <script lang="ts">
   import Layout from "./layouts/Layout.svelte";
-  import Home from "./pages/Home.svelte";
+  import HomePage from "./pages/HomePage.svelte";
   import Router from "./pages/Router.svelte";
-  import Search from "./pages/Search.svelte";
-  import Series from "./pages/Series.svelte";
-  import Settings from "./pages/Settings.svelte";
+  import SearchPage from "./pages/SearchPage.svelte";
+  import SeriesPage from "./pages/SeriesPage.svelte";
+  import SettingsPage from "./pages/SettingsPage.svelte";
   import { QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
   import { SvelteQueryDevtools } from "@tanstack/svelte-query-devtools";
 
   const queryClient = new QueryClient();
   const routes = {
-    "/": Home,
-    "/search": Search,
-    "/series/:seriesId": Series,
-    "/settings/:section?": Settings,
+    "/": HomePage,
+    "/search": SearchPage,
+    "/series/:seriesId": SeriesPage,
+    "/settings/:section?": SettingsPage,
   };
 </script>
 

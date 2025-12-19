@@ -1,14 +1,14 @@
 <script lang="ts">
-  import AppSettings from "./AppSettings.svelte";
-  import ExtensionsSettings from "./ExtensionsSettings.svelte";
+  import AppSettingsPage from "./AppSettingsPage.svelte";
+  import ExtensionsSettingsPage from "./ExtensionsSettingsPage.svelte";
   import { link } from "./Router.svelte";
   import type { Component } from "svelte";
 
   let { params }: { params: { section?: string } } = $props();
 
   const settingsRoutes: Record<string, Component> = {
-    app: AppSettings,
-    extensions: ExtensionsSettings,
+    app: AppSettingsPage,
+    extensions: ExtensionsSettingsPage,
   };
 
   const activeSection = $derived(params?.section || "app");
