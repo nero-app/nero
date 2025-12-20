@@ -22,8 +22,6 @@ export function createMutation<TData, TVariables>(
       state.status = "error";
       state.error = error instanceof Error ? error : new Error(String(error));
       return null;
-    } finally {
-      state.status = "idle";
     }
   }
 
