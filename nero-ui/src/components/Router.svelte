@@ -141,8 +141,10 @@
     );
   }
 
-  const routesList = Object.entries(routes).map(([path, component]) =>
-    createRoute(path, component),
+  const routesList = $derived(
+    Object.entries(routes).map(([path, component]) =>
+      createRoute(path, component),
+    ),
   );
 
   let currentLocation = $state(getLocation());

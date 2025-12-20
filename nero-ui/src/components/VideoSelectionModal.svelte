@@ -14,7 +14,7 @@
 
   let { seriesId, episode, onClose }: VideoSelectionModalProps = $props();
 
-  const videosQuery = createSeriesVideosQuery(seriesId, episode.id);
+  const videosQuery = $derived(createSeriesVideosQuery(seriesId, episode.id));
 
   let dialogElement: HTMLDialogElement;
   let scrollProgress = $state(0);
@@ -120,8 +120,9 @@
 
 <dialog
   bind:this={dialogElement}
-  class="m-auto size-full max-h-[90vh] max-w-[400px] overflow-y-auto rounded-lg border
-    border-neutral-200 shadow-xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+  class="m-auto size-full max-h-[90vh] max-w-[400px] overflow-y-auto rounded-lg
+    border border-neutral-200 shadow-xl backdrop:bg-black/40
+    backdrop:backdrop-blur-sm"
   onclick={handleBackdropClick}
   oncancel={handleCancel}
   onscroll={handleScroll}
@@ -140,8 +141,8 @@
   </figure>
 
   <header
-    class="sticky top-0 z-10 border-b border-neutral-200 px-4 py-3 transition-all
-      duration-200"
+    class="sticky top-0 z-10 border-b border-neutral-200 px-4 py-3
+      transition-all duration-200"
     style="
 			margin-top: -60px;
 			background-color: rgba(255, 255, 255, {scrollProgress});

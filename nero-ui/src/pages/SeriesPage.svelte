@@ -12,8 +12,8 @@
 
   let { params }: { params: { seriesId: string } } = $props();
 
-  let seriesQuery = createSeriesInfoQuery(params.seriesId);
-  let episodesQuery = createInfiniteEpisodesQuery(params.seriesId);
+  let seriesQuery = $derived(createSeriesInfoQuery(params.seriesId));
+  let episodesQuery = $derived(createInfiniteEpisodesQuery(params.seriesId));
 
   let selectedEpisode = $state<Episode | null>(null);
 

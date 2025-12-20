@@ -14,7 +14,7 @@
   let { filePath, onClose }: LoadExtensionModalProps = $props();
 
   const extension = $derived(appState.extension);
-  const metadataQuery = createExtensionMetadataQuery(filePath);
+  const metadataQuery = $derived(createExtensionMetadataQuery(filePath));
   const loadMutation = createLoadExtensionMutation();
 
   let dialogElement: HTMLDialogElement;
@@ -48,7 +48,8 @@
 >
   <div class="flex flex-col">
     <div
-      class="flex items-center justify-between border-b border-neutral-200 px-6 py-4"
+      class="flex items-center justify-between border-b border-neutral-200 px-6
+        py-4"
     >
       <h2 class="text-lg font-semibold text-neutral-900">Load Extension</h2>
       <button
@@ -134,8 +135,8 @@
       <button
         onclick={onClose}
         type="button"
-        class="cursor-pointer rounded-md border border-neutral-300 px-4 py-2 text-sm
-          font-medium text-neutral-700 duration-300 active:scale-95"
+        class="cursor-pointer rounded-md border border-neutral-300 px-4 py-2
+          text-sm font-medium text-neutral-700 duration-300 active:scale-95"
       >
         Cancel
       </button>
@@ -143,9 +144,9 @@
         onclick={handleLoad}
         type="button"
         disabled={$metadataQuery.isPending || $loadMutation.isPending}
-        class="cursor-pointer rounded-md bg-orange-200 px-4 py-2 text-sm font-medium
-          text-neutral-900 duration-300 active:scale-95 disabled:cursor-not-allowed
-          disabled:opacity-50"
+        class="cursor-pointer rounded-md bg-orange-200 px-4 py-2 text-sm
+          font-medium text-neutral-900 duration-300 active:scale-95
+          disabled:cursor-not-allowed disabled:opacity-50"
       >
         {$loadMutation.isPending ? "Loading..." : "Load Extension"}
       </button>
