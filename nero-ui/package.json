@@ -23,6 +23,6 @@
     "svelte": "5.46.0",
     "svelte-check": "4.3.4",
     "tailwindcss": "4.1.18",
-    "vite": "7.1.11"
+    "vite": "7.3.0"
   }
 }
