@@ -1,16 +1,13 @@
 <script lang="ts">
   import { createInfiniteScroll } from "../lib/infiniteScroll.svelte";
+  import type { createInfiniteEpisodesQuery } from "../lib/queries";
   import EpisodeCard from "./EpisodeCard.svelte";
   import ErrorMessage from "./ErrorMessage.svelte";
   import SortIcon from "./icons/SortIcon.svelte";
-  import type { EpisodesPage, Episode } from "@nero/plugin-extensions";
-  import type {
-    CreateInfiniteQueryResult,
-    InfiniteData,
-  } from "@tanstack/svelte-query";
+  import type { Episode } from "@nero/plugin-extensions";
 
   interface EpisodesListProps {
-    episodesQuery: CreateInfiniteQueryResult<InfiniteData<EpisodesPage>>;
+    episodesQuery: ReturnType<typeof createInfiniteEpisodesQuery>;
     seriesId: string;
     onEpisodeSelect?: (episode: Episode) => void;
   }
@@ -18,11 +15,7 @@
     $props();
 
   let infiniteScroll = createInfiniteScroll(() =>
-    $episodesQuery.fetchNextPage(),
-  );
-
-  let episodes = $derived(
-    $episodesQuery.data?.pages.flatMap((page) => page.items) ?? [],
+    episodesQuery.fetchNextPage(),
   );
 
   function handleEpisodeClick(episode: Episode) {
@@ -32,7 +25,7 @@
 
 {#snippet episodesList()}
   <ul>
-    {#each episodes as episode (episode.id)}
+    {#each episodesQuery.data as episode (episode.id)}
       <li>
         <EpisodeCard
           {seriesId}
@@ -43,7 +36,7 @@
     {/each}
   </ul>
   <div bind:this={infiniteScroll.element}></div>
-  {#if $episodesQuery.isFetchingNextPage}
+  {#if episodesQuery.isFetchingNextPage}
     <p class="p-2 text-center text-sm text-gray-500">Loading more...</p>
   {/if}
 {/snippet}
@@ -59,14 +52,14 @@
     </div>
     <hr class="border-gray-300" />
   </header>
-  {#if $episodesQuery.isLoading}
+  {#if episodesQuery.isLoading}
     <p>Loading...</p>
-  {:else if $episodesQuery.isError}
+  {:else if episodesQuery.error}
     <ErrorMessage
       message="Apparently an error has occurred"
-      error={$episodesQuery.error}
+      error={episodesQuery.error}
     />
-  {:else if $episodesQuery.isSuccess}
+  {:else if episodesQuery.isSuccess}
     {@render episodesList()}
   {/if}
 </section>

@@ -165,16 +165,16 @@
     </h3>
   </header>
 
-  {#if $videosQuery.isPending}
+  {#if videosQuery.isLoading}
     {@render loadingSpinner()}
-  {:else if $videosQuery.isError}
+  {:else if videosQuery.error}
     <section class="size-full max-h-[50vh]">
       <ErrorMessage
         message="Apparently an error has occurred"
-        error={$videosQuery.error}
+        error={videosQuery.error}
       />
     </section>
-  {:else if $videosQuery.isSuccess && $videosQuery.data}
-    {@render videosList($videosQuery.data)}
+  {:else if videosQuery.data}
+    {@render videosList(videosQuery.data)}
   {/if}
 </dialog>

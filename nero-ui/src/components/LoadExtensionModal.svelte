@@ -36,7 +36,7 @@
   }
 
   async function handleLoad() {
-    await $loadMutation.mutateAsync(filePath);
+    await loadMutation.mutate(filePath);
   }
 </script>
 
@@ -62,25 +62,25 @@
     </div>
 
     <div class="p-6">
-      {#if $metadataQuery.isPending}
+      {#if metadataQuery.isLoading}
         <div class="flex items-center justify-center py-8">
           <div
             class="size-8 animate-spin rounded-full border-4 border-neutral-200
               border-t-neutral-900"
           ></div>
         </div>
-      {:else if $metadataQuery.isError}
+      {:else if metadataQuery.error}
         <div class="rounded-md border border-red-200 bg-red-50 p-4">
-          <p class="text-sm text-red-800">{$metadataQuery.error.message}</p>
+          <p class="text-sm text-red-800">{metadataQuery.error.message}</p>
         </div>
-      {:else if $metadataQuery.data}
+      {:else if metadataQuery.data}
         <div class="space-y-4">
           <div>
             <h3 class="text-base font-medium text-neutral-900">
-              {$metadataQuery.data.name}
+              {metadataQuery.data.name}
             </h3>
             <p class="mt-1 text-sm text-neutral-600">
-              {$metadataQuery.data.description}
+              {metadataQuery.data.description}
             </p>
           </div>
 
@@ -88,19 +88,19 @@
             <div class="flex justify-between">
               <span class="text-neutral-600">Version:</span>
               <span class="font-medium text-neutral-900"
-                >v{$metadataQuery.data.version}</span
+                >v{metadataQuery.data.version}</span
               >
             </div>
             <div class="flex justify-between">
               <span class="text-neutral-600">Authors:</span>
               <span class="font-medium text-neutral-900"
-                >{$metadataQuery.data.authors}</span
+                >{metadataQuery.data.authors}</span
               >
             </div>
             <div class="flex justify-between">
               <span class="text-neutral-600">Source:</span>
               <span class="font-medium text-neutral-900"
-                >{$metadataQuery.data.source}</span
+                >{metadataQuery.data.source}</span
               >
             </div>
           </div>
@@ -114,13 +114,13 @@
             </div>
           {/if}
 
-          {#if $loadMutation.isError}
+          {#if loadMutation.isError}
             <div class="rounded-md border border-red-200 bg-red-50 p-3">
-              <p class="text-sm text-red-800">{$loadMutation.error.message}</p>
+              <p class="text-sm text-red-800">{loadMutation.error}</p>
             </div>
           {/if}
 
-          {#if $loadMutation.isSuccess}
+          {#if loadMutation.isSuccess}
             <div class="rounded-md border border-green-200 bg-green-50 p-3">
               <p class="text-sm text-green-800">
                 Extension loaded successfully
@@ -143,12 +143,12 @@
       <button
         onclick={handleLoad}
         type="button"
-        disabled={$metadataQuery.isPending || $loadMutation.isPending}
+        disabled={metadataQuery.isLoading || loadMutation.isLoading}
         class="cursor-pointer rounded-md bg-orange-200 px-4 py-2 text-sm
           font-medium text-neutral-900 duration-300 active:scale-95
           disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {$loadMutation.isPending ? "Loading..." : "Load Extension"}
+        {loadMutation.isLoading ? "Loading..." : "Load Extension"}
       </button>
     </div>
   </div>

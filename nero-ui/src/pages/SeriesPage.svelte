@@ -17,9 +17,11 @@
 
   let selectedEpisode = $state<Episode | null>(null);
 
+  let firstEpisode = $derived(episodesQuery.data[0]);
+
   function openFirstEpisode() {
-    if ($episodesQuery.isSuccess && $episodesQuery.data.pages[0]?.items[0]) {
-      selectedEpisode = $episodesQuery.data.pages[0].items[0];
+    if (firstEpisode) {
+      selectedEpisode = firstEpisode;
     }
   }
 
@@ -58,8 +60,7 @@
       class="rounded-lg bg-red-300 px-3 py-1.5 duration-300 active:scale-95
         disabled:cursor-not-allowed disabled:opacity-50"
       onclick={openFirstEpisode}
-      disabled={!$episodesQuery.isSuccess ||
-        !$episodesQuery.data?.pages[0]?.items[0]}
+      disabled={!firstEpisode}
     >
       <div class="flex items-center gap-2">
         <PlayIcon />
@@ -80,30 +81,32 @@
 
 <div class="grid h-full grid-cols-[2fr_3fr] gap-20">
   <figure class="overflow-hidden pb-8">
-    {#if $seriesQuery.isLoading}
+    {#if seriesQuery.isLoading}
       <div class="size-full animate-pulse rounded-xl bg-gray-200"></div>
-    {:else if $seriesQuery.isError}
+    {:else if seriesQuery.isError}
       <div class="size-full rounded-xl bg-gray-700"></div>
-    {:else if $seriesQuery.isSuccess}
+    {:else if seriesQuery.data}
       <!-- TODO: Handle missing poster -->
       <img
         class="size-full rounded-xl object-cover"
-        src={$seriesQuery.data.posterUrl!}
-        alt="{$seriesQuery.data.title} poster"
+        src={seriesQuery.data.posterUrl}
+        alt="{seriesQuery.data.title} poster"
       />
     {/if}
   </figure>
+
   <article class="flex flex-col gap-4 overflow-y-auto">
-    {#if $seriesQuery.isLoading}
+    {#if seriesQuery.isLoading}
       {@render seriesHeaderSkeleton()}
-    {:else if $seriesQuery.isError}
+    {:else if seriesQuery.error}
       <ErrorMessage
         message="Apparently an error has occurred"
-        error={$seriesQuery.error}
+        error={seriesQuery.error}
       />
-    {:else if $seriesQuery.isSuccess}
-      {@render seriesHeader($seriesQuery.data)}
+    {:else if seriesQuery.data}
+      {@render seriesHeader(seriesQuery.data)}
     {/if}
+
     <EpisodesList
       {episodesQuery}
       seriesId={params.seriesId}

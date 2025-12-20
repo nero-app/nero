@@ -14,7 +14,6 @@
   } from "@nero/plugin-extensions";
 
   let { querystring }: { querystring: string } = $props();
-  $inspect(querystring);
 
   let filtersQuery = createFiltersQuery();
   let searchFilters = $state<SearchFilter[]>([]);
@@ -22,13 +21,8 @@
   let query = $derived(
     decodeURIComponent(querystring.substring(querystring.indexOf("q=") + 2)),
   );
-  let searchQuery = $derived(
-    createInfiniteSearchQuery(query, 1, searchFilters),
-  );
-  let infiniteScroll = createInfiniteScroll(() => $searchQuery.fetchNextPage());
-  let series = $derived(
-    $searchQuery.data?.pages.flatMap((page) => page.items) ?? [],
-  );
+  let searchQuery = $derived(createInfiniteSearchQuery(query, searchFilters));
+  let infiniteScroll = createInfiniteScroll(() => searchQuery.fetchNextPage());
 
   function toggleFilter(categoryId: string, filterId: string) {
     const category = searchFilters.find((sf) => sf.id === categoryId);
@@ -101,13 +95,13 @@
 
 {#snippet seriesList()}
   <ul class="grid grid-cols-4">
-    {#each series as series (series.id)}
+    {#each searchQuery.data as series (series.id)}
       <li>
         <SeriesCard {series} />
       </li>
     {/each}
     <div bind:this={infiniteScroll.element}></div>
-    {#if $searchQuery.isFetchingNextPage}
+    {#if searchQuery.isFetchingNextPage}
       <p class="p-2 text-center text-sm text-gray-500">Loading more...</p>
     {/if}
   </ul>
@@ -115,28 +109,29 @@
 
 <div class="grid h-full grid-cols-[4fr_2fr] gap-12 overflow-hidden">
   <div class="overflow-y-auto">
-    {#if $searchQuery.isLoading}
+    {#if searchQuery.isLoading}
       <p>Loading...</p>
-    {:else if $searchQuery.isError}
+    {:else if searchQuery.error}
       <ErrorMessage
         message="Apparently an error has occurred"
         imageSrc={shockedCat}
-        error={$searchQuery.error}
+        error={searchQuery.error}
       />
-    {:else if $searchQuery.isSuccess}
+    {:else if searchQuery.isSuccess}
       {@render seriesList()}
     {/if}
   </div>
+
   <aside class="overflow-y-auto">
-    {#if $filtersQuery.isLoading}
+    {#if filtersQuery.isLoading}
       <p>Loading...</p>
-    {:else if $filtersQuery.isError}
+    {:else if filtersQuery.error}
       <ErrorMessage
         message="Apparently an error has occurred"
-        error={$filtersQuery.error}
+        error={filtersQuery.error}
       />
-    {:else if $filtersQuery.isSuccess}
-      {@render filtersList($filtersQuery.data)}
+    {:else if filtersQuery.data}
+      {@render filtersList(filtersQuery.data)}
     {/if}
   </aside>
 </div>
