@@ -12,15 +12,10 @@
   interface EpisodesListProps {
     episodesQuery: CreateInfiniteQueryResult<InfiniteData<EpisodesPage>>;
     seriesId: string;
-    smallCards?: boolean;
     onEpisodeSelect?: (episode: Episode) => void;
   }
-  let {
-    episodesQuery,
-    seriesId,
-    smallCards = false,
-    onEpisodeSelect,
-  }: EpisodesListProps = $props();
+  let { episodesQuery, seriesId, onEpisodeSelect }: EpisodesListProps =
+    $props();
 
   let infiniteScroll = createInfiniteScroll(() =>
     $episodesQuery.fetchNextPage(),
@@ -42,7 +37,6 @@
         <EpisodeCard
           {seriesId}
           {episode}
-          small={smallCards}
           onclick={() => handleEpisodeClick(episode)}
         />
       </li>
