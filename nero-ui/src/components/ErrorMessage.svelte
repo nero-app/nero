@@ -21,8 +21,9 @@
       <img class="w-56" src={imageSrc} alt="Error illustration" />
     {/if}
     <pre
-      class="max-h-64 overflow-auto whitespace-pre-wrap break-words rounded-md border
-        border-gray-300 bg-gray-100 p-4 text-sm text-gray-800">{error}</pre>
+      class="max-h-64 overflow-auto rounded-md border border-gray-300
+        bg-gray-100 p-4 text-sm wrap-break-word whitespace-pre-wrap
+        text-gray-800">{error}</pre>
   </div>
   {@render children?.()}
 </article>

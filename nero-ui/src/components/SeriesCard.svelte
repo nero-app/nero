@@ -13,7 +13,7 @@
 >
   <!-- TODO: Handle missing poster -->
   <img
-    class="aspect-[2/3] rounded-lg object-cover"
+    class="aspect-2/3 rounded-lg object-cover"
     src={series.posterUrl!}
     alt={series.title}
   />

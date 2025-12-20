@@ -77,7 +77,7 @@
       text-left transition-colors hover:bg-neutral-50"
   >
     <span
-      class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-md bg-neutral-900
+      class="flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-neutral-900
         text-sm font-semibold text-white"
     >
       {index + 1}
@@ -120,7 +120,7 @@
 
 <dialog
   bind:this={dialogElement}
-  class="m-auto size-full max-h-[90vh] max-w-[400px] overflow-y-auto rounded-lg
+  class="m-auto size-full max-h-[90vh] max-w-100 overflow-y-auto rounded-lg
     border border-neutral-200 shadow-xl backdrop:bg-black/40
     backdrop:backdrop-blur-sm"
   onclick={handleBackdropClick}
@@ -135,7 +135,7 @@
       style="opacity: {1 - scrollProgress}"
     />
     <div
-      class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"
+      class="absolute inset-0 bg-linear-to-t from-black/70 to-transparent"
       style="opacity: {1 - scrollProgress}"
     ></div>
   </figure>

@@ -15,7 +15,7 @@
   {onclick}
 >
   <span class="truncate text-center font-medium">{episode.number}</span>
-  <picture class="aspect-video min-w-[150px]">
+  <picture class="aspect-video min-w-37.5">
     <!-- TODO: Handle missing poster -->
     <img
       class="size-full rounded-lg object-cover"
