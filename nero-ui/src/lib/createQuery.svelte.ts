@@ -6,7 +6,18 @@ export type QueryState<T> = {
   error: Error | null;
 };
 
-export function createQuery<T>(queryFn: () => Promise<T>) {
+export type CreateQueryResult<T> = {
+  readonly data: T | null;
+  readonly isLoading: boolean;
+  readonly isError: boolean;
+  readonly error: Error | null;
+  readonly isSuccess: boolean;
+  refetch: () => Promise<void>;
+};
+
+export function createQuery<T>(
+  queryFn: () => Promise<T>,
+): CreateQueryResult<T> {
   const state = $state<QueryState<T>>({
     data: null,
     status: "idle",

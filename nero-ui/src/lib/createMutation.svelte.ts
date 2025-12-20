@@ -1,8 +1,15 @@
-import type { QueryState } from "./createQuery.svelte";
+import type { CreateQueryResult, QueryState } from "./createQuery.svelte";
+
+export type CreateMutationResult<TData, TVariables> = Omit<
+  CreateQueryResult<TData>,
+  "refetch"
+> & {
+  mutate: (variables: TVariables) => Promise<TData | null>;
+};
 
 export function createMutation<TData, TVariables>(
   mutationFn: (variables: TVariables) => Promise<TData>,
-) {
+): CreateMutationResult<TData, TVariables> {
   let state = $state<QueryState<TData>>({
     data: null,
     status: "idle",

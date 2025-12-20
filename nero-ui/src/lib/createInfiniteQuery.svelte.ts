@@ -1,4 +1,4 @@
-import type { QueryState } from "./createQuery.svelte";
+import type { CreateQueryResult, QueryState } from "./createQuery.svelte";
 
 export type InfiniteQueryState<T> = Omit<QueryState<T[]>, "data"> & {
   data: T[];
@@ -6,10 +6,20 @@ export type InfiniteQueryState<T> = Omit<QueryState<T[]>, "data"> & {
   isFetchingNextPage: boolean;
 };
 
+export type CreateInfiniteQueryResult<T> = Omit<
+  CreateQueryResult<T[]>,
+  "data"
+> & {
+  readonly data: T[];
+  readonly hasNextPage: boolean;
+  readonly isFetchingNextPage: boolean;
+  fetchNextPage: () => Promise<void>;
+};
+
 export function createInfiniteQuery<T>(
   queryFn: (page: number) => Promise<{ data: T[]; hasNextPage: boolean }>,
   options?: { initialPage?: number },
-) {
+): CreateInfiniteQueryResult<T> {
   const initialPage = options?.initialPage ?? 1;
 
   let state = $state<InfiniteQueryState<T>>({
@@ -65,9 +75,6 @@ export function createInfiniteQuery<T>(
   return {
     get data() {
       return state.data;
-    },
-    get status() {
-      return state.status;
     },
     get isLoading() {
       return state.status === "loading";
