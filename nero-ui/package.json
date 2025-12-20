@@ -12,7 +12,6 @@
   "dependencies": {
     "@nero/plugin-extensions": "workspace:*",
     "@tanstack/svelte-query": "5.75.4",
-    "@tanstack/svelte-query-devtools": "5.75.4",
     "@tauri-apps/plugin-dialog": "2.4.2",
     "@tauri-apps/plugin-store": "2.4.1",
     "regexparam": "3.0.0"
@@ -20,6 +19,7 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "5.0.3",
     "@tailwindcss/vite": "4.1.5",
+    "@tanstack/svelte-query-devtools": "5.75.4",
     "svelte": "5.23.1",
     "svelte-check": "4.1.5",
     "tailwindcss": "4.1.5",
