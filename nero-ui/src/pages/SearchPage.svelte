@@ -2,11 +2,10 @@
   import shockedCat from "../assets/images/shocked_cat.svg";
   import ErrorMessage from "../components/ErrorMessage.svelte";
   import SeriesCard from "../components/SeriesCard.svelte";
+  import { appState } from "../lib/appState.svelte";
+  import { createInfiniteQuery } from "../lib/createInfiniteQuery.svelte";
+  import { createQuery } from "../lib/createQuery.svelte";
   import { createInfiniteScroll } from "../lib/infiniteScroll.svelte";
-  import {
-    createFiltersQuery,
-    createInfiniteSearchQuery,
-  } from "../lib/queries";
   import type {
     Filter,
     FilterCategory,
@@ -15,13 +14,25 @@
 
   let { querystring }: { querystring: string } = $props();
 
-  let filtersQuery = createFiltersQuery();
+  let filtersQuery = createQuery(() => {
+    const extension = appState.extension;
+    if (!extension) throw new Error("No extension loaded");
+    return extension.getFilters();
+  });
   let searchFilters = $state<SearchFilter[]>([]);
 
   let query = $derived(
     decodeURIComponent(querystring.substring(querystring.indexOf("q=") + 2)),
   );
-  let searchQuery = $derived(createInfiniteSearchQuery(query, searchFilters));
+  let searchQuery = createInfiniteQuery(async (page) => {
+    const extension = appState.extension;
+    if (!extension) throw new Error("No extension loaded");
+    const result = await extension.search(query, page, searchFilters);
+    return {
+      data: result.items,
+      hasNextPage: result.hasNextPage,
+    };
+  });
   let infiniteScroll = createInfiniteScroll(() => searchQuery.fetchNextPage());
 
   function toggleFilter(categoryId: string, filterId: string) {

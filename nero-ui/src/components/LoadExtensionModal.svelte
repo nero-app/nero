@@ -1,10 +1,9 @@
 <script lang="ts">
   import { appState } from "../lib/appState.svelte";
-  import {
-    createExtensionMetadataQuery,
-    createLoadExtensionMutation,
-  } from "../lib/queries";
+  import { createMutation } from "../lib/createMutation.svelte";
+  import { createQuery } from "../lib/createQuery.svelte";
   import XMarkIcon from "./icons/XMarkIcon.svelte";
+  import { Extension } from "@nero/plugin-extensions";
   import { onMount } from "svelte";
 
   interface LoadExtensionModalProps {
@@ -14,8 +13,12 @@
   let { filePath, onClose }: LoadExtensionModalProps = $props();
 
   const extension = $derived(appState.extension);
-  const metadataQuery = $derived(createExtensionMetadataQuery(filePath));
-  const loadMutation = createLoadExtensionMutation();
+  const metadataQuery = createQuery(() => Extension.getMetadata(filePath));
+  const loadMutation = createMutation(async (filePath: string) => {
+    const loadedExtension = await Extension.load(filePath);
+    appState.extension = loadedExtension;
+    return loadedExtension;
+  });
 
   let dialogElement: HTMLDialogElement;
 

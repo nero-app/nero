@@ -1,6 +1,6 @@
 <script lang="ts">
   import { appState } from "../lib/appState.svelte";
-  import { createSeriesVideosQuery } from "../lib/queries";
+  import { createQuery } from "../lib/createQuery.svelte";
   import ErrorMessage from "./ErrorMessage.svelte";
   import type { Episode, Video } from "@nero/plugin-extensions";
   import { invoke } from "@tauri-apps/api/core";
@@ -14,7 +14,11 @@
 
   let { seriesId, episode, onClose }: VideoSelectionModalProps = $props();
 
-  const videosQuery = $derived(createSeriesVideosQuery(seriesId, episode.id));
+  const videosQuery = createQuery(() => {
+    const extension = appState.extension;
+    if (!extension) throw new Error("No extension loaded");
+    return extension.getSeriesVideos(seriesId, episode.id);
+  });
 
   let dialogElement: HTMLDialogElement;
   let scrollProgress = $state(0);

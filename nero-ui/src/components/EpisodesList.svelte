@@ -1,13 +1,13 @@
 <script lang="ts">
+  import type { CreateInfiniteQueryResult } from "../lib/createInfiniteQuery.svelte";
   import { createInfiniteScroll } from "../lib/infiniteScroll.svelte";
-  import type { createInfiniteEpisodesQuery } from "../lib/queries";
   import EpisodeCard from "./EpisodeCard.svelte";
   import ErrorMessage from "./ErrorMessage.svelte";
   import SortIcon from "./icons/SortIcon.svelte";
   import type { Episode } from "@nero/plugin-extensions";
 
   interface EpisodesListProps {
-    episodesQuery: ReturnType<typeof createInfiniteEpisodesQuery>;
+    episodesQuery: CreateInfiniteQueryResult<Episode>;
     seriesId: string;
     onEpisodeSelect?: (episode: Episode) => void;
   }

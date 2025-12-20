@@ -4,16 +4,28 @@
   import VideoSelectionModal from "../components/VideoSelectionModal.svelte";
   import PlayIcon from "../components/icons/PlayIcon.svelte";
   import ShareIcon from "../components/icons/ShareIcon.svelte";
-  import {
-    createInfiniteEpisodesQuery,
-    createSeriesInfoQuery,
-  } from "../lib/queries";
+  import { appState } from "../lib/appState.svelte";
+  import { createInfiniteQuery } from "../lib/createInfiniteQuery.svelte";
+  import { createQuery } from "../lib/createQuery.svelte";
   import type { Series, Episode } from "@nero/plugin-extensions";
 
   let { params }: { params: { seriesId: string } } = $props();
 
-  let seriesQuery = $derived(createSeriesInfoQuery(params.seriesId));
-  let episodesQuery = $derived(createInfiniteEpisodesQuery(params.seriesId));
+  let seriesQuery = createQuery(() => {
+    const extension = appState.extension;
+    if (!extension) throw new Error("No extension loaded");
+    return extension.getSeriesInfo(params.seriesId);
+  });
+
+  let episodesQuery = createInfiniteQuery(async (page) => {
+    const extension = appState.extension;
+    if (!extension) throw new Error("No extension loaded");
+    const result = await extension.getSeriesEpisodes(params.seriesId, page);
+    return {
+      data: result.items,
+      hasNextPage: result.hasNextPage,
+    };
+  });
 
   let selectedEpisode = $state<Episode | null>(null);
 
