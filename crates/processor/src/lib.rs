@@ -7,7 +7,7 @@ use std::{io, net::SocketAddr, sync::Arc};
 
 use axum::{Router, routing::get};
 use bytes::Bytes;
-use http::Request;
+use http::{Method, Request, uri::Scheme};
 use magnet_uri::MagnetURI;
 use moka::future::Cache;
 use tokio::{net::TcpListener, sync::RwLock};
@@ -68,8 +68,8 @@ impl Processor {
     }
 
     pub async fn handle_http_request(&self, request: Request<Option<Bytes>>) -> Result<Url, Error> {
-        let scheme = request.uri().scheme().map(|s| s.as_str());
-        if scheme != Some("http") && scheme != Some("https") {
+        let scheme = request.uri().scheme();
+        if scheme != Some(&Scheme::HTTP) && scheme != Some(&Scheme::HTTPS) {
             return Err(Error::UnsupportedScheme);
         }
 
@@ -78,9 +78,9 @@ impl Processor {
         }
 
         let request_hash = get_request_hash(&request);
-        let mut base = Url::parse(&format!("http://{}", self.state.addr)).unwrap();
+        let mut base = Url::parse(&format!("{}://{}", Scheme::HTTP, self.state.addr)).unwrap();
 
-        if request.method() != http::Method::GET {
+        if request.method() != Method::GET {
             base.set_path(&format!("/other/{request_hash}"));
             return Ok(base);
         }
