@@ -21,7 +21,7 @@ use crate::{
 struct PluginState {
     host: WasmHost,
     extension: RwLock<Option<WasmExtension>>,
-    processor: Processor,
+    processor: Arc<Processor>,
 }
 
 #[tauri::command]
@@ -165,11 +165,18 @@ impl Builder {
         let state = PluginState {
             host: WasmHost::default(),
             extension: RwLock::new(None),
-            processor: Processor::new(self.processor_addr),
+            processor: Arc::new(Processor::new(self.processor_addr)),
         };
 
         plugin::Builder::new("nero-extensions")
             .setup(|app, _| {
+                let processor = state.processor.clone();
+                tauri::async_runtime::spawn(async move {
+                    processor
+                        .run()
+                        .await
+                        .expect("Unable to spawn internal extension processor server")
+                });
                 app.manage(state);
                 Ok(())
             })
