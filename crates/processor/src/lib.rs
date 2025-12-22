@@ -1,7 +1,7 @@
 mod error;
 mod mime_detector;
 mod routes;
-use webtorrent_sidecar::WebTorrent;
+mod utils;
 
 use std::{io, net::SocketAddr, sync::Arc};
 
@@ -13,18 +13,19 @@ use moka::future::Cache;
 use tokio::{net::TcpListener, sync::RwLock};
 use tracing::debug;
 use url::Url;
-use uuid::Uuid;
+use webtorrent_sidecar::WebTorrent;
 
 use crate::{
     error::Error,
     mime_detector::mime_type,
     routes::{handle_image_request, handle_other_request, handle_video_request},
+    utils::get_request_hash,
 };
 
 struct ServerState {
     addr: SocketAddr,
     http_client: reqwest::Client,
-    http_requests: Cache<Uuid, Request<Option<Bytes>>>,
+    http_requests: Cache<u64, Request<Option<Bytes>>>,
     torrent_handler: RwLock<Option<WebTorrent>>,
 }
 
@@ -76,11 +77,11 @@ impl Processor {
             return Ok(Url::parse(&request.uri().to_string())?);
         }
 
-        let uuid = Uuid::new_v4();
+        let request_hash = get_request_hash(&request);
         let mut base = Url::parse(&format!("http://{}", self.state.addr)).unwrap();
 
         if request.method() != http::Method::GET {
-            base.set_path(&format!("/other/{uuid}"));
+            base.set_path(&format!("/other/{request_hash}"));
             return Ok(base);
         }
 
@@ -89,8 +90,8 @@ impl Processor {
             .ok_or(Error::UnsupportedMediaType)?;
 
         match mime_type.type_() {
-            mime::IMAGE => base.set_path(&format!("/image/{uuid}")),
-            mime::VIDEO => base.set_path(&format!("/video/{uuid}")),
+            mime::IMAGE => base.set_path(&format!("/image/{request_hash}")),
+            mime::VIDEO => base.set_path(&format!("/video/{request_hash}")),
             mime::APPLICATION if mime_type.subtype() == "application/x-bittorrent" => {
                 todo!()
             }
@@ -98,7 +99,7 @@ impl Processor {
             _ => return Err(Error::UnsupportedMediaType),
         }
 
-        self.state.http_requests.insert(uuid, request).await;
+        self.state.http_requests.insert(request_hash, request).await;
 
         Ok(base)
     }

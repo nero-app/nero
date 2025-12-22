@@ -5,18 +5,17 @@ use axum::{
     extract::{Path, Request, State},
     response::Response,
 };
-use uuid::Uuid;
 
 use crate::{ServerState, error::Error, routes::ForwardRequest};
 
 pub async fn handle_image_request(
     State(state): State<Arc<ServerState>>,
-    Path(request_id): Path<Uuid>,
+    Path(request_hash): Path<u64>,
     incoming_request: Request<Body>,
 ) -> Result<Response, Error> {
     let stored_request = state
         .http_requests
-        .get(&request_id)
+        .get(&request_hash)
         .await
         .ok_or(Error::NotFound)?;
 
