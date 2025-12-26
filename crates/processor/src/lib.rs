@@ -9,7 +9,6 @@ use anyhow::bail;
 use axum::{Router, routing::get};
 use bytes::Bytes;
 use http::{Request, uri::Scheme};
-use magnet_uri::MagnetURI;
 use moka::future::Cache;
 use tokio::{net::TcpListener, sync::RwLock};
 use tracing::debug;
@@ -127,7 +126,7 @@ impl Processor {
         Ok(base)
     }
 
-    pub async fn register_video_magnet(&self, uri: MagnetURI) -> anyhow::Result<Url> {
+    pub async fn register_video_magnet(&self, uri: String) -> anyhow::Result<Url> {
         todo!()
     }
 }

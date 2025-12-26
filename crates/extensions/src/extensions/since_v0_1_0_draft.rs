@@ -182,9 +182,9 @@ impl AsyncTryFromWithStore<MediaResource> for crate::types::MediaResource {
                 Ok(crate::types::MediaResource::HttpRequest(Box::new(request)))
             }
             MediaResource::MagnetUri(uri) => {
-                let magnet = MagnetURI::from_str(&uri)
+                MagnetURI::from_str(&uri)
                     .map_err(|e| anyhow::anyhow!("Failed to parse magnet URI: {:?}", e))?;
-                Ok(crate::types::MediaResource::MagnetUri(magnet))
+                Ok(crate::types::MediaResource::MagnetUri(uri))
             }
         }
     }

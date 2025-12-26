@@ -1,11 +1,10 @@
 use bytes::Bytes;
-use magnet_uri::MagnetURI;
 
 pub type HttpRequest = http::Request<Option<Bytes>>;
 
 pub enum MediaResource {
     HttpRequest(Box<HttpRequest>),
-    MagnetUri(MagnetURI),
+    MagnetUri(String),
 }
 
 pub struct Page<T> {
