@@ -1,58 +1,33 @@
 mod image;
-mod other;
 mod video;
 
 pub use image::*;
-pub use other::*;
 pub use video::*;
 
-use axum::{body::Body, response::Response};
-use http::HeaderMap;
+use bytes::Bytes;
 use reqwest::Client;
+use url::Url;
 
-use crate::error::Error;
-
-pub struct ForwardRequest {
-    client: Client,
-    url: String,
-    headers: HeaderMap,
-    body: Option<bytes::Bytes>,
+pub trait IntoReqwestRequest {
+    fn into_reqwest_request(self, client: Client) -> Result<reqwest::Request, reqwest::Error>;
 }
 
-impl ForwardRequest {
-    pub fn new(client: Client, url: String, headers: HeaderMap) -> Self {
-        Self {
-            client,
-            url,
-            headers,
-            body: None,
-        }
-    }
+impl IntoReqwestRequest for http::Request<Option<Bytes>> {
+    fn into_reqwest_request(self, client: Client) -> Result<reqwest::Request, reqwest::Error> {
+        let (parts, body) = self.into_parts();
 
-    pub fn body(mut self, body: bytes::Bytes) -> Self {
-        self.body = Some(body);
-        self
-    }
+        let url = Url::parse(&parts.uri.to_string()).unwrap();
 
-    pub async fn send(self) -> Result<Response, Error> {
-        let mut req = self.client.get(self.url.clone()).headers(self.headers);
-        if let Some(body) = self.body {
-            req = req.body(body);
+        let mut builder = client.request(parts.method, url);
+
+        for (k, v) in parts.headers.iter() {
+            builder = builder.header(k, v);
         }
 
-        let res = req.send().await?;
-        let status = res.status();
-        if !status.is_success() {
-            return Err(Error::RemoteServer(status));
+        if let Some(body) = body {
+            builder.body(body).build()
+        } else {
+            builder.build()
         }
-
-        let headers = res.headers().clone();
-        let stream = res.bytes_stream();
-        let body = Body::from_stream(stream);
-
-        let mut response = Response::new(body);
-        *response.status_mut() = status;
-        *response.headers_mut() = headers;
-        Ok(response)
     }
 }

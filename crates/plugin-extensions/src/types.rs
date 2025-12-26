@@ -1,3 +1,4 @@
+use anyhow::bail;
 use nero_extensions::types::MediaResource;
 use serde::{Deserialize, Serialize};
 use url::Url;
@@ -53,10 +54,10 @@ impl AsyncTryFromWithState<nero_extensions::types::Series> for Series {
             title: series.title,
             poster_url: match series.poster_resource {
                 Some(MediaResource::HttpRequest(req)) => {
-                    Some(state.processor.handle_http_request(*req).await?)
+                    Some(state.processor.register_image_request(*req).await?)
                 }
-                Some(MediaResource::MagnetUri(magnet)) => {
-                    Some(state.processor.handle_magnet_uri(magnet).await?)
+                Some(MediaResource::MagnetUri(_)) => {
+                    bail!("Magnet URIs are not supported for images");
                 }
                 None => None,
             },
@@ -87,10 +88,10 @@ impl AsyncTryFromWithState<nero_extensions::types::Episode> for Episode {
             title: episode.title,
             thumbnail_url: match episode.thumbnail_resource {
                 Some(MediaResource::HttpRequest(req)) => {
-                    Some(state.processor.handle_http_request(*req).await?)
+                    Some(state.processor.register_image_request(*req).await?)
                 }
-                Some(MediaResource::MagnetUri(magnet)) => {
-                    Some(state.processor.handle_magnet_uri(magnet).await?)
+                Some(MediaResource::MagnetUri(_)) => {
+                    bail!("Magnet URIs are not supported for images");
                 }
                 None => None,
             },
@@ -116,10 +117,10 @@ impl AsyncTryFromWithState<nero_extensions::types::Video> for Video {
         Ok(Self {
             url: match video.media_resource {
                 MediaResource::HttpRequest(req) => {
-                    state.processor.handle_http_request(*req).await?
+                    state.processor.register_video_request(*req).await?
                 }
                 MediaResource::MagnetUri(magnet) => {
-                    state.processor.handle_magnet_uri(magnet).await?
+                    state.processor.register_video_magnet(magnet).await?
                 }
             },
             server: video.server,

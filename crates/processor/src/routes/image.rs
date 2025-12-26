@@ -6,27 +6,40 @@ use axum::{
     response::Response,
 };
 
-use crate::{ServerState, error::Error, routes::ForwardRequest};
+use crate::{ServerState, error::Error, routes::IntoReqwestRequest};
 
 pub async fn handle_image_request(
     State(state): State<Arc<ServerState>>,
-    Path(request_hash): Path<u64>,
+    Path(stored_request_hash): Path<u64>,
     incoming_request: Request<Body>,
 ) -> Result<Response, Error> {
-    let stored_request = state
+    let mut stored_request = state
         .http_requests
-        .get(&request_hash)
+        .get(&stored_request_hash)
         .await
         .ok_or(Error::NotFound)?;
 
-    let uri = stored_request.uri().to_string();
-
-    let mut headers = stored_request.headers().clone();
     for (name, value) in incoming_request.headers().iter() {
-        headers.insert(name.clone(), value.clone());
+        stored_request
+            .headers_mut()
+            .insert(name.clone(), value.clone());
     }
 
-    ForwardRequest::new(state.http_client.clone(), uri, headers)
-        .send()
-        .await
+    let request = stored_request.into_reqwest_request(state.http_client.clone())?;
+    let response = state.http_client.execute(request).await?;
+
+    let status = response.status();
+    if !status.is_success() {
+        return Err(Error::RemoteServer(status));
+    }
+
+    let headers = response.headers().clone();
+    let stream = response.bytes_stream();
+    let body = Body::from_stream(stream);
+
+    let mut response = Response::new(body);
+    *response.status_mut() = status;
+    *response.headers_mut() = headers;
+
+    Ok(response)
 }

@@ -5,9 +5,10 @@ mod utils;
 
 use std::{io, net::SocketAddr, sync::Arc};
 
+use anyhow::bail;
 use axum::{Router, routing::get};
 use bytes::Bytes;
-use http::{Method, Request, uri::Scheme};
+use http::{Request, uri::Scheme};
 use magnet_uri::MagnetURI;
 use moka::future::Cache;
 use tokio::{net::TcpListener, sync::RwLock};
@@ -16,9 +17,8 @@ use url::Url;
 use webtorrent_sidecar::WebTorrent;
 
 use crate::{
-    error::Error,
     mime_detector::mime_type,
-    routes::{handle_image_request, handle_other_request, handle_video_request},
+    routes::{handle_image_request, handle_video_request},
     utils::get_request_hash,
 };
 
@@ -51,7 +51,6 @@ impl Processor {
         let app = Router::new()
             .route("/image/{request_id}", get(handle_image_request))
             .route("/video/{request_id}", get(handle_video_request))
-            .route("/other/{request_id}", get(handle_other_request))
             .with_state(self.state.clone());
 
         let listener = TcpListener::bind(self.state.addr).await?;
@@ -67,36 +66,45 @@ impl Processor {
         *self.state.torrent_handler.write().await = None;
     }
 
-    pub async fn handle_http_request(&self, request: Request<Option<Bytes>>) -> Result<Url, Error> {
-        let scheme = request.uri().scheme();
-        if scheme != Some(&Scheme::HTTP) && scheme != Some(&Scheme::HTTPS) {
-            return Err(Error::UnsupportedScheme);
-        }
+    pub async fn register_image_request(
+        &self,
+        request: Request<Option<Bytes>>,
+    ) -> anyhow::Result<Url> {
+        let mime_type = mime_type(&self.state.http_client, &request)
+            .await?
+            .ok_or(anyhow::anyhow!("Could not detect mime type"))?;
 
-        if request.headers().is_empty() {
-            return Ok(Url::parse(&request.uri().to_string())?);
+        if mime_type.subtype() == "application/x-bittorrent" {
+            bail!("Torrents are not supported for images");
         }
 
         let request_hash = get_request_hash(&request);
-        let mut base = Url::parse(&format!("{}://{}", Scheme::HTTP, self.state.addr)).unwrap();
+        let url = Url::parse(&format!(
+            "{}://{}/image/{request_hash}",
+            Scheme::HTTP,
+            self.state.addr,
+        ))?;
 
-        if request.method() != Method::GET {
-            base.set_path(&format!("/other/{request_hash}"));
-            return Ok(base);
-        }
+        self.state.http_requests.insert(request_hash, request).await;
 
+        Ok(url)
+    }
+
+    pub async fn register_video_request(
+        &self,
+        request: Request<Option<Bytes>>,
+    ) -> anyhow::Result<Url> {
         let mime_type = mime_type(&self.state.http_client, &request)
             .await?
-            .ok_or(Error::UnsupportedMediaType)?;
+            .ok_or(anyhow::anyhow!("Could not detect mime type"))?;
+
+        let request_hash = get_request_hash(&request);
+        let mut base = Url::parse(&format!("{}://{}", Scheme::HTTP, self.state.addr))?;
 
         match mime_type.type_() {
-            mime::IMAGE => base.set_path(&format!("/image/{request_hash}")),
             mime::VIDEO => base.set_path(&format!("/video/{request_hash}")),
-            mime::APPLICATION if mime_type.subtype() == "application/x-bittorrent" => {
-                todo!()
-            }
-            mime::APPLICATION => todo!(),
-            _ => return Err(Error::UnsupportedMediaType),
+            mime::APPLICATION if mime_type.subtype() == "application/x-bittorrent" => todo!(),
+            _ => bail!("Unsupported media type"),
         }
 
         self.state.http_requests.insert(request_hash, request).await;
@@ -104,7 +112,7 @@ impl Processor {
         Ok(base)
     }
 
-    pub async fn handle_magnet_uri(&self, uri: MagnetURI) -> Result<Url, Error> {
+    pub async fn register_video_magnet(&self, uri: MagnetURI) -> anyhow::Result<Url> {
         todo!()
     }
 }
