@@ -22,10 +22,17 @@ use crate::{
     utils::get_request_hash,
 };
 
+#[derive(Clone)]
+enum VideoRequestSource {
+    Http(Box<Request<Option<Bytes>>>),
+    MagnetUri(String),
+}
+
 struct ServerState {
     addr: SocketAddr,
     http_client: reqwest::Client,
-    http_requests: Cache<u64, Request<Option<Bytes>>>,
+    image_requests: Cache<u64, Request<Option<Bytes>>>,
+    video_requests: Cache<u64, VideoRequestSource>,
     torrent_handler: RwLock<Option<WebTorrent>>,
 }
 
@@ -38,7 +45,9 @@ impl Processor {
         let state = ServerState {
             addr,
             http_client: reqwest::Client::new(),
-            http_requests: Cache::builder().build(),
+            // TODO: ttls
+            image_requests: Cache::builder().build(),
+            video_requests: Cache::builder().build(),
             torrent_handler: RwLock::new(None),
         };
 
@@ -85,7 +94,10 @@ impl Processor {
             self.state.addr,
         ))?;
 
-        self.state.http_requests.insert(request_hash, request).await;
+        self.state
+            .image_requests
+            .insert(request_hash, request)
+            .await;
 
         Ok(url)
     }
@@ -107,7 +119,10 @@ impl Processor {
             _ => bail!("Unsupported media type"),
         }
 
-        self.state.http_requests.insert(request_hash, request).await;
+        self.state
+            .video_requests
+            .insert(request_hash, VideoRequestSource::Http(Box::new(request)))
+            .await;
 
         Ok(base)
     }
