@@ -84,6 +84,10 @@ impl Processor {
         &self,
         request: Request<Option<Bytes>>,
     ) -> anyhow::Result<Url> {
+        if request.headers().is_empty() {
+            return Ok(Url::parse(&request.uri().to_string())?);
+        }
+
         let mime_type = mime_type(&self.state.http_client, &request)
             .await?
             .ok_or(anyhow::anyhow!("Could not detect mime type"))?;
@@ -111,6 +115,10 @@ impl Processor {
         &self,
         request: Request<Option<Bytes>>,
     ) -> anyhow::Result<Url> {
+        if request.headers().is_empty() {
+            return Ok(Url::parse(&request.uri().to_string())?);
+        }
+
         let mime_type = mime_type(&self.state.http_client, &request)
             .await?
             .ok_or(anyhow::anyhow!("Could not detect mime type"))?;
