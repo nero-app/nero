@@ -3,7 +3,12 @@ mod mime_detector;
 mod routes;
 mod utils;
 
-use std::{io, net::SocketAddr, sync::Arc};
+use std::{
+    hash::{DefaultHasher, Hash, Hasher},
+    io,
+    net::SocketAddr,
+    sync::Arc,
+};
 
 use anyhow::bail;
 use axum::{Router, routing::get};
@@ -17,7 +22,7 @@ use webtorrent_sidecar::WebTorrent;
 
 use crate::{
     mime_detector::mime_type,
-    routes::{handle_image_request, handle_video_request},
+    routes::{handle_image_request, handle_torrent_request, handle_video_request},
     utils::get_request_hash,
 };
 
@@ -59,6 +64,7 @@ impl Processor {
         let app = Router::new()
             .route("/image/{request_id}", get(handle_image_request))
             .route("/video/{request_id}", get(handle_video_request))
+            .route("/torrent/{request_id}", get(handle_torrent_request))
             .with_state(self.state.clone());
 
         let listener = TcpListener::bind(self.state.addr).await?;
@@ -114,7 +120,9 @@ impl Processor {
 
         match mime_type.type_() {
             mime::VIDEO => base.set_path(&format!("/video/{request_hash}")),
-            mime::APPLICATION if mime_type.subtype() == "application/x-bittorrent" => todo!(),
+            mime::APPLICATION if mime_type.subtype() == "application/x-bittorrent" => {
+                base.set_path(&format!("/torrent/{request_hash}"))
+            }
             _ => bail!("Unsupported media type"),
         }
 
@@ -127,6 +135,21 @@ impl Processor {
     }
 
     pub async fn register_video_magnet(&self, uri: String) -> anyhow::Result<Url> {
-        todo!()
+        let mut hasher = DefaultHasher::new();
+        uri.hash(&mut hasher);
+        let uri_hash = hasher.finish();
+
+        let url = Url::parse(&format!(
+            "{}://{}/torrent/{uri_hash}",
+            Scheme::HTTP,
+            self.state.addr,
+        ))?;
+
+        self.state
+            .video_requests
+            .insert(uri_hash, VideoRequestSource::MagnetUri(uri))
+            .await;
+
+        Ok(url)
     }
 }

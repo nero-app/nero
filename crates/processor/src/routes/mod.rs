@@ -1,7 +1,9 @@
 mod image;
+mod torrent;
 mod video;
 
 pub use image::*;
+pub use torrent::*;
 pub use video::*;
 
 use bytes::Bytes;
