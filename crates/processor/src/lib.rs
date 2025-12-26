@@ -62,9 +62,9 @@ impl Processor {
 
     pub async fn run(&self) -> io::Result<()> {
         let app = Router::new()
-            .route("/image/{request_id}", get(handle_image_request))
-            .route("/video/{request_id}", get(handle_video_request))
-            .route("/torrent/{request_id}", get(handle_torrent_request))
+            .route("/image/{request_hash}", get(handle_image_request))
+            .route("/video/{request_hash}", get(handle_video_request))
+            .route("/torrent/{request_hash}", get(handle_torrent_request))
             .with_state(self.state.clone());
 
         let listener = TcpListener::bind(self.state.addr).await?;

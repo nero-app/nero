@@ -10,12 +10,12 @@ use crate::{ServerState, error::Error, routes::IntoReqwestRequest};
 
 pub async fn handle_image_request(
     State(state): State<Arc<ServerState>>,
-    Path(stored_request_hash): Path<u64>,
+    Path(request_hash): Path<u64>,
     incoming_request: Request<Body>,
 ) -> Result<Response, Error> {
     let mut stored_request = state
         .image_requests
-        .get(&stored_request_hash)
+        .get(&request_hash)
         .await
         .ok_or(Error::NotFound)?;
 
