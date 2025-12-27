@@ -119,9 +119,7 @@ impl AsyncTryFromWithState<nero_extensions::types::Video> for Video {
                 MediaResource::HttpRequest(req) => {
                     state.processor.register_video_request(*req).await?
                 }
-                MediaResource::MagnetUri(magnet) => {
-                    state.processor.register_video_magnet(magnet).await?
-                }
+                MediaResource::MagnetUri(_) => todo!("Implement torrent support"),
             },
             server: video.server,
             resolution: video.resolution,

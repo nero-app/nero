@@ -1,8 +1,6 @@
 const COMMANDS: &[&str] = &[
     "get_extension_metadata",
     "load_extension",
-    "enable_torrent_support",
-    "disable_torrent_support",
     "get_filters",
     "search",
     "get_series_info",

@@ -3,41 +3,28 @@ mod mime_detector;
 mod routes;
 mod utils;
 
-use std::{
-    hash::{DefaultHasher, Hash, Hasher},
-    io,
-    net::SocketAddr,
-    sync::Arc,
-};
+use std::{io, net::SocketAddr, sync::Arc};
 
 use anyhow::bail;
 use axum::{Router, routing::get};
 use bytes::Bytes;
 use http::{Request, uri::Scheme};
 use moka::future::Cache;
-use tokio::{net::TcpListener, sync::RwLock};
+use tokio::net::TcpListener;
 use tracing::debug;
 use url::Url;
-use webtorrent_sidecar::WebTorrent;
 
 use crate::{
     mime_detector::mime_type,
-    routes::{handle_image_request, handle_torrent_request, handle_video_request},
+    routes::{handle_image_request, handle_video_request},
     utils::get_request_hash,
 };
-
-#[derive(Clone)]
-enum VideoRequestSource {
-    Http(Box<Request<Option<Bytes>>>),
-    MagnetUri(String),
-}
 
 struct ServerState {
     addr: SocketAddr,
     http_client: reqwest::Client,
     image_requests: Cache<u64, Request<Option<Bytes>>>,
-    video_requests: Cache<u64, VideoRequestSource>,
-    torrent_handler: RwLock<Option<WebTorrent>>,
+    video_requests: Cache<u64, Request<Option<Bytes>>>,
 }
 
 pub struct Processor {
@@ -52,7 +39,6 @@ impl Processor {
             // TODO: ttls
             image_requests: Cache::builder().build(),
             video_requests: Cache::builder().build(),
-            torrent_handler: RwLock::new(None),
         };
 
         Self {
@@ -64,20 +50,11 @@ impl Processor {
         let app = Router::new()
             .route("/image/{request_hash}", get(handle_image_request))
             .route("/video/{request_hash}", get(handle_video_request))
-            .route("/torrent/{request_hash}", get(handle_torrent_request))
             .with_state(self.state.clone());
 
         let listener = TcpListener::bind(self.state.addr).await?;
         debug!("listening on {}", listener.local_addr().unwrap());
         axum::serve(listener, app).await
-    }
-
-    pub async fn enable_torrent_support(&self, webtorrent: WebTorrent) {
-        *self.state.torrent_handler.write().await = Some(webtorrent);
-    }
-
-    pub async fn disable_torrent_support(&self) {
-        *self.state.torrent_handler.write().await = None;
     }
 
     pub async fn register_image_request(
@@ -128,36 +105,14 @@ impl Processor {
 
         match mime_type.type_() {
             mime::VIDEO => base.set_path(&format!("/video/{request_hash}")),
-            mime::APPLICATION if mime_type.subtype() == "application/x-bittorrent" => {
-                base.set_path(&format!("/torrent/{request_hash}"))
-            }
             _ => bail!("Unsupported media type"),
         }
 
         self.state
             .video_requests
-            .insert(request_hash, VideoRequestSource::Http(Box::new(request)))
+            .insert(request_hash, request)
             .await;
 
         Ok(base)
-    }
-
-    pub async fn register_video_magnet(&self, uri: String) -> anyhow::Result<Url> {
-        let mut hasher = DefaultHasher::new();
-        uri.hash(&mut hasher);
-        let uri_hash = hasher.finish();
-
-        let url = Url::parse(&format!(
-            "{}://{}/torrent/{uri_hash}",
-            Scheme::HTTP,
-            self.state.addr,
-        ))?;
-
-        self.state
-            .video_requests
-            .insert(uri_hash, VideoRequestSource::MagnetUri(uri))
-            .await;
-
-        Ok(url)
     }
 }

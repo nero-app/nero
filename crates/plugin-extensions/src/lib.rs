@@ -6,12 +6,11 @@ use std::{net::SocketAddr, sync::Arc};
 use nero_extensions::{WasmExtension, host::WasmHost};
 use nero_processor::Processor;
 use tauri::{
-    AppHandle, Manager, Result, Runtime, State,
+    Manager, Result, Runtime, State,
     plugin::{self, TauriPlugin},
 };
 use tokio::sync::RwLock;
 use wasm_metadata::{Metadata, Payload};
-use webtorrent_sidecar::WebTorrent;
 
 use crate::{
     types::{EpisodesPage, FilterCategory, SearchFilter, Series, SeriesPage, Video},
@@ -41,35 +40,6 @@ async fn load_extension(state: State<'_, PluginState>, file_path: String) -> Res
     let extension = state.host.load_extension_async(file_path).await?;
     state.extension.write().await.replace(extension);
 
-    Ok(())
-}
-
-#[tauri::command]
-#[tracing::instrument(skip(app_handle, state))]
-async fn enable_torrent_support<R: Runtime>(
-    app_handle: AppHandle<R>,
-    state: State<'_, PluginState>,
-) -> Result<()> {
-    let webtorrent_state = app_handle
-        .try_state::<Arc<RwLock<Option<WebTorrent>>>>()
-        .ok_or(anyhow::anyhow!("WebTorrent state not found in app"))?;
-
-    let webtorrent_guard = webtorrent_state.read().await;
-    let webtorrent = webtorrent_guard
-        .as_ref()
-        .ok_or(anyhow::anyhow!("WebTorrent not initialized."))?
-        .clone();
-
-    drop(webtorrent_guard);
-
-    state.processor.enable_torrent_support(webtorrent).await;
-    Ok(())
-}
-
-#[tauri::command]
-#[tracing::instrument(skip(state))]
-async fn disable_torrent_support(state: State<'_, PluginState>) -> Result<()> {
-    state.processor.disable_torrent_support().await;
     Ok(())
 }
 
@@ -183,8 +153,6 @@ impl Builder {
             .invoke_handler(tauri::generate_handler![
                 get_extension_metadata,
                 load_extension,
-                enable_torrent_support,
-                disable_torrent_support,
                 get_filters,
                 search,
                 get_series_info,
