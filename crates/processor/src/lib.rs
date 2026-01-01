@@ -1,24 +1,33 @@
+mod cache;
 mod error;
 mod mime_detector;
 mod routes;
 mod utils;
 
-use std::{io, net::SocketAddr, sync::Arc};
+use std::{io, net::SocketAddr, sync::Arc, time::Duration};
 
 use anyhow::bail;
 use axum::{Router, routing::get};
 use bytes::Bytes;
 use http::{Request, uri::Scheme};
-use moka::future::Cache;
 use tokio::net::TcpListener;
 use tracing::debug;
 use url::Url;
 
 use crate::{
+    cache::Cache,
     mime_detector::mime_type,
     routes::{handle_image_request, handle_video_request},
     utils::get_request_hash,
 };
+
+#[derive(Debug, Clone, Default)]
+pub struct CacheConfig {
+    pub image_ttl: Option<Duration>,
+    pub image_capacity: Option<usize>,
+    pub video_ttl: Option<Duration>,
+    pub video_capacity: Option<usize>,
+}
 
 struct ServerState {
     addr: SocketAddr,
@@ -33,12 +42,33 @@ pub struct Processor {
 
 impl Processor {
     pub fn new(addr: SocketAddr) -> Self {
+        Self::with_cache_config(addr, CacheConfig::default())
+    }
+
+    pub fn with_cache_config(addr: SocketAddr, cache_config: CacheConfig) -> Self {
         let state = ServerState {
             addr,
             http_client: reqwest::Client::new(),
-            // TODO: ttls
-            image_requests: Cache::builder().build(),
-            video_requests: Cache::builder().build(),
+            image_requests: {
+                let mut cache = Cache::default();
+                if let Some(ttl) = cache_config.image_ttl {
+                    cache = cache.with_ttl(ttl);
+                }
+                if let Some(capacity) = cache_config.image_capacity {
+                    cache = cache.with_capacity(capacity);
+                }
+                cache
+            },
+            video_requests: {
+                let mut cache = Cache::default();
+                if let Some(ttl) = cache_config.video_ttl {
+                    cache = cache.with_ttl(ttl);
+                }
+                if let Some(capacity) = cache_config.video_capacity {
+                    cache = cache.with_capacity(capacity);
+                }
+                cache
+            },
         };
 
         Self {
