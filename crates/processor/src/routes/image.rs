@@ -15,7 +15,7 @@ pub async fn handle_image_request(
 ) -> Result<Response, Error> {
     let mut stored_request = state
         .image_requests
-        .get(&request_hash)
+        .remove(&request_hash)
         .await
         .ok_or(Error::NotFound)?;
 
