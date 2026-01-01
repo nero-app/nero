@@ -30,6 +30,9 @@ pub async fn handle_video_request(
         .replace(stored_request.clone());
 
     for (name, value) in incoming_request.headers().iter() {
+        if name == http::header::HOST {
+            continue;
+        }
         stored_request
             .headers_mut()
             .insert(name.clone(), value.clone());

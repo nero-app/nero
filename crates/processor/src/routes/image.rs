@@ -5,6 +5,7 @@ use axum::{
     extract::{Path, Request, State},
     response::Response,
 };
+use http::header::HOST;
 
 use crate::{
     ServerState,
@@ -24,6 +25,9 @@ pub async fn handle_image_request(
         .ok_or(Error::NotFound)?;
 
     for (name, value) in incoming_request.headers().iter() {
+        if name == HOST {
+            continue;
+        }
         stored_request
             .headers_mut()
             .insert(name.clone(), value.clone());
