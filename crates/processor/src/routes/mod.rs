@@ -1,12 +1,55 @@
 mod image;
 mod video;
 
+use http::{
+    HeaderMap, HeaderName,
+    header::{CONNECTION, PROXY_AUTHENTICATE, PROXY_AUTHORIZATION, TE, TRANSFER_ENCODING, UPGRADE},
+};
 pub use image::*;
 pub use video::*;
 
 use bytes::Bytes;
 use reqwest::Client;
 use url::Url;
+
+const HOP_BY_HOP_HEADERS: [HeaderName; 8] = [
+    CONNECTION,
+    HeaderName::from_static("keep-alive"),
+    PROXY_AUTHENTICATE,
+    PROXY_AUTHORIZATION,
+    TE,
+    HeaderName::from_static("trailers"),
+    TRANSFER_ENCODING,
+    UPGRADE,
+];
+
+pub trait HopByHopHeadersExt {
+    fn remove_hop_by_hop_headers(&mut self);
+}
+
+impl HopByHopHeadersExt for HeaderMap {
+    fn remove_hop_by_hop_headers(&mut self) {
+        let connection_val_owned = self
+            .get(CONNECTION)
+            .and_then(|v| v.to_str().ok())
+            .map(|s| s.to_owned());
+
+        if let Some(conn_str) = connection_val_owned {
+            for token in conn_str.split(',') {
+                let token = token.trim();
+                if !token.is_empty()
+                    && let Ok(header_name) = HeaderName::from_bytes(token.as_bytes())
+                {
+                    self.remove(header_name);
+                }
+            }
+        }
+
+        for header in HOP_BY_HOP_HEADERS {
+            self.remove(header);
+        }
+    }
+}
 
 pub trait IntoReqwestRequest {
     fn into_reqwest_request(self, client: Client) -> Result<reqwest::Request, reqwest::Error>;

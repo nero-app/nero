@@ -6,7 +6,11 @@ use axum::{
     response::Response,
 };
 
-use crate::{ServerState, error::Error, routes::IntoReqwestRequest};
+use crate::{
+    ServerState,
+    error::Error,
+    routes::{HopByHopHeadersExt, IntoReqwestRequest},
+};
 
 pub async fn handle_image_request(
     State(state): State<Arc<ServerState>>,
@@ -25,6 +29,8 @@ pub async fn handle_image_request(
             .insert(name.clone(), value.clone());
     }
 
+    stored_request.headers_mut().remove_hop_by_hop_headers();
+
     let request = stored_request.into_reqwest_request(state.http_client.clone())?;
     let response = state.http_client.execute(request).await?;
 
@@ -33,7 +39,9 @@ pub async fn handle_image_request(
         return Err(Error::RemoteServer(status));
     }
 
-    let headers = response.headers().clone();
+    let mut headers = response.headers().clone();
+    headers.remove_hop_by_hop_headers();
+
     let stream = response.bytes_stream();
     let body = Body::from_stream(stream);
 
