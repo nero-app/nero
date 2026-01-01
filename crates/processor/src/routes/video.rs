@@ -1,17 +1,51 @@
 use std::sync::Arc;
 
 use axum::{
+    body::Body,
     extract::{Path, Request, State},
     response::Response,
 };
 
-use crate::{ServerState, error::Error};
+use crate::{ServerState, error::Error, routes::IntoReqwestRequest};
 
-#[allow(unused_variables)]
 pub async fn handle_video_request(
     State(state): State<Arc<ServerState>>,
     Path(request_hash): Path<u64>,
-    req: Request,
+    incoming_request: Request,
 ) -> Result<Response, Error> {
-    todo!()
+    let mut stored_request = state
+        .image_requests
+        .remove(&request_hash)
+        .await
+        .ok_or(Error::NotFound)?;
+
+    state
+        .current_video
+        .write()
+        .await
+        .replace(stored_request.clone());
+
+    for (name, value) in incoming_request.headers().iter() {
+        stored_request
+            .headers_mut()
+            .insert(name.clone(), value.clone());
+    }
+
+    let request = stored_request.into_reqwest_request(state.http_client.clone())?;
+    let response = state.http_client.execute(request).await?;
+
+    let status = response.status();
+    if !status.is_success() {
+        return Err(Error::RemoteServer(status));
+    }
+
+    let headers = response.headers().clone();
+    let stream = response.bytes_stream();
+    let body = Body::from_stream(stream);
+
+    let mut response = Response::new(body);
+    *response.status_mut() = status;
+    *response.headers_mut() = headers;
+
+    Ok(response)
 }

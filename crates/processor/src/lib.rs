@@ -10,7 +10,7 @@ use anyhow::bail;
 use axum::{Router, routing::get};
 use bytes::Bytes;
 use http::{Request, uri::Scheme};
-use tokio::net::TcpListener;
+use tokio::{net::TcpListener, sync::RwLock};
 use tracing::debug;
 use url::Url;
 
@@ -20,6 +20,8 @@ use crate::{
     routes::{handle_image_request, handle_video_request},
     utils::get_request_hash,
 };
+
+type HttpRequest = Request<Option<Bytes>>;
 
 #[derive(Debug, Clone, Default)]
 pub struct CacheConfig {
@@ -32,8 +34,11 @@ pub struct CacheConfig {
 struct ServerState {
     addr: SocketAddr,
     http_client: reqwest::Client,
-    image_requests: Cache<u64, Request<Option<Bytes>>>,
-    video_requests: Cache<u64, Request<Option<Bytes>>>,
+
+    image_requests: Cache<u64, HttpRequest>,
+    video_requests: Cache<u64, HttpRequest>,
+
+    current_video: RwLock<Option<HttpRequest>>,
 }
 
 pub struct Processor {
@@ -69,6 +74,7 @@ impl Processor {
                 }
                 cache
             },
+            current_video: RwLock::new(None),
         };
 
         Self {
@@ -87,10 +93,7 @@ impl Processor {
         axum::serve(listener, app).await
     }
 
-    pub async fn register_image_request(
-        &self,
-        request: Request<Option<Bytes>>,
-    ) -> anyhow::Result<Url> {
+    pub async fn register_image_request(&self, request: HttpRequest) -> anyhow::Result<Url> {
         if request.headers().is_empty() {
             return Ok(Url::parse(&request.uri().to_string())?);
         }
@@ -118,10 +121,7 @@ impl Processor {
         Ok(url)
     }
 
-    pub async fn register_video_request(
-        &self,
-        request: Request<Option<Bytes>>,
-    ) -> anyhow::Result<Url> {
+    pub async fn register_video_request(&self, request: HttpRequest) -> anyhow::Result<Url> {
         if request.headers().is_empty() {
             return Ok(Url::parse(&request.uri().to_string())?);
         }
